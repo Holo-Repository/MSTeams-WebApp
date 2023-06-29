@@ -25,16 +25,18 @@
     "accentColor": "#FFFFFF",
     "bots": [],
     "composeExtensions": [],
-    "configurableTabs": [],
-    "staticTabs": [
+    "configurableTabs": [
         {
-            "entityId": "index0",
-            "name": "Personal Tab",
-            "contentUrl": "${{TAB_ENDPOINT}}/index.html#/tab",
-            "websiteUrl": "${{TAB_ENDPOINT}}/index.html#/tab",
+            "configurationUrl": "https://localhost:53000",
+            "canUpdateConfiguration": true,
             "scopes": [
-                "personal"
-            ]
+                "groupchat",
+                "team"
+            ],
+            "context": [
+                "meetingStage"
+              ]
+            
         }
     ],
     "permissions": [
