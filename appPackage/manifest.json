@@ -27,7 +27,7 @@
     "composeExtensions": [],
     "configurableTabs": [
         {
-            "configurationUrl": "https://localhost:53000",
+            "configurationUrl": "${{TAB_ENDPOINT}}/#/config",
             "canUpdateConfiguration": true,
             "scopes": [
                 "groupchat",
