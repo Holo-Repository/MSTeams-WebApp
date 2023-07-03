@@ -58,8 +58,8 @@ export default function App() {
                             {/* <Route path="/privacy" element={<Privacy/>} />
                             <Route path="/termsofuse" element={<TermsOfUse/>} /> */}
                             <Route path="/holorepo" element={<HoloRepo/>}/>
-                            <Route path="/config" element={<AppConfig/>} />
-                            <Route path="*" element={<Navigate to={"/config"}/>}></Route>
+                            <Route path="/config" element={<AppConfig/>}/>
+                            <Route path="*" element={<Navigate to={"/holorepo"}/>}></Route>
                         </Routes>
                     )}
                 </Router>

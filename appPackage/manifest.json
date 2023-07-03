@@ -34,10 +34,18 @@
                 "team"
             ],
             "context": [
+                "channelTab",
+                "privateChatTab",
+                "meetingChatTab",
+                "meetingDetailsTab",
                 "meetingStage",
                 "meetingSidePanel"
             ]
         }
+    ],
+    "supportedChannelTypes": [
+        "sharedChannels",
+        "privateChannels"
     ],
     "permissions": [
         "identity",
