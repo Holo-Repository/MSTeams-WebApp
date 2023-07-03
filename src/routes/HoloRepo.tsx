@@ -1,11 +1,27 @@
 import React from "react";
-import {app, pages} from "@microsoft/teams-js";
+import { app } from "@microsoft/teams-js";
+
+import SharedCanvas from "./SharedCanvas";
 
 class HoloRepo extends React.Component {
+    state = {
+        // Expected values: "default", "content", "sidePanel", "meetingStage"
+        view: "default",
+    };
+
+    async componentDidMount() {
+        const context = await app.getContext();
+        this.setState({ view: context.page.frameContext });
+    }
+
     render() {
+        const { view } = this.state;
         return (
             <div>
-                <h1>HoloRepo App</h1>
+                {view === "default" && "Default view"}
+                {view === "content" && "Content view"}
+                {view === "sidePanel" && "Side panel view"}
+                {view === "meetingStage" && <SharedCanvas/>}
             </div>
         );
     }

@@ -58,5 +58,24 @@
         "id": "${{AAD_APP_CLIENT_ID}}",
         "resource": "api://${{TAB_DOMAIN}}/${{AAD_APP_CLIENT_ID}}"
     },
-    "showLoadingIndicator": false
+    "showLoadingIndicator": false,
+    "authorization": {
+        "permissions": {
+            "resourceSpecific": [
+                {
+                    "name": "LiveShareSession.ReadWrite.Chat",
+                    "type": "Delegated"
+                }, {
+                    "name": "LiveShareSession.ReadWrite.Group",
+                    "type": "Delegated"
+                }, {
+                    "name": "MeetingStage.Write.Chat",
+                    "type": "Delegated"
+                }, {
+                    "name": "ChannelMeetingStage.Write.Group",
+                    "type": "Delegated"
+                }
+            ]
+        }
+    }
 }
