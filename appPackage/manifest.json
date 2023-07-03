@@ -3,9 +3,9 @@
     "manifestVersion": "1.16",
     "version": "1.0.0",
     "id": "${{TEAMS_APP_ID}}",
-    "packageName": "com.microsoft.teams.extension",
+    "packageName": "com.ucl.holorepository.teams",
     "developer": {
-        "name": "Teams App, Inc.",
+        "name": "HoloRepository 2023",
         "websiteUrl": "${{TAB_ENDPOINT}}",
         "privacyUrl": "${{TAB_ENDPOINT}}/index.html#/privacy",
         "termsOfUseUrl": "${{TAB_ENDPOINT}}/index.html#/termsofuse"
@@ -15,14 +15,14 @@
         "outline": "outline.png"
     },
     "name": {
-        "short": "HoloRepo-Teams-${{TEAMSFX_ENV}}",
-        "full": "Full name for HoloRepo-Teams"
+        "short": "HoloCollab",
+        "full": "HoloRepository Collab"
     },
     "description": {
-        "short": "Short description of HoloRepo-Teams",
-        "full": "Full description of HoloRepo-Teams"
+        "short": "Collaborative HoloRepository Environment.",
+        "full": "Shared collaborative environment for HoloRepository technology stack."
     },
-    "accentColor": "#FFFFFF",
+    "accentColor": "#4C55B6",
     "bots": [],
     "composeExtensions": [],
     "configurableTabs": [
