@@ -6,7 +6,7 @@ import {
     teamsHighContrastTheme,
     tokens,
 } from "@fluentui/react-components";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { HashRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { app } from "@microsoft/teams-js";
 import { useTeamsUserCredential } from "@microsoft/teamsfx-react";
@@ -46,8 +46,10 @@ export default function App() {
             });
     }, [loading]);
 
+    const teamsFxContextValue = useMemo(() => ({ theme, themeString, teamsUserCredential }), [theme, themeString, teamsUserCredential]);
+
     return (
-        <TeamsFxContext.Provider value={{ theme, themeString, teamsUserCredential }}>
+        <TeamsFxContext.Provider value={teamsFxContextValue}>
             <FluentProvider
                 theme={getTheme(themeString)}
                 style={{ background: tokens.colorNeutralBackground3 }}
