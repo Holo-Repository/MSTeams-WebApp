@@ -4,16 +4,14 @@ import { InkingTool } from "@microsoft/live-share-canvas";
 import Tool, { ToolProps } from "./Tool";
 import SizePicker from "./SizePicker";
 
-interface EraserProps extends ToolProps {
-}
 
-class Eraser extends Tool<EraserProps> {
+class Eraser extends Tool {
     static defaultProps = {
         icon: "🧽",
         tool: InkingTool.eraser
     }
 
-    constructor(props: EraserProps) {
+    constructor(props: ToolProps) {
         super(props);
         this.setSize = this.setSize.bind(this);
     }
@@ -29,14 +27,9 @@ class Eraser extends Tool<EraserProps> {
         const isDoubleClick = this.props.isDoubleClick && isSelected;
 
         return (
-            <div>
-                <button 
-                style={{ backgroundColor: isSelected ? "lightgray" : "white" }}
-                onClick={() => this.props.selectTool(this.props.tool)}
-                >{this.props.icon}
-                </button>
+            <Tool {...this.props}>
                 {!isDoubleClick ? <></> : <SizePicker setSize={this.setSize} />}
-            </div>
+            </Tool>
         );
     }
 }

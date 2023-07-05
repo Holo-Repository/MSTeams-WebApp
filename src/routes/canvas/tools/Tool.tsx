@@ -2,6 +2,7 @@ import React from "react";
 import { InkingTool, InkingManager } from "@microsoft/live-share-canvas";
 
 export interface ToolProps {
+    children?: React.ReactNode,
     icon: string,
     tool: InkingTool,
     activeTool: InkingTool,
@@ -10,7 +11,7 @@ export interface ToolProps {
     ext: (callback: (inkingManager: InkingManager) => void) => void
 }
 
-class Tool<T extends ToolProps> extends React.Component<T> {
+class Tool extends React.Component<ToolProps> {
     render(): React.ReactNode {
         const isSelected = this.props.activeTool === this.props.tool;
 
@@ -21,6 +22,7 @@ class Tool<T extends ToolProps> extends React.Component<T> {
                     onClick={() => this.props.selectTool(this.props.tool)}
                     >{this.props.icon}
                 </button>
+                {this.props.children}
             </div>
         );
     }

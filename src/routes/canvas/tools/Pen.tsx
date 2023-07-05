@@ -5,16 +5,13 @@ import Tool, { ToolProps } from "./Tool";
 import ColorPicker from "./ColorPicker";
 import SizePicker from "./SizePicker";
 
-interface PenProps extends ToolProps {
-}
-
-class Pen extends Tool<PenProps> {
+class Pen extends Tool {
     static defaultProps = {
         icon: "✒️",
         tool: InkingTool.pen
     }
 
-    constructor(props: PenProps) {
+    constructor(props: ToolProps) {
         super(props);
         this.setColor = this.setColor.bind(this);
         this.setSize = this.setSize.bind(this);
@@ -37,15 +34,10 @@ class Pen extends Tool<PenProps> {
         const isDoubleClick = this.props.isDoubleClick && isSelected;
 
         return (
-            <div>
-                <button 
-                style={{ backgroundColor: isSelected ? "lightgray" : "white" }}
-                onClick={() => this.props.selectTool(this.props.tool)}
-                >{this.props.icon}
-                </button>
+            <Tool {...this.props}>
                 {!isDoubleClick ? <></> : <ColorPicker setColor={this.setColor} />}
                 {!isDoubleClick ? <></> : <SizePicker setSize={this.setSize} />}
-            </div>
+            </Tool>
         );
     }
 }
