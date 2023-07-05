@@ -15,20 +15,27 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
 
     constructor(props: {inkingManager: InkingManager}) {
         super(props);
+        this.isSelected = this.isSelected.bind(this);
+        this.isDoubleClicked = this.isDoubleClicked.bind(this);
         this.setTool = this.setTool.bind(this);
         this.ext = this.ext.bind(this);
+    }
+
+    isSelected(tool: InkingTool) {
+        return (this.state.selectedTool === tool)
+            // Ugly hack to make sure that the standard eraser and the point eraser are considered the same tool
+            || (tool === InkingTool.eraser && this.state.selectedTool === InkingTool.pointEraser)
+            || (tool === InkingTool.pointEraser && this.state.selectedTool === InkingTool.eraser);
+    }
+
+    isDoubleClicked(tool: InkingTool) {
+        return this.state.doubleClicked && this.isSelected(tool);
     }
 
     setTool(tool: InkingTool) {
         this.props.inkingManager.tool = tool;
         
-        const { selectedTool } = this.state;
-        let doubleClicked = selectedTool === tool ? !this.state.doubleClicked : false;
-
-        if ((tool === InkingTool.eraser && selectedTool === InkingTool.pointEraser)
-            || (tool === InkingTool.pointEraser && selectedTool === InkingTool.eraser)) {
-            doubleClicked = !this.state.doubleClicked;
-        }
+        let doubleClicked = this.isSelected(tool) ? !this.state.doubleClicked : false;
 
         this.setState({ 
             selectedTool: tool, 
@@ -44,8 +51,8 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
     render(): React.ReactNode {
         const { selectedTool, doubleClicked } = this.state;
         let toolProps = {
-            activeTool: selectedTool,
-            isDoubleClick: doubleClicked,
+            isSelected: this.isSelected,
+            isDoubleClicked: this.isDoubleClicked,
             selectTool: this.setTool,
             ext: this.ext,
         }

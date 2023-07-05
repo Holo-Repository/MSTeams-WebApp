@@ -68,11 +68,7 @@ class Eraser extends Tool {
     }
 
     render(): React.ReactNode {
-        // Ugly hack to make sure that the standard eraser and the point eraser are considered the same tool
-        const isSelected = (this.props.activeTool === this.props.tool)
-            || (this.props.activeTool === InkingTool.eraser && this.props.tool === InkingTool.pointEraser)
-            || (this.props.activeTool === InkingTool.pointEraser && this.props.tool === InkingTool.eraser);
-        const isDoubleClick = this.props.isDoubleClick && isSelected;
+        const isDoubleClick = this.props.isDoubleClicked(this.props.tool)
         const eraser = this.state.isPointEraser ? pointEraserProps : eraserProps;
 
         return (

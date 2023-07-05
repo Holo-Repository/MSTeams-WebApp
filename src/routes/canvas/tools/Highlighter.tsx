@@ -47,8 +47,7 @@ class Highlighter extends Tool {
     }
 
     render(): React.ReactNode {
-        const isSelected = this.props.activeTool === this.props.tool;
-        const isDoubleClick = this.props.isDoubleClick && isSelected;
+        const isDoubleClick = this.props.isDoubleClicked(this.props.tool);
 
         return (
             <Tool {...this.props}>
