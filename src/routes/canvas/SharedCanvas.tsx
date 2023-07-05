@@ -22,7 +22,6 @@ class SharedCanvas extends React.Component {
         // Get the canvas host element
         const canvasHostElement = document.getElementById("canvas-host");
         const inkingManager = new InkingManager(canvasHostElement!);
-        console.log("Inking manager", inkingManager);
         
         // Begin synchronization for LiveCanvas
         await liveCanvas.initialize(inkingManager);
@@ -33,7 +32,6 @@ class SharedCanvas extends React.Component {
     
     render(): React.ReactNode {
         const { inkingManager: ink } = this.state;
-        console.log("Ink", ink);
 
         return (
             <div>
