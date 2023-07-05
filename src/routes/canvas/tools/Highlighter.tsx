@@ -5,7 +5,13 @@ import Tool, { ToolProps } from "./Tool";
 import ColorPicker from "./ColorPicker";
 import SizePicker from "./SizePicker";
 
-
+/**
+ * The highlighter component.
+ * This component shows a interfaces that allows the user to pick
+ * the color and size of the highlighter.
+ * 
+ * It extends the Tool component, which handles the tool selection logic.
+ */
 class Highlighter extends Tool {
     static defaultProps = {
         icon: "🖍️",
@@ -18,12 +24,22 @@ class Highlighter extends Tool {
         this.setSize = this.setSize.bind(this);
     }
 
+    /**
+     * Sets the color of the highlighter in the DrawingManager component.
+     * 
+     * @param color The color of the highlighter.
+     */
     setColor(color: string) {
         this.props.ext(inkingManager => {
             inkingManager.highlighterBrush.color = fromCssColor(color);
         });
     }
 
+    /**
+     * Sets the size of the highlighter in the DrawingManager component.
+     * 
+     * @param size The size of the highlighter.
+     */
     setSize(size: number) {
         this.props.ext(inkingManager => {
             inkingManager.highlighterBrush.tipSize = size;

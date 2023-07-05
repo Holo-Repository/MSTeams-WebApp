@@ -1,5 +1,12 @@
 import React from "react";
 
+/**
+ * A color picker component.
+ * This component shows a button for each color in the colors array
+ * and handles the click event by calling the setColor callback function.
+ * 
+ * @param setColor A callback function that sets the color.
+ */
 class ColorPicker extends React.Component<{setColor: (color: string) => void}> {
     colors = [
         "#FF0000", // red

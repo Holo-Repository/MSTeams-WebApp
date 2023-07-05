@@ -5,6 +5,13 @@ import Tool, { ToolProps } from "./Tool";
 import ColorPicker from "./ColorPicker";
 import SizePicker from "./SizePicker";
 
+/**
+ * The pen component.
+ * This component shows a interfaces that allows the user to pick
+ * the color and size of the pen.
+ * 
+ * It extends the Tool component, which handles the tool selection logic.
+ */
 class Pen extends Tool {
     static defaultProps = {
         icon: "✒️",
@@ -17,12 +24,22 @@ class Pen extends Tool {
         this.setSize = this.setSize.bind(this);
     }
 
+    /**
+     * Sets the color of the pen in the DrawingManager component.
+     * 
+     * @param color The color of the pen.
+     */
     setColor(color: string) {
         this.props.ext(inkingManager => {
             inkingManager.penBrush.color = fromCssColor(color);
         });
     }
 
+    /**
+     * Sets the size of the pen in the DrawingManager component.
+     * 
+     * @param size The size of the pen.
+     */
     setSize(size: number) {
         this.props.ext(inkingManager => {
             inkingManager.penBrush.tipSize = size;
