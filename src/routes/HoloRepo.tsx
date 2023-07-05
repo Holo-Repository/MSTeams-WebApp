@@ -1,7 +1,7 @@
 import React from "react";
 import { app } from "@microsoft/teams-js";
 
-import SharedCanvas from "./SharedCanvas";
+import SharedCanvas from "./canvas/SharedCanvas";
 
 class HoloRepo extends React.Component {
     state = {
