@@ -10,7 +10,7 @@ import LaserPointer from './tools/LaserPointer';
 class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
     state = {
         selectedTool: InkingTool.pen,
-        doubleClicked: false
+        doubleClicked: false,
     }
 
     constructor(props: {inkingManager: InkingManager}) {
@@ -22,10 +22,17 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
     setTool(tool: InkingTool) {
         this.props.inkingManager.tool = tool;
         
-        let { selectedTool } = this.state;
+        const { selectedTool } = this.state;
+        let doubleClicked = selectedTool === tool ? !this.state.doubleClicked : false;
+
+        if ((tool === InkingTool.eraser && selectedTool === InkingTool.pointEraser)
+            || (tool === InkingTool.pointEraser && selectedTool === InkingTool.eraser)) {
+            doubleClicked = !this.state.doubleClicked;
+        }
+
         this.setState({ 
             selectedTool: tool, 
-            doubleClicked: selectedTool === tool ? !this.state.doubleClicked : false
+            doubleClicked: doubleClicked,
         });
     }
 

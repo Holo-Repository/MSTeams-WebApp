@@ -1,7 +1,6 @@
-import React from "react";
 import { InkingTool } from "@microsoft/live-share-canvas";
 
-import Tool, { ToolProps } from "./Tool";
+import Tool from "./Tool";
 
 
 class LaserPointer extends Tool {
