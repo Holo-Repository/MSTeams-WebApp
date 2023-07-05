@@ -1,19 +1,28 @@
 import React from "react";
-import { InkingTool } from "@microsoft/live-share-canvas";
+import { InkingTool, InkingManager } from "@microsoft/live-share-canvas";
 
-type ToolProps = {
+export interface ToolProps {
     icon: string,
-    isSelected: boolean,
-    selectTool: () => void
+    tool: InkingTool,
+    activeTool: InkingTool,
+    isDoubleClick: boolean,
+    selectTool: (tool: InkingTool) => void,
+    ext: (callback: (inkingManager: InkingManager) => void) => void
 }
 
-class Tool extends React.Component<ToolProps> {
+class Tool<T extends ToolProps> extends React.Component<T> {
     render(): React.ReactNode {
-        return <button 
-            style={{ backgroundColor: this.props.isSelected ? "lightgray" : "white" }}
-            onClick={() => this.props.selectTool()}
-            >{this.props.icon}
-            </button>;
+        const isSelected = this.props.activeTool === this.props.tool;
+
+        return (
+            <div>
+                <button 
+                    style={{ backgroundColor: isSelected ? "lightgray" : "white" }}
+                    onClick={() => this.props.selectTool(this.props.tool)}
+                    >{this.props.icon}
+                </button>
+            </div>
+        );
     }
 }
 
