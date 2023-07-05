@@ -1,5 +1,6 @@
 import React from "react";
 import { InkingTool, InkingManager } from "@microsoft/live-share-canvas";
+import { Button } from "@fluentui/react-components";
 
 export interface ToolProps {
     children?: React.ReactNode,
@@ -17,11 +18,11 @@ class Tool extends React.Component<ToolProps> {
 
         return (
             <div>
-                <button 
+                <Button
                     style={{ backgroundColor: isSelected ? "lightgray" : "white" }}
                     onClick={() => this.props.selectTool(this.props.tool)}
                     >{this.props.icon}
-                </button>
+                </Button>
                 {this.props.children}
             </div>
         );
