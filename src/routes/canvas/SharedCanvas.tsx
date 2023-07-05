@@ -6,12 +6,23 @@ import { ContainerSchema } from "fluid-framework";
 
 import DrawingManager from "./DrawingManager";
 
+
+/**
+ * The shared canvas component.
+ * This component is responsible for setting up the Fluid container and the inking manager.
+ * As well as rendering the drawing manager component in the newly created live canvas.
+ */
 class SharedCanvas extends React.Component {
     state = {
         inkingManager: undefined,
     }
 
+    /**
+     * Initializes the Fluid container and the inking manager once the component is mounted.
+     */
     async componentDidMount() {
+        // This code is taken directly from the live canvas documentation
+
         // Setup the Fluid container
         const host = LiveShareHost.create();
         const liveShare = new LiveShareClient(host);
@@ -38,7 +49,7 @@ class SharedCanvas extends React.Component {
                 <div id="canvas-host"
                     style={{width: "100vw", height: "90vh", border: "1px solid black", backgroundColor: "white"}}
                 ></div>
-                {!ink ? <></> : <DrawingManager inkingManager={ink}/>}
+                {ink && <DrawingManager inkingManager={ink}/>}
             </div>
         );
     }

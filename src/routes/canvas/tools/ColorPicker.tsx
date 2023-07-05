@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@fluentui/react-components";
 
 /**
  * A color picker component.
@@ -22,11 +23,11 @@ class ColorPicker extends React.Component<{setColor: (color: string) => void}> {
     render(): React.ReactNode {
         return <div>
             {this.colors.map((color: string) => 
-                <button
+                <Button
                     key={color}
                     onClick={() => this.props.setColor(color)}
                     style={{ color: color }}
-                >&#9632;</button>
+                >&#9632;</Button>
             )}
         </div>;
     }

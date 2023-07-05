@@ -51,8 +51,8 @@ class Highlighter extends Tool {
 
         return (
             <Tool {...this.props}>
-                {!isDoubleClick ? <></> : <ColorPicker setColor={this.setColor} />}
-                {!isDoubleClick ? <></> : <SizePicker setSize={this.setSize} />}
+                {isDoubleClick && <ColorPicker setColor={this.setColor} />}
+                {isDoubleClick && <SizePicker setSize={this.setSize} />}
             </Tool>
         );
     }

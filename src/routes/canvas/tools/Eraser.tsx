@@ -1,5 +1,6 @@
 import React from "react";
 import { InkingTool } from "@microsoft/live-share-canvas";
+import { Button } from "@fluentui/react-components";
 
 import Tool, { ToolProps } from "./Tool";
 import SizePicker from "./SizePicker";
@@ -74,12 +75,12 @@ class Eraser extends Tool {
         return (
             <Tool {...this.props} icon={eraser.icon} tool={eraser.tool}>
                 {/* Draw the button to select the other eraser */}
-                {!isDoubleClick ? <></> : <div>
-                    <button onClick={() => this.setEraser(!this.state.isPointEraser)}>
+                {isDoubleClick && <div>
+                    <Button onClick={() => this.setEraser(!this.state.isPointEraser)}>
                         {this.state.isPointEraser ? eraserProps.icon : pointEraserProps.icon}
-                    </button>
+                    </Button>
                 </div>}
-                {!isDoubleClick ? <></> : <SizePicker setSize={this.setSize} />}
+                {isDoubleClick && <SizePicker setSize={this.setSize} />}
             </Tool>
         );
     }

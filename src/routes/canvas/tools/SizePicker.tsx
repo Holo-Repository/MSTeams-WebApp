@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@fluentui/react-components";
 
 /**
  * The size picker component.
@@ -14,10 +15,10 @@ class SizePicker extends React.Component<{setSize: (size: number) => void}> {
     render(): React.ReactNode {
         return <div>
             {this.sizes.map((size: number) => 
-                <button
+                <Button
                     key={size}
                     onClick={() => this.props.setSize(size)}
-                >{size}</button>
+                >{size}</Button>
             )}
         </div>;
     }
