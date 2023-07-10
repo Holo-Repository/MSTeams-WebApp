@@ -34,7 +34,7 @@ provision:
   - uses: teamsApp/create
     with:
       # Teams app name
-      name: HoloRepo-Teams-${{TEAMSFX_ENV}}
+      name: HoloCollab
     # Write the information of created resources into environment file for
     # the specified environment variable(s).
     writeToEnvironmentFile: 
