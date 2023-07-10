@@ -38,6 +38,7 @@ export default function App() {
         initiateLoginEndpoint: config.initiateLoginEndpoint!,
         clientId: config.clientId!,
     });
+    
     useEffect(() => {
         loading &&
             app.initialize().then(() => {
