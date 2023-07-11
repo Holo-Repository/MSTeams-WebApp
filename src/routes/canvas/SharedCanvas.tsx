@@ -5,7 +5,7 @@ import { LiveShareHost } from "@microsoft/teams-js";
 import { ContainerSchema } from "fluid-framework";
 
 import DrawingManager from "./DrawingManager";
-
+import './SharedCanvas.css'; 
 
 /**
  * The shared canvas component.
@@ -45,11 +45,11 @@ class SharedCanvas extends React.Component {
         const { inkingManager: ink } = this.state;
 
         return (
-            <div>
+            <div>   
                 <div id="canvas-host"
-                    style={{width: "100vw", height: "90vh", border: "1px solid black", backgroundColor: "white"}}
-                ></div>
-                {ink && <DrawingManager inkingManager={ink}/>}
+                    style={{width: "100vw", height: "90vh", border: "1px solid black", backgroundColor: "white", zIndex: 1}}>
+                    <div className="drawing-manager">{ink && <DrawingManager  inkingManager={ink}/>}</div>
+                </div>
             </div>
         );
     }
