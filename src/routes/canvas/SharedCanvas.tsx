@@ -3,7 +3,10 @@ import { LiveShareClient } from "@microsoft/live-share";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { LiveShareHost } from "@microsoft/teams-js";
 import { ContainerSchema } from "fluid-framework";
+import { Toolbar, ToolbarRadioGroup} from "@fluentui/react-components";
+import {LocationArrow28Filled, Pen24Filled} from "@fluentui/react-icons"
 
+import MyToolbarButton  from "./MyToolBarButton";
 import DrawingManager from "./DrawingManager";
 import './SharedCanvas.css'; 
 
@@ -15,6 +18,7 @@ import './SharedCanvas.css';
 class SharedCanvas extends React.Component {
     state = {
         inkingManager: undefined,
+        myVisibleTool: undefined,
     }
 
     /**
@@ -38,7 +42,18 @@ class SharedCanvas extends React.Component {
         await liveCanvas.initialize(inkingManager);
         
         inkingManager.activate();
-        this.setState({ inkingManager });
+        this.setState({
+            inkingManager,
+            myTool: 'select'
+        });
+    }
+
+    setVisibleTool = (event: any) => {
+        this.setState({myVisibleTool: event.currentTarget.value})
+    }
+
+    getVisibleTool() {
+        return this.state.myVisibleTool;
     }
     
     render(): React.ReactNode {
@@ -46,10 +61,28 @@ class SharedCanvas extends React.Component {
 
         return (
             <div>   
-                <div id="canvas-host"
-                    style={{width: "100vw", height: "90vh", border: "1px solid black", backgroundColor: "white", zIndex: 1}}>
-                    <div className="drawing-manager">{ink && <DrawingManager  inkingManager={ink}/>}</div>
-                </div>
+                <div id="canvas-host" onClick={this.setVisibleTool}></div>
+                <Toolbar id="tool-bar" aria-label="with-Tools"
+                    defaultCheckedValues={{
+                        tools: ["Select"],
+                    }}
+                >
+                    <ToolbarRadioGroup>
+                        <MyToolbarButton 
+                            name="Select"
+                            icon={<LocationArrow28Filled />}
+                            onClick={this.setVisibleTool}
+                        >   
+                        </MyToolbarButton>
+                        <MyToolbarButton 
+                            name="Annotation"
+                            icon={<Pen24Filled />}
+                            onClick={this.setVisibleTool}
+                        >
+                        </MyToolbarButton>
+                        {ink && this.getVisibleTool() === "Annotation" && <DrawingManager inkingManager={ink}/>}
+                    </ToolbarRadioGroup>
+                </Toolbar>
             </div>
         );
     }

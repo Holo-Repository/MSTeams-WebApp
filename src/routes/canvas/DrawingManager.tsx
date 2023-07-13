@@ -101,9 +101,8 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
             ext: this.ext,
         }
         return (
-            <div>
-                
-                <Toolbar aria-label="Vertical Button" {...toolProps}>
+            <div> 
+                <Toolbar className="tool-first-level">
                     <Pen {...toolProps} />
                     <Highlighter {...toolProps} />
                     <Eraser {...toolProps} />

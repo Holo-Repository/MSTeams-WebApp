@@ -1,13 +1,22 @@
 #canvas-host {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  border: 1px solid black;
+  background-color: white;
+  z-Index: 1;
   }
-  
-  .drawing-manager {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-  }
-  
+
+#tool-bar {
+  position: relative;
+  top: -13vh;
+  left: 50%;
+  z-index: 2;
+}
+
+.tool-first-level {
+  position: relative;
+  top: -13vh;
+  left: -50%;
+  z-index: 2;
+}
