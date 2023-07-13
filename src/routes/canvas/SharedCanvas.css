@@ -7,26 +7,39 @@
   z-Index: 1;
   }
 
-#tool-bar {
-  position: relative;
+#tool-first-level {
+  position: absolute;
   display: inline-flex;
-  top: -13vh;
+  top: 87%;
   left: 50%;
   z-index: 2;
-  padding: 1px, 0px;
+  padding: 3px;
   background-color: rgb(181, 179, 179);
   border-radius: 5px;
 }
 
-#tool-bar span {
+#tool-first-level span {
   margin-left: 2px;
   margin-right: 2px;
 }
 
-#tool-first-level {
-  position: relative;
-  display: inline-flex;
-  top: -20vh;
-  left: 20%;
-  z-index: 2;
+#drawing-button {
+  margin-left: 2px;
+  margin-right: 2px;
 }
+
+.tool-second-level {
+  position: absolute;
+  margin: 0px 0px;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2vh);
+  padding: 1px 0px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px 1mm rgba(181, 181, 181, 0.669);
+  z-index: 2;
+  color: black;
+}
+
+

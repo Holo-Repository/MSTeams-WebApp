@@ -28,10 +28,11 @@ class Tool extends React.Component<ToolProps> {
 
         return (
             <div>
-                <Button
-                    appearance={isSelected(tool) ? "primary" : undefined}
+                <Button id="drawing-button"
+                    appearance={isSelected(tool) ? "primary" : "subtle"}
                     onClick={() => selectTool(tool)}
-                    >{icon}
+                    icon={icon}
+                >
                 </Button>
                 {children}
             </div>

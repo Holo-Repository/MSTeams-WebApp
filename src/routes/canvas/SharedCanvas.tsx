@@ -37,7 +37,6 @@ class SharedCanvas extends React.Component {
         // Begin synchronization for LiveCanvas
         await liveCanvas.initialize(inkingManager);
         
-        inkingManager.activate();
         this.setState({
             inkingManager
         });

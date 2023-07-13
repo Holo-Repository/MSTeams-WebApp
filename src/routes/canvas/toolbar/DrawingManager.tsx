@@ -1,13 +1,12 @@
 import React from 'react';
 import { InkingManager, InkingTool } from "@microsoft/live-share-canvas";
-
+import {webLightTheme,FluentProvider} from "@fluentui/react-components";
 import {Toolbar} from "@fluentui/react-components";
 
-import { Button } from '@fluentui/react-components';
-import Pen from "./toolbar/tools/Pen";
-import Eraser from './toolbar/tools/Eraser';
-import Highlighter from './toolbar/tools/Highlighter';
-import LaserPointer from './toolbar/tools/LaserPointer';
+import Pen from "./tools/Pen";
+import Eraser from './tools/Eraser';
+import Highlighter from './tools/Highlighter';
+import LaserPointer from './tools/LaserPointer';
 
 /**
  * The drawing manager component.
@@ -100,15 +99,19 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
             selectTool: this.setTool,
             ext: this.ext,
         }
+
         return (
-            <div> 
+            <div className='tool-second-level'>
+                {/* <FluentProvider theme={webLightTheme}> */}
                 <Toolbar>
                     <Pen {...toolProps} />
                     <Highlighter {...toolProps} />
                     <Eraser {...toolProps} />
                     <LaserPointer {...toolProps} />
                 </Toolbar>
+                {/* </FluentProvider> */}
             </div>
+            
         );
     }
 }

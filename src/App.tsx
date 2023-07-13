@@ -19,6 +19,7 @@ import AppConfig from "./AppConfig";
 import { TeamsFxContext } from "./Context";
 
 function getTheme(themeString: string) {
+    console.log(themeString + "kk");
     switch (themeString) {
         case "dark":
             return teamsDarkTheme;

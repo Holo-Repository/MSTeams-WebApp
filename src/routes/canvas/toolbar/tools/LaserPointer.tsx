@@ -13,6 +13,14 @@ class LaserPointer extends Tool {
         icon: "🔴",
         tool: InkingTool.laserPointer
     }
+
+    render(): React.ReactNode {
+
+        return (
+            <Tool {...this.props}>
+            </Tool>
+        );
+    }
 }
 
 export default LaserPointer;
