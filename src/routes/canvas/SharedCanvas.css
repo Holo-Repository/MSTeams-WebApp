@@ -9,14 +9,24 @@
 
 #tool-bar {
   position: relative;
+  display: inline-flex;
   top: -13vh;
   left: 50%;
   z-index: 2;
+  padding: 1px, 0px;
+  background-color: rgb(181, 179, 179);
+  border-radius: 5px;
 }
 
-.tool-first-level {
+#tool-bar span {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+#tool-first-level {
   position: relative;
-  top: -13vh;
-  left: -50%;
+  display: inline-flex;
+  top: -20vh;
+  left: 20%;
   z-index: 2;
 }
