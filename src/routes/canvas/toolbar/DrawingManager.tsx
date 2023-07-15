@@ -2,6 +2,7 @@ import React from 'react';
 import { InkingManager, InkingTool } from "@microsoft/live-share-canvas";
 import {webLightTheme,FluentProvider} from "@fluentui/react-components";
 import {Toolbar} from "@fluentui/react-components";
+import {CalligraphyPen24Filled} from "@fluentui/react-icons";
 
 import Pen from "./tools/Pen";
 import Eraser from './tools/Eraser';
@@ -93,6 +94,7 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
 
     render(): React.ReactNode {
         const { selectedTool, doubleClicked } = this.state;
+
         let toolProps = {
             isSelected: this.isSelected,
             isDoubleClicked: this.isDoubleClicked,
@@ -104,10 +106,10 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
             <div className='tool-second-level'>
                 {/* <FluentProvider theme={webLightTheme}> */}
                 <Toolbar>
-                    <Pen {...toolProps} />
-                    <Highlighter {...toolProps} />
+                    <Pen {...toolProps} icon={ <img src={require("../../../assets/ink-pen.png")} alt="Icon" />}/>
+                    <Highlighter {...toolProps} icon={ <img src={require("../../../assets/highlighter.png")} alt="Icon" />} />
                     <Eraser {...toolProps} />
-                    <LaserPointer {...toolProps} />
+                    <LaserPointer {...toolProps} icon={ <img src={require("../../../assets/laser.png")} alt="Icon" />} />
                 </Toolbar>
                 {/* </FluentProvider> */}
             </div>

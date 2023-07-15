@@ -28,6 +28,10 @@
   margin-right: 2px;
 }
 
+.popover{
+  position: relative;
+}
+
 .tool-second-level {
   position: absolute;
   margin: 0px 0px;
@@ -37,9 +41,36 @@
   padding: 1px 0px;
   background-color: rgb(255, 255, 255);
   border-radius: 5px;
-  box-shadow: 1px 1px 5px 1mm rgba(181, 181, 181, 0.669);
+  box-shadow: 1px 1px 5px 1px rgba(181, 181, 181, 0.669);
   z-index: 2;
   color: black;
+}
+
+.tool-third-level {
+  position: absolute;
+  margin: 0px 0px;
+  bottom: 100%;
+  left: 50%;
+  padding: 0px 0px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px 1px rgba(181, 181, 181, 0.669);
+  z-index: 2;
+  color: black;
+}
+
+#eraser-picker {
+  padding: 0px 0px;
+  transform: translateX(-100%) translateY(-7vh);
+}
+
+#color-picker {
+  padding: 0px 0px;
+  transform: translateX(-100%) translateY(-7vh);
+}
+
+#size-picker {
+  padding: 0px 0px;
+  transform: translateY(-7vh);
 }
 
 

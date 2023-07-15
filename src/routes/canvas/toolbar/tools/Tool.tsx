@@ -7,7 +7,7 @@ import { Button } from "@fluentui/react-components";
  */
 export interface ToolProps {
     children?: React.ReactNode, // Used to render any additional children required by the tool. IE ColorPicker and SizePicker
-    icon: string, // The icon to display for the tool.
+    icon: JSX.Element | string, // The icon to display for the tool.
     tool: InkingTool, // The tool to select when the tool is clicked.
     isDoubleClicked: (tool: InkingTool) => boolean, // A function that returns true if the tool is double clicked and false otherwise. Used to render the additional children.
     isSelected: (tool: InkingTool) => boolean, // A function that returns true if the tool is selected and false otherwise.
@@ -27,7 +27,7 @@ class Tool extends React.Component<ToolProps> {
         const { children, icon, tool, isSelected, selectTool } = this.props;
 
         return (
-            <div>
+            <div id="tool">
                 <Button id="drawing-button"
                     appearance={isSelected(tool) ? "primary" : "subtle"}
                     onClick={() => selectTool(tool)}

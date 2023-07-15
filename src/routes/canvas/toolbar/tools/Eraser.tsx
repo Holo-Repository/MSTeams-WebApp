@@ -1,6 +1,7 @@
 import React from "react";
 import { InkingTool } from "@microsoft/live-share-canvas";
-import { Button } from "@fluentui/react-components";
+import { Button, ToggleButton, Toolbar, ToolbarRadioButton, ToolbarRadioGroup } from "@fluentui/react-components";
+import { Eraser20Regular, EraserSegment20Regular} from "@fluentui/react-icons"
 
 import Tool, { ToolProps } from "./Tool";
 import SizePicker from "./SizePicker";
@@ -9,7 +10,7 @@ import SizePicker from "./SizePicker";
  * Properties for the standard eraser component.
  */
 const eraserProps = {
-    icon: "🧹",
+    icon:<Eraser20Regular />,
     tool: InkingTool.eraser
 }
 
@@ -19,7 +20,7 @@ const eraserProps = {
  * at the point where the user clicks.
  */
 const pointEraserProps = {
-    icon: "🧽",
+    icon: <EraserSegment20Regular />,
     tool: InkingTool.pointEraser
 }
 
@@ -73,14 +74,23 @@ class Eraser extends Tool {
         const eraser = this.state.isPointEraser ? pointEraserProps : eraserProps;
 
         return (
-            <Tool {...this.props} icon={eraser.icon} tool={eraser.tool}>
-                {/* Draw the button to select the other eraser */}
-                {isDoubleClick && <div>
-                    <Button onClick={() => this.setEraser(!this.state.isPointEraser)}>
-                        {this.state.isPointEraser ? eraserProps.icon : pointEraserProps.icon}
-                    </Button>
-                </div>}
-                {isDoubleClick && <SizePicker setSize={this.setSize} />}
+            <Tool {...this.props} icon={<img src={require("../../../../assets/eraser.png")} alt="Icon" />} tool={eraser.tool}>
+                <div className="popover">
+                    {/* Draw the button to select the other eraser */}
+                    {isDoubleClick &&
+                        <Toolbar defaultCheckedValues={{eraser: ["standard"],}} id="eraser-picker" className="tool-third-level">
+                            <ToolbarRadioGroup>
+                                <ToolbarRadioButton name="eraser" value="standard" onClick={() => this.setEraser(false)}>
+                                    {eraserProps.icon}
+                                </ToolbarRadioButton>
+                                <ToolbarRadioButton name="eraser" value="point" onClick={() => this.setEraser(true)}>
+                                    {pointEraserProps.icon}
+                                </ToolbarRadioButton>
+                            </ToolbarRadioGroup>
+                        </Toolbar>
+                    }
+                    {isDoubleClick && <SizePicker setSize={this.setSize} />}
+                </div>
             </Tool>
         );
     }

@@ -21,7 +21,7 @@ class ColorPicker extends React.Component<{setColor: (color: string) => void}> {
     ]
 
     render(): React.ReactNode {
-        return <div>
+        return <div id="color-picker" className="tool-third-level">
             {this.colors.map((color: string) => 
                 <Button
                     key={color}

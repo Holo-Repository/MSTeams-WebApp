@@ -51,8 +51,10 @@ class Pen extends Tool {
 
         return (
             <Tool {...this.props}>
-                {isDoubleClick && <ColorPicker setColor={this.setColor} />}
-                {isDoubleClick && <SizePicker setSize={this.setSize} />}
+                <div className="popover">
+                    {isDoubleClick && <ColorPicker setColor={this.setColor} />}
+                    {isDoubleClick && <SizePicker setSize={this.setSize} />}
+                </div>
             </Tool>
         );
     }

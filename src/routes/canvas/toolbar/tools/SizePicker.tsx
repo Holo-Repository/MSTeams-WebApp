@@ -13,7 +13,7 @@ class SizePicker extends React.Component<{setSize: (size: number) => void}> {
     sizes = [1, 5, 10, 25, 50]
 
     render(): React.ReactNode {
-        return <div>
+        return <div id="size-picker" className="tool-third-level">
             {this.sizes.map((size: number) => 
                 <Button
                     key={size}

@@ -61,7 +61,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
             <div>
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
                     defaultCheckedValues={{
-                        tools: ["Select"],
+                        tools: ["Select"]
                     }}
                 >
                     <ToolbarRadioGroup>
@@ -88,8 +88,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             name="tools"
                             icon={<NoteEdit24Filled />}
                             onClick={this.setSelectedTool}
-                            content={ink 
-                                && this.getSelectedTool() === "Notes" 
+                            content={this.getSelectedTool() === "Notes" 
                                 && <div className="tool-second-level">Add new component here</div>}
                         />
                         

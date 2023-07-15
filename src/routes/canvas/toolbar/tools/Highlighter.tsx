@@ -51,9 +51,11 @@ class Highlighter extends Tool {
 
         return (
             <Tool {...this.props}>
-                {isDoubleClick && <ColorPicker setColor={this.setColor} />}
-                {isDoubleClick && <SizePicker setSize={this.setSize} />}
-            </Tool>
+                <div className="popover">
+                    {isDoubleClick && <ColorPicker setColor={this.setColor} />}
+                    {isDoubleClick && <SizePicker setSize={this.setSize} />}
+                </div>
+            </Tool>  
         );
     }
 }
