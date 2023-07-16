@@ -70,7 +70,6 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             name="tools"
                             icon={<LocationArrow28Filled />}
                             onClick={this.setSelectedTool}
-                            content={undefined}
                         />
 
                         <MyToolbarButton 
@@ -78,19 +77,20 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             name="tools"
                             icon={<Pen24Filled />}
                             onClick={this.setSelectedTool}
-                            content={ink 
-                                && this.getSelectedTool() === "Annotation" 
-                                && <DrawingManager inkingManager={ink}/>}
-                        />
+                        >
+                            {ink && this.getSelectedTool() === "Annotation" 
+                            && <DrawingManager inkingManager={ink}/>}
+                        </MyToolbarButton>
 
                         <MyToolbarButton 
                             value="Notes"
                             name="tools"
                             icon={<NoteEdit24Filled />}
                             onClick={this.setSelectedTool}
-                            content={this.getSelectedTool() === "Notes" 
-                                && <div className="tool-second-level">Add new component here</div>}
-                        />
+                        >
+                            {this.getSelectedTool() === "Notes" 
+                            && <div className="tool-second-level">Add new component here</div>}
+                        </MyToolbarButton>
                         
                     </ToolbarRadioGroup>
                 </Toolbar>

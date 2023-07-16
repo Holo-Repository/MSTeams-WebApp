@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Children } from "react";
 import { Tooltip, ToolbarRadioButton } from '@fluentui/react-components';
 
 /**
@@ -16,7 +16,6 @@ export interface MyToolbarButtonProps {
     value: string,
     name: string,
     icon: JSX.Element,
-    content: JSX.Element | boolean | undefined
     onClick: (event: any) => void
 }
 
@@ -27,7 +26,7 @@ export interface MyToolbarButtonProps {
 class MyToolbarButton extends React.Component<MyToolbarButtonProps> {
   
     render() {
-      const { value, name, icon, content} = this.props;
+      const { children, value, name, icon} = this.props;
   
       return (
         <span style={{position:"relative"}}>
@@ -48,7 +47,7 @@ class MyToolbarButton extends React.Component<MyToolbarButtonProps> {
             >
             </ToolbarRadioButton>
           </Tooltip>
-          {content}
+          {children}
         </span>
       );
     }

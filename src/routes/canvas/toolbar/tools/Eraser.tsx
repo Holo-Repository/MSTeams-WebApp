@@ -74,7 +74,7 @@ class Eraser extends Tool {
         const eraser = this.state.isPointEraser ? pointEraserProps : eraserProps;
 
         return (
-            <Tool {...this.props} icon={<img src={require("../../../../assets/eraser.png")} alt="Icon" />} tool={eraser.tool}>
+            <Tool {...this.props} icon={<img src={require("src/assets/eraser.png")} alt="Icon" />} tool={eraser.tool}>
                 <div className="popover">
                     {/* Draw the button to select the other eraser */}
                     {isDoubleClick &&
