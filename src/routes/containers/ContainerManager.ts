@@ -160,13 +160,13 @@ class ContainerManager {
      * Get a Fluid container
      * Sets the AzureAudience into the AzureLiveShareHost returned
      * 
-     * @param container The container to get
+     * @param containerId The container to get
      * @returns { container: Container, services: any, host: AzureLiveShareHost }
      */
-    async getContainer(container: Container) {
+    async getContainer(containerId: string) {
         const { host, injectedSchema } = this.getSchema();
-        const { container: c, services } = await this.liveShare.client.getContainer(container.id, injectedSchema);
-        host.setAudience(services.audience);
+        const { container: c, services } = await this.liveShare.client.getContainer(containerId, injectedSchema);
+        // host.setAudience(services.audience);
         
         await c.connect();
         

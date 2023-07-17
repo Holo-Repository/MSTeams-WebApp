@@ -1,5 +1,5 @@
 import React from "react";
-import { UserMeetingRole, app } from "@microsoft/teams-js";
+import { UserMeetingRole, app, meeting } from "@microsoft/teams-js";
 import { LiveEvent, LiveShareClient, LiveState } from "@microsoft/live-share";
 import { LiveShareHost } from "@microsoft/teams-js";
 
@@ -22,11 +22,10 @@ class HoloRepo extends React.Component {
         // Don't forget that multiple views can be running at the same time.
         view: "default",
         containerManager: undefined as ContainerManager | undefined,
-        activeContainer: undefined as Container | undefined,
         containers: [] as Container[],
+        activeContainerId: undefined as string | undefined,
     };
 
-    liveActiveContainer: LiveState | undefined = undefined;
     liveNewContainerEvent: LiveEvent | undefined = undefined;
 
     constructor(props: any) {
@@ -47,26 +46,24 @@ class HoloRepo extends React.Component {
             // Setup the Fluid container
             const host = LiveShareHost.create();
             const liveShare = new LiveShareClient(host);
-            const schema = { initialObjects: { 
-                liveActiveContainer: LiveState,
+            const schema = { initialObjects: {
                 liveNewContainerEvent: LiveEvent,
             } };
             const { container } = await liveShare.joinContainer(schema);
-            this.liveActiveContainer = container.initialObjects.liveActiveContainer as LiveState;
             this.liveNewContainerEvent = container.initialObjects.liveNewContainerEvent as LiveEvent;
             // Set listeners for the Fluid container
-            this.liveActiveContainer.on('stateChanged', (container) => {
-                this.setState({ activeContainer: container });
-            });
             this.liveNewContainerEvent.on('received', () => {
                 this.state.containerManager?.listContainers().then((containers) =>
                     this.setState({ containers })
                 );
             });
             // Set the initial state
-            await this.liveActiveContainer.initialize(undefined);
             await this.liveNewContainerEvent.initialize();
         }
+
+        // Get URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const activeContainerId = params.get("containerID");
 
         // Create a container manager to handle connections to remote containers
         const containerManager = new ContainerManager(locationID, { id: context.user?.id, userName: context.user?.userPrincipalName })
@@ -76,6 +73,7 @@ class HoloRepo extends React.Component {
             view,
             containerManager,
             containers: await containerManager.listContainers(),
+            activeContainerId,
         });
     }
 
@@ -87,13 +85,19 @@ class HoloRepo extends React.Component {
      * @throws Error if the container cannot be opened in the current view.
      */
     openContainer(container: Container) {
-        if (["sidePanel", "meetingStage"].includes(this.state.view))
-            if (this.liveActiveContainer) 
-                this.liveActiveContainer.set(container);
-            else
-                throw new Error("Cannot open container without a live container");
-        else
-            throw new Error("Cannot open container in this view");
+        // Add the container ID to the parameter "containerID" in the URL
+        const newURL = new URL(window.location.href);
+        newURL.searchParams.set("containerID", container.id);
+        // Open the container in the current view
+        meeting.shareAppContentToStage((err, result) => {
+            // Alert the user that something went wrong
+            if (err)
+                alert(`Error opening container ${container.id} in the meeting stage view
+                Please try again.
+                Error: ${err}`);
+            // Update the view
+            if (result) this.setState({ activeContainerId: container.id });
+        }, newURL.href);
     }
 
     /**
@@ -112,7 +116,11 @@ class HoloRepo extends React.Component {
     }
 
     render() {
-        const { view, activeContainer, containerManager } = this.state;
+        const { 
+            view, 
+            containerManager,
+            activeContainerId,
+        } = this.state;
         let content = null;
 
         const contentProps = {
@@ -126,13 +134,13 @@ class HoloRepo extends React.Component {
             content = "Loading...";
         else if (view === "content") 
             content = <Content {...contentProps} canOpen={false}/>;
-        else if (!activeContainer && ["sidePanel", "meetingStage"].includes(view))
+        else if (!activeContainerId && ["sidePanel", "meetingStage"].includes(view))
             content = <Content {...contentProps} canOpen={true}/>;
-        else if (activeContainer) {
+        else if (activeContainerId) {
             if (view === "sidePanel")
                 content = "Side panel view";
             else if (view === "meetingStage")
-                content = <SharedCanvas container={activeContainer} containerManager={containerManager!}/>;
+                content = <SharedCanvas container={activeContainerId} containerManager={containerManager!}/>;
         } else
             content = "Unknown view";
 

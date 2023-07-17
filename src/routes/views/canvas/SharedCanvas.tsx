@@ -10,7 +10,7 @@ import ContainerManager from "../../containers/ContainerManager";
 
 
 export interface SharedCanvasProps {
-    container: Container;
+    container: string;
     containerManager: ContainerManager;
 }
 
@@ -28,8 +28,6 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
      * Initializes the Fluid container and the inking manager once the component is mounted.
      */
     async componentDidMount() {
-        // This code is taken directly from the live canvas documentation
-
         const { container } = await this.props.containerManager.getContainer(this.props.container);
         const liveCanvas = container.initialObjects.liveCanvas as LiveCanvas;
 
