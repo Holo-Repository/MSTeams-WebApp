@@ -18,10 +18,20 @@ class Highlighter extends Tool {
         tool: InkingTool.highlighter
     }
 
+    state = {
+        color: "#FFFF00",
+        size: 10
+    }
+
     constructor(props: ToolProps) {
         super(props);
         this.setColor = this.setColor.bind(this);
         this.setSize = this.setSize.bind(this);
+
+        this.props.ext(inkingManager => {
+            inkingManager.penBrush.color = fromCssColor(this.state.color);
+            inkingManager.penBrush.tipSize = this.state.size;
+        });
     }
 
     /**
@@ -30,6 +40,7 @@ class Highlighter extends Tool {
      * @param color The color of the highlighter.
      */
     setColor(color: string) {
+        this.state.color = color;
         this.props.ext(inkingManager => {
             inkingManager.highlighterBrush.color = fromCssColor(color);
         });
@@ -41,6 +52,7 @@ class Highlighter extends Tool {
      * @param size The size of the highlighter.
      */
     setSize(size: number) {
+        this.state.size = size;
         this.props.ext(inkingManager => {
             inkingManager.highlighterBrush.tipSize = size;
         });
@@ -52,8 +64,8 @@ class Highlighter extends Tool {
         return (
             <Tool {...this.props}>
                 <div className="popover">
-                    {isDoubleClick && <ColorPicker setColor={this.setColor} />}
-                    {isDoubleClick && <SizePicker setSize={this.setSize} />}
+                    {isDoubleClick && <ColorPicker defaultColor={this.state.color} setColor={this.setColor} />}
+                    {isDoubleClick && <SizePicker defaultSize={this.state.size} setSize={this.setSize} />}
                 </div>
             </Tool>  
         );

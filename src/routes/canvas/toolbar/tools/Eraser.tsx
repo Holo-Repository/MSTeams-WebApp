@@ -36,6 +36,7 @@ const pointEraserProps = {
 class Eraser extends Tool {
     static defaultProps = eraserProps;
     state = {
+        size: 5,
         isPointEraser: false
     }
 
@@ -43,6 +44,10 @@ class Eraser extends Tool {
         super(props);
         this.setSize = this.setSize.bind(this);
         this.setEraser = this.setEraser.bind(this);
+
+        this.props.ext(inkingManager => {
+            inkingManager.eraserSize = this.state.size;
+        });
     }
 
     /**
@@ -51,6 +56,7 @@ class Eraser extends Tool {
      * @param size The size of the eraser.
      */
     setSize(size: number) {
+        this.state.size = size;
         this.props.ext(inkingManager => {
             inkingManager.eraserSize = size;
         });
@@ -74,22 +80,30 @@ class Eraser extends Tool {
         const eraser = this.state.isPointEraser ? pointEraserProps : eraserProps;
 
         return (
-            <Tool {...this.props} icon={<img src={require("src/assets/eraser.png")} alt="Icon" />} tool={eraser.tool}>
+            <Tool {...this.props} icon={<img src={require("../../../../assets/eraser.png")} alt="Icon" />} tool={eraser.tool}>
                 <div className="popover">
                     {/* Draw the button to select the other eraser */}
                     {isDoubleClick &&
-                        <Toolbar defaultCheckedValues={{eraser: ["standard"],}} id="eraser-picker" className="tool-third-level">
-                            <ToolbarRadioGroup>
-                                <ToolbarRadioButton name="eraser" value="standard" onClick={() => this.setEraser(false)}>
-                                    {eraserProps.icon}
-                                </ToolbarRadioButton>
-                                <ToolbarRadioButton name="eraser" value="point" onClick={() => this.setEraser(true)}>
-                                    {pointEraserProps.icon}
-                                </ToolbarRadioButton>
-                            </ToolbarRadioGroup>
-                        </Toolbar>
+                        <div id="eraser-picker" className="tool-third-level">
+                            <Button onClick={() => this.setEraser(false)}
+                                style={{
+                                    border: !this.state.isPointEraser ? '1px solid #444791' : '1px solid grey',
+                                    backgroundColor: !this.state.isPointEraser ? 'rgba(89, 95, 186, 0.9)' : 'rgba(36, 36, 36, 0.9)'}
+                                }
+                            >
+                                {eraserProps.icon}
+                            </Button>
+                            <Button onClick={() => this.setEraser(true)}
+                                style={{
+                                    border: this.state.isPointEraser ? '1px solid #444791' : '1px solid grey',
+                                    backgroundColor: this.state.isPointEraser ? 'rgba(89, 95, 186, 0.9)' : 'rgba(36, 36, 36, 0.9)'}
+                                }
+                            >
+                                {pointEraserProps.icon}
+                            </Button>
+                        </div>
                     }
-                    {isDoubleClick && <SizePicker setSize={this.setSize} />}
+                    {isDoubleClick && <SizePicker defaultSize={this.state.size} setSize={this.setSize} />}
                 </div>
             </Tool>
         );

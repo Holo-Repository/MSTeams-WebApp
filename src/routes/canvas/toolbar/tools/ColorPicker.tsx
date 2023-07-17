@@ -8,7 +8,7 @@ import { Button } from "@fluentui/react-components";
  * 
  * @param setColor A callback function that sets the color.
  */
-class ColorPicker extends React.Component<{setColor: (color: string) => void}> {
+class ColorPicker extends React.Component<{defaultColor: string, setColor: (color: string) => void}> {
     colors = [
         "#FF0000", // red
         "#FFA500", // orange
@@ -20,13 +20,25 @@ class ColorPicker extends React.Component<{setColor: (color: string) => void}> {
         "#FFFFFF"  // white
     ]
 
+    state = {
+        selectedColor: this.props.defaultColor,
+    };
+
+    setColor(color: string) {
+        this.setState({ selectedColor: color });
+        this.props.setColor(color);
+    }
+
+
     render(): React.ReactNode {
         return <div id="color-picker" className="tool-third-level">
             {this.colors.map((color: string) => 
                 <Button
                     key={color}
-                    onClick={() => this.props.setColor(color)}
-                    style={{ color: color }}
+                    onClick={() => this.setColor(color)}
+                    style={{ color: color, 
+                        border: this.state.selectedColor === color ? '1px solid #444791' : '1px solid grey',
+                        backgroundColor: this.state.selectedColor === color ? 'rgba(89, 95, 186, 0.9)' : 'rgba(36, 36, 36, 0.9)'}}
                 >&#9632;</Button>
             )}
         </div>;
