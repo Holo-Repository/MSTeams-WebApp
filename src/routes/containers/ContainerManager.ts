@@ -1,6 +1,5 @@
 import { TableClient } from "@azure/data-tables";
 import {
-    LivePresence, 
     getLiveShareContainerSchemaProxy,
     LiveShareRuntime,
     AzureLiveShareHost,

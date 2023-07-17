@@ -1,11 +1,7 @@
 import React from "react";
-import { LiveShareClient } from "@microsoft/live-share";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
-import { LiveShareHost } from "@microsoft/teams-js";
-import { ContainerSchema } from "fluid-framework";
 
 import DrawingManager from "./DrawingManager";
-import Container from "../../containers/Container";
 import ContainerManager from "../../containers/ContainerManager";
 
 

@@ -1,6 +1,6 @@
 import React from "react";
-import { UserMeetingRole, app, meeting } from "@microsoft/teams-js";
-import { LiveEvent, LiveShareClient, LiveState } from "@microsoft/live-share";
+import { app, meeting } from "@microsoft/teams-js";
+import { LiveEvent, LiveShareClient } from "@microsoft/live-share";
 import { LiveShareHost } from "@microsoft/teams-js";
 
 import SharedCanvas from "./views/canvas/SharedCanvas";
@@ -67,6 +67,7 @@ class HoloRepo extends React.Component {
 
         // Create a container manager to handle connections to remote containers
         const containerManager = new ContainerManager(locationID, { userId: context.user?.id, userName: context.user?.userPrincipalName })
+        console.log({ userId: context.user?.id, userName: context.user?.userPrincipalName })
 
         // Setup the container manager
         this.setState({ 
