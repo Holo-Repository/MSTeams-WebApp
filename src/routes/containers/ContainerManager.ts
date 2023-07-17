@@ -143,7 +143,7 @@ class ContainerManager {
     async createContainer(name: string, description: string) {
         const { host, injectedSchema } = this.getSchema();
         const { container, services } = await this.liveShare.client.createContainer(injectedSchema);
-        // host.setAudience(services.audience);
+        host.setAudience(services.audience);
 
         const id = await container.attach();
         // await this.appendContainerId({ id, name, description, locationId: this.locationId } as Container);
@@ -166,7 +166,7 @@ class ContainerManager {
     async getContainer(containerId: string) {
         const { host, injectedSchema } = this.getSchema();
         const { container: c, services } = await this.liveShare.client.getContainer(containerId, injectedSchema);
-        // host.setAudience(services.audience);
+        host.setAudience(services.audience);
         
         await c.connect();
         

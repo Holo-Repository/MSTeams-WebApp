@@ -66,7 +66,7 @@ class HoloRepo extends React.Component {
         const activeContainerId = params.get("containerID");
 
         // Create a container manager to handle connections to remote containers
-        const containerManager = new ContainerManager(locationID, { id: context.user?.id, userName: context.user?.userPrincipalName })
+        const containerManager = new ContainerManager(locationID, { userId: context.user?.id, userName: context.user?.userPrincipalName })
 
         // Setup the container manager
         this.setState({ 
