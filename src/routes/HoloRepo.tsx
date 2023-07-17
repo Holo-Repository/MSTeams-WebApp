@@ -1,8 +1,12 @@
 import React from "react";
-import { app } from "@microsoft/teams-js";
+import { UserMeetingRole, app } from "@microsoft/teams-js";
+import { LiveEvent, LiveShareClient, LiveState } from "@microsoft/live-share";
+import { LiveShareHost } from "@microsoft/teams-js";
 
-import SharedCanvas from "./canvas/SharedCanvas";
-
+import SharedCanvas from "./views/canvas/SharedCanvas";
+import ContainerManager from "./containers/ContainerManager";
+import Content from "./views/content/Content";
+import Container from "./containers/Container";
 
 /**
  * The HoloRepo component.
@@ -17,22 +21,124 @@ class HoloRepo extends React.Component {
         // Represents the current view where the app is running.
         // Don't forget that multiple views can be running at the same time.
         view: "default",
+        containerManager: undefined as ContainerManager | undefined,
+        activeContainer: undefined as Container | undefined,
+        containers: [] as Container[],
     };
+
+    liveActiveContainer: LiveState | undefined = undefined;
+    liveNewContainerEvent: LiveEvent | undefined = undefined;
+
+    constructor(props: any) {
+        super(props);
+        this.openContainer = this.openContainer.bind(this);
+        this.createContainer = this.createContainer.bind(this);
+    }
 
     async componentDidMount() {
         const context = await app.getContext();
-        this.setState({ view: context.page.frameContext });
+        const locationID = (context.channel ?? context.chat)?.id;
+        const view = context.page.frameContext;
+
+        // Connect to a Fluid container handles by Teams
+        // This acts a message queue to synchronize the state of the app across multiple views
+        // Joining a container is only possible in the side panel and meeting stage views
+        if (["sidePanel", "meetingStage"].includes(view)) {
+            // Setup the Fluid container
+            const host = LiveShareHost.create();
+            const liveShare = new LiveShareClient(host);
+            const schema = { initialObjects: { 
+                liveActiveContainer: LiveState,
+                liveNewContainerEvent: LiveEvent,
+            } };
+            const { container } = await liveShare.joinContainer(schema);
+            this.liveActiveContainer = container.initialObjects.liveActiveContainer as LiveState;
+            this.liveNewContainerEvent = container.initialObjects.liveNewContainerEvent as LiveEvent;
+            // Set listeners for the Fluid container
+            this.liveActiveContainer.on('stateChanged', (container) => {
+                this.setState({ activeContainer: container });
+            });
+            this.liveNewContainerEvent.on('received', () => {
+                this.state.containerManager?.listContainers().then((containers) =>
+                    this.setState({ containers })
+                );
+            });
+            // Set the initial state
+            await this.liveActiveContainer.initialize(undefined);
+            await this.liveNewContainerEvent.initialize();
+        }
+
+        // Create a container manager to handle connections to remote containers
+        const containerManager = new ContainerManager(locationID, { id: context.user?.id, userName: context.user?.userPrincipalName })
+
+        // Setup the container manager
+        this.setState({ 
+            view,
+            containerManager,
+            containers: await containerManager.listContainers(),
+        });
+    }
+
+    /**
+     * Triggers the opening of a container in the current view.
+     * Propagates the change to all other clients connected to the app Fluid container.
+     * 
+     * @param container The container to open.
+     * @throws Error if the container cannot be opened in the current view.
+     */
+    openContainer(container: Container) {
+        if (["sidePanel", "meetingStage"].includes(this.state.view))
+            if (this.liveActiveContainer) 
+                this.liveActiveContainer.set(container);
+            else
+                throw new Error("Cannot open container without a live container");
+        else
+            throw new Error("Cannot open container in this view");
+    }
+
+    /**
+     * Triggers the creation of a container in the current location.
+     * Propagates the change to all other clients connected to the app Fluid container.
+     * 
+     * @param name The name of the container.
+     * @param description The description of the container.
+     * @throws Error if the container cannot be created in the current location.
+     */
+    async createContainer(name: string, description: string) {
+        if (!this.state.containerManager) throw new Error("Cannot create container without a container manager"); // This should never happen because the button should be disabled
+        
+        await this.state.containerManager.createContainer(name, description);
+        this.liveNewContainerEvent?.send('received')
     }
 
     render() {
-        const { view } = this.state;
+        const { view, activeContainer, containerManager } = this.state;
+        let content = null;
+
+        const contentProps = {
+            containers: this.state.containers,
+            canCreate: containerManager !== undefined,
+            openContainer: this.openContainer,
+            createContainer: this.createContainer,
+        };
+
+        if (view === "default") 
+            content = "Loading...";
+        else if (view === "content") 
+            content = <Content {...contentProps} canOpen={false}/>;
+        else if (!activeContainer && ["sidePanel", "meetingStage"].includes(view))
+            content = <Content {...contentProps} canOpen={true}/>;
+        else if (activeContainer) {
+            if (view === "sidePanel")
+                content = "Side panel view";
+            else if (view === "meetingStage")
+                content = <SharedCanvas container={activeContainer} containerManager={containerManager!}/>;
+        } else
+            content = "Unknown view";
+
         return (
-            // This is a simple conditional rendering based on the view state.
             <div>
-                {view === "default" && "Default view"}
-                {view === "content" && "Content view"}
-                {view === "sidePanel" && "Side panel view"}
-                {view === "meetingStage" && <SharedCanvas/>}
+                {content}
             </div>
         );
     }

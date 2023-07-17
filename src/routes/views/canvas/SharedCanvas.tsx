@@ -5,14 +5,21 @@ import { LiveShareHost } from "@microsoft/teams-js";
 import { ContainerSchema } from "fluid-framework";
 
 import DrawingManager from "./DrawingManager";
+import Container from "../../containers/Container";
+import ContainerManager from "../../containers/ContainerManager";
 
+
+export interface SharedCanvasProps {
+    container: Container;
+    containerManager: ContainerManager;
+}
 
 /**
  * The shared canvas component.
  * This component is responsible for setting up the Fluid container and the inking manager.
  * As well as rendering the drawing manager component in the newly created live canvas.
  */
-class SharedCanvas extends React.Component {
+class SharedCanvas extends React.Component<SharedCanvasProps> {
     state = {
         inkingManager: undefined,
     }
@@ -23,11 +30,7 @@ class SharedCanvas extends React.Component {
     async componentDidMount() {
         // This code is taken directly from the live canvas documentation
 
-        // Setup the Fluid container
-        const host = LiveShareHost.create();
-        const liveShare = new LiveShareClient(host);
-        const schema: ContainerSchema = {initialObjects: { liveCanvas: LiveCanvas }};
-        const { container } = await liveShare.joinContainer(schema);
+        const { container } = await this.props.containerManager.getContainer(this.props.container);
         const liveCanvas = container.initialObjects.liveCanvas as LiveCanvas;
 
         // Get the canvas host element
