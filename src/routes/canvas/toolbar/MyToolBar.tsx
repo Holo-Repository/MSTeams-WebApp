@@ -24,27 +24,39 @@ export interface MyToolbarProps {
  * - When a tool is not selected, the corresponding content will be hidden.
  */
 class MyToolBar extends React.Component<MyToolbarProps>{
-    // Define the state with selectedTool variable which stores the current
+    // Define the state with selectedTool variable which stores the current selected tool
+    // and the isDisplayed variable, which determines whether the content of the tool is displayed.
     state={
         selectedTool: "Select",
+        isDisplayed: true,
     }
 
     /**
-     * Function that sets the state's selectedTool value based on the event received
-     * It also activates or deactivates the InkingManager depending on the selected tool
+     * Function that sets the state's selectedTool value based on the event received, and
+     * set the display status based on the current state. It also activates or deactivates
+     *  the InkingManager depending on the selected tool.
      * @param event The click event which can be used to retrive the value of the current target
      */
     setSelectedTool = (event: any) => {
         const tool = event.currentTarget.value;
-        this.setState({selectedTool: tool});
-    
-        if (this.props.ink) {
-            if (tool === "Annotation") {
-                this.props.ink.activate();
-            } else {
-                this.props.ink.deactivate();
+
+        // If the current tool is already selected, toggle its display status
+        if (this.state.selectedTool === tool) {
+            this.state.isDisplayed ? this.setState({isDisplayed: false}) : this.setState({isDisplayed: true});
+        } else {
+             // If a different tool is selected, update the selected tool and set isDisplayed to true.
+            this.setState({selectedTool: tool, isDisplayed: true});
+
+            // If there's an InkingManager instance provided via props, activate or deactivate 
+            // the InkingManager based on whether the selected tool is "Annotation".
+            if (this.props.ink) {
+                if (tool === "Annotation") {
+                    this.props.ink.activate();
+                } else {
+                    this.props.ink.deactivate();
+                }
             }
-        }
+        }    
     }
 
     /**
@@ -78,9 +90,12 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             icon={<Pen24Filled />}
                             onClick={this.setSelectedTool}
                         >
-                            {ink 
-                            && <DrawingManager inkingManager={ink}
-                            display = {this.getSelectedTool() === "Annotation" ? 'block' : 'none'}/>}
+                            {ink && 
+                                <DrawingManager 
+                                    inkingManager={ink}
+                                    display = {this.getSelectedTool() === "Annotation" && this.state.isDisplayed ? 'block' : 'none'}
+                                />
+                            }
                         </MyToolbarButton>
 
                         <MyToolbarButton 
@@ -89,8 +104,13 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             icon={<NoteEdit24Filled />}
                             onClick={this.setSelectedTool}
                         >
-                            {this.getSelectedTool() === "Notes" 
-                            && <div className="tool-second-level">Add new component here</div>}
+                            {<div 
+                                className="tool-second-level"
+                                style={{display : this.getSelectedTool() === "Notes" && this.state.isDisplayed ? 'block' : 'none'}}
+                            >
+                                Add new component here
+                            </div>
+                            }
                         </MyToolbarButton>
                         
                     </ToolbarRadioGroup>
