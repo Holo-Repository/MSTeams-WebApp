@@ -8,16 +8,16 @@ import {
     ContainerSchema
 } from "fluid-framework";
 import {
-    AzureFunctionTokenProvider, 
     AzureClientProps,
     AzureClient
 } from "@fluidframework/azure-client";
 
 import getTableClient from "./TableClient";
 import Container from "./Container";
+import FluidTokenProvider from "./FluidTokenProvider";
+import { LiveCanvas } from "@microsoft/live-share-canvas";
 
 import { InsecureTokenProvider } from "@fluidframework/test-client-utils";
-import { LiveCanvas } from "@microsoft/live-share-canvas";
 
 class ContainerManager {
     locationId: string;
@@ -34,7 +34,8 @@ class ContainerManager {
         const options: AzureClientProps = {
             connection: {
                 tenantId: 'a04ee05a-7649-44cc-a6ab-39a91f793bb8',
-                tokenProvider: new InsecureTokenProvider('dd8e40b88e6a91f5bc75854fce2ba067', user),
+                // tokenProvider: new InsecureTokenProvider('dd8e40b88e6a91f5bc75854fce2ba067', user),
+                tokenProvider: new FluidTokenProvider('http://localhost:3000/api/token', user),
                 endpoint: 'https://eu.fluidrelay.azure.com',
                 type: 'remote'
             }
@@ -142,7 +143,7 @@ class ContainerManager {
     async createContainer(name: string, description: string) {
         const { host, injectedSchema } = this.getSchema();
         const { container, services } = await this.liveShare.client.createContainer(injectedSchema);
-        host.setAudience(services.audience);
+        // host.setAudience(services.audience);
 
         const id = await container.attach();
         // await this.appendContainerId({ id, name, description, locationId: this.locationId } as Container);
