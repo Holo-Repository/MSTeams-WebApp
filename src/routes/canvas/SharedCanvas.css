@@ -73,4 +73,14 @@
   transform: translateY(-7vh);
 }
 
+.tool-third-level .picker-selected{
+  border: 1px solid #444791;
+  background-color: rgba(89, 95, 186, 0.9);
+}
+
+.tool-third-level .picker-unselected{
+  border: '1px solid grey';
+  background-color: rgba(36, 36, 36, 0.9);
+}
+
 

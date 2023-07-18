@@ -27,11 +27,8 @@ class Highlighter extends Tool {
         super(props);
         this.setColor = this.setColor.bind(this);
         this.setSize = this.setSize.bind(this);
-
-        this.props.ext(inkingManager => {
-            inkingManager.penBrush.color = fromCssColor(this.state.color);
-            inkingManager.penBrush.tipSize = this.state.size;
-        });
+        this.setColor(this.state.color);
+        this.setSize(this.state.size);
     }
 
     /**

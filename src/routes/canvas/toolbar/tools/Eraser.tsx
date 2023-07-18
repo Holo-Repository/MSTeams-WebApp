@@ -44,10 +44,7 @@ class Eraser extends Tool {
         super(props);
         this.setSize = this.setSize.bind(this);
         this.setEraser = this.setEraser.bind(this);
-
-        this.props.ext(inkingManager => {
-            inkingManager.eraserSize = this.state.size;
-        });
+        this.setSize(this.state.size);
     }
 
     /**
@@ -86,18 +83,12 @@ class Eraser extends Tool {
                     {isDoubleClick &&
                         <div id="eraser-picker" className="tool-third-level">
                             <Button onClick={() => this.setEraser(false)}
-                                style={{
-                                    border: !this.state.isPointEraser ? '1px solid #444791' : '1px solid grey',
-                                    backgroundColor: !this.state.isPointEraser ? 'rgba(89, 95, 186, 0.9)' : 'rgba(36, 36, 36, 0.9)'}
-                                }
+                                className={!this.state.isPointEraser ? 'picker-selected' : 'picker-unselected'}
                             >
                                 {eraserProps.icon}
                             </Button>
                             <Button onClick={() => this.setEraser(true)}
-                                style={{
-                                    border: this.state.isPointEraser ? '1px solid #444791' : '1px solid grey',
-                                    backgroundColor: this.state.isPointEraser ? 'rgba(89, 95, 186, 0.9)' : 'rgba(36, 36, 36, 0.9)'}
-                                }
+                                className={this.state.isPointEraser ? 'picker-selected' : 'picker-unselected'}
                             >
                                 {pointEraserProps.icon}
                             </Button>

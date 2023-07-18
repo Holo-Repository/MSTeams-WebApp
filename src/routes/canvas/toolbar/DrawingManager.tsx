@@ -18,13 +18,13 @@ import LaserPointer from './tools/LaserPointer';
  * 
  * @param inkingManager The inking manager that is used to draw on the canvas.
  */
-class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
+class DrawingManager extends React.Component<{inkingManager: InkingManager, display: string}> {
     state = {
         selectedTool: InkingTool.pen,
         doubleClicked: false,
     }
 
-    constructor(props: {inkingManager: InkingManager}) {
+    constructor(props: {inkingManager: InkingManager, display: string}) {
         super(props);
         this.isSelected = this.isSelected.bind(this);
         this.isDoubleClicked = this.isDoubleClicked.bind(this);
@@ -102,7 +102,7 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
         }
 
         return (
-            <div className='tool-second-level'>
+            <div className='tool-second-level' style={{display: this.props.display}}>
                 {/* <FluentProvider theme={webLightTheme}> */}
                 <Toolbar>
                     <Pen {...toolProps} icon={ <img src={require("../../../assets/ink-pen.png")} alt="Icon" />}/>

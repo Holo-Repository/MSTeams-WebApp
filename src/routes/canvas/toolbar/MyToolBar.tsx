@@ -78,8 +78,9 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             icon={<Pen24Filled />}
                             onClick={this.setSelectedTool}
                         >
-                            {ink && this.getSelectedTool() === "Annotation" 
-                            && <DrawingManager inkingManager={ink}/>}
+                            {ink 
+                            && <DrawingManager inkingManager={ink}
+                            display = {this.getSelectedTool() === "Annotation" ? 'block' : 'none'}/>}
                         </MyToolbarButton>
 
                         <MyToolbarButton 

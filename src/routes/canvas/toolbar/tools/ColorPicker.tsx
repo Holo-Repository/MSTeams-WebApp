@@ -34,11 +34,10 @@ class ColorPicker extends React.Component<{defaultColor: string, setColor: (colo
         return <div id="color-picker" className="tool-third-level">
             {this.colors.map((color: string) => 
                 <Button
+                    className={this.state.selectedColor === color ? 'picker-selected' : 'picker-unselected'}
                     key={color}
                     onClick={() => this.setColor(color)}
-                    style={{ color: color, 
-                        border: this.state.selectedColor === color ? '1px solid #444791' : '1px solid grey',
-                        backgroundColor: this.state.selectedColor === color ? 'rgba(89, 95, 186, 0.9)' : 'rgba(36, 36, 36, 0.9)'}}
+                    style={{ color: color}}
                 >&#9632;</Button>
             )}
         </div>;

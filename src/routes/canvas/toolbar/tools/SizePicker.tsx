@@ -25,10 +25,8 @@ class SizePicker extends React.Component<{defaultSize: number, setSize: (size: n
         return <div id="size-picker" className="tool-third-level">
             {this.sizes.map((size: number) => 
                 <Button
+                    className={this.state.selectedSize === size ? 'picker-selected' : 'picker-unselected'}
                     key={size}
-                    style={{
-                        border: this.state.selectedSize === size ? '1px solid #444791' : '1px solid grey',
-                        backgroundColor: this.state.selectedSize === size ? 'rgba(89, 95, 186, 0.9)' : 'rgba(36, 36, 36, 0.9)'}}
                     onClick={() => this.props.setSize(size)}
                 >{size}</Button>
             )}
