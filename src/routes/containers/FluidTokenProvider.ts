@@ -69,7 +69,7 @@ class FluidTokenProvider implements ITokenProvider {
 
         if (!res.ok) throw new Error(`Error fetching token: ${res.status} ${res.statusText}`);
 
-        return { jwt: await res.json() };
+        return { jwt: await res.text() };
     }
 }
 

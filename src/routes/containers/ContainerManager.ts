@@ -17,8 +17,6 @@ import Container from "./Container";
 import FluidTokenProvider from "./FluidTokenProvider";
 import { LiveCanvas } from "@microsoft/live-share-canvas";
 
-import { InsecureTokenProvider } from "@fluidframework/test-client-utils";
-
 class ContainerManager {
     locationId: string;
     private tableClient: TableClient;
@@ -34,8 +32,7 @@ class ContainerManager {
         const options: AzureClientProps = {
             connection: {
                 tenantId: 'a04ee05a-7649-44cc-a6ab-39a91f793bb8',
-                // tokenProvider: new InsecureTokenProvider('dd8e40b88e6a91f5bc75854fce2ba067', user),
-                tokenProvider: new FluidTokenProvider('http://localhost:3000/api/token', user),
+                tokenProvider: new FluidTokenProvider('https://fluid-jwt-provider.azurewebsites.net/api/JWTProvider', user),
                 endpoint: 'https://eu.fluidrelay.azure.com',
                 type: 'remote'
             }
