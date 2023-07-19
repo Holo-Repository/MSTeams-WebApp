@@ -1,11 +1,13 @@
 import React from 'react';
 import { InkingManager, InkingTool } from "@microsoft/live-share-canvas";
 
+import {Toolbar} from "@fluentui/react-components";
+
+import { Button } from '@fluentui/react-components';
 import Pen from "./tools/Pen";
 import Eraser from './tools/Eraser';
 import Highlighter from './tools/Highlighter';
 import LaserPointer from './tools/LaserPointer';
-
 
 /**
  * The drawing manager component.
@@ -73,6 +75,21 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
         });
     }
 
+
+    downloadSVG() {
+        const svgText = this.props.inkingManager.exportSVG();
+        const blob = new Blob([svgText], {type: "image/svg+xml;charset=utf-8"});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'drawing.svg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+
+
     /**
      * A generic function that simply calls the callback with the inkingManager from the DrawingManager component.
      * Always triggers a rerender by setting the double click state to false.
@@ -88,6 +105,8 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
         this.setState({ doubleClicked: false });
     }
 
+
+
     render(): React.ReactNode {
         const { selectedTool, doubleClicked } = this.state;
         let toolProps = {
@@ -96,13 +115,16 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
             selectTool: this.setTool,
             ext: this.ext,
         }
-
         return (
             <div>
-                <Pen {...toolProps} />
-                <Highlighter {...toolProps} />
-                <Eraser {...toolProps} />
-                <LaserPointer {...toolProps} />
+                
+                <Toolbar aria-label="Vertical Button" {...toolProps}>
+                    <Pen {...toolProps} />
+                    <Highlighter {...toolProps} />
+                    <Eraser {...toolProps} />
+                    <LaserPointer {...toolProps} />
+                    <Button onClick={this.downloadSVG.bind(this)}>Download SVG</Button>
+                </Toolbar>
             </div>
         );
     }
