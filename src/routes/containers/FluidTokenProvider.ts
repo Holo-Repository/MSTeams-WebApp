@@ -1,17 +1,17 @@
 import { AzureMember } from "@fluidframework/azure-client";
 import { ITokenProvider, ITokenResponse } from "@fluidframework/routerlicious-driver";
 
-import FetchCacheRetry from "./FetchCacheRetry";
+import FetchJWT from "./FetchJWT";
 
 
 class FluidTokenProvider implements ITokenProvider {
-    private readonly fetchCacheRetry: FetchCacheRetry;
+    private readonly fetchJWT: FetchJWT;
 
     constructor(
         private readonly tokenFunURL: string,
         private readonly user?: Pick<AzureMember, "userId" | "userName" | "additionalDetails">,
     ) {
-        this.fetchCacheRetry = new FetchCacheRetry();
+        this.fetchJWT = new FetchJWT();
     }
 
     /**
@@ -60,7 +60,7 @@ class FluidTokenProvider implements ITokenProvider {
             .join("&");
 
         const reqURL = `${this.tokenFunURL}?${reqQuery}`;
-        const res = await this.fetchCacheRetry.fetch(reqURL, {
+        const res = await this.fetchJWT.fetch(reqURL, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
