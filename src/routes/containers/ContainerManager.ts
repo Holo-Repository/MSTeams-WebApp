@@ -1,8 +1,8 @@
 import { TableClient } from "@azure/data-tables";
 import {
     getLiveShareContainerSchemaProxy,
+    HostTimestampProvider,
     LiveShareRuntime,
-    AzureLiveShareHost,
 } from "@microsoft/live-share";
 import {
     ContainerSchema
@@ -11,11 +11,12 @@ import {
     AzureClientProps,
     AzureClient
 } from "@fluidframework/azure-client";
+import { LiveCanvas } from "@microsoft/live-share-canvas";
 
 import getTableClient from "./TableClient";
 import Container from "./Container";
 import FluidTokenProvider from "./FluidTokenProvider";
-import { LiveCanvas } from "@microsoft/live-share-canvas";
+import HoloLiveShareHost from "./HoloLiveShareHost";
 
 class ContainerManager {
     locationId: string;
@@ -118,12 +119,14 @@ class ContainerManager {
                 // presence: LivePresence,
                 liveCanvas: LiveCanvas,
             }
-        }
-
+        };
+        
         // Create host
-        const host = AzureLiveShareHost.create();
+        const host = HoloLiveShareHost.create();
+        // Manually supplying a started timestamp provider because otherwise it would give an error that the provider had not been started
+        const tsp = new HostTimestampProvider(host); tsp.start();
         // Create the LiveShareRuntime, which is needed for `LiveDataObject` instances to work
-        const runtime = new LiveShareRuntime(host);
+        const runtime = new LiveShareRuntime(host, tsp);
         // Inject the LiveShareRuntime dependency into the ContainerSchema
         const injectedSchema: ContainerSchema = getLiveShareContainerSchemaProxy(schema, runtime);
         return { host, injectedSchema };
