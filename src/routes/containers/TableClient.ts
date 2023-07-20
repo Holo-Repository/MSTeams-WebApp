@@ -4,7 +4,7 @@ import {
 } from "@azure/data-tables";
 
 const account = "genericfluidstorage";
-const sas = "?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiyx&se=2023-07-20T04:11:49Z&st=2023-07-19T20:11:49Z&spr=https&sig=NPxsDy81gU7VyP7nkZ0hNwoq6PmrWGqsczVpFV7gP4g%3D";
+const sas = "?sv=2022-11-02&ss=t&srt=o&sp=rwlacu&se=2023-10-01T01:21:22Z&st=2023-07-20T17:21:22Z&spr=https&sig=LYcEp%2Bo%2BYximphpUBqlaA%2FsPgZAO8QiyeVQeH8oaHMM%3D";
 const tableName = "LocationIDtoFluidKey";
 
 export default function getTableClient() {

@@ -1,12 +1,13 @@
 import React from "react";
 import { app, meeting } from "@microsoft/teams-js";
-import { LiveEvent, LiveShareClient } from "@microsoft/live-share";
+import { LiveEvent, LiveShareClient, LiveState } from "@microsoft/live-share";
 import { LiveShareHost } from "@microsoft/teams-js";
 
 import SharedCanvas from "./views/canvas/SharedCanvas";
 import ContainerManager from "./containers/ContainerManager";
 import Content from "./views/content/Content";
 import Container from "./containers/Container";
+import { SharedMap } from "fluid-framework";
 
 /**
  * The HoloRepo component.
@@ -27,6 +28,7 @@ class HoloRepo extends React.Component {
     };
 
     liveNewContainerEvent: LiveEvent | undefined = undefined;
+    liveAppState: SharedMap | undefined = undefined;
 
     constructor(props: any) {
         super(props);
@@ -39,6 +41,10 @@ class HoloRepo extends React.Component {
         const locationID = (context.channel ?? context.chat)?.id;
         const view = context.page.frameContext;
 
+        // Get URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const activeContainerId = params.get("containerID");
+
         // Connect to a Fluid container handles by Teams
         // This acts a message queue to synchronize the state of the app across multiple views
         // Joining a container is only possible in the side panel and meeting stage views
@@ -48,22 +54,28 @@ class HoloRepo extends React.Component {
             const liveShare = new LiveShareClient(host);
             const schema = { initialObjects: {
                 liveNewContainerEvent: LiveEvent,
+                liveAppState: SharedMap,
             } };
             const { container } = await liveShare.joinContainer(schema);
             this.liveNewContainerEvent = container.initialObjects.liveNewContainerEvent as LiveEvent;
+            this.liveAppState = container.initialObjects.liveAppState as SharedMap;
             // Set listeners for the Fluid container
             this.liveNewContainerEvent.on('received', () => {
                 this.state.containerManager?.listContainers().then((containers) =>
                     this.setState({ containers })
                 );
             });
+            this.liveAppState.on('valueChanged', (changed, local) => {
+                if (changed.key === 'activeContainerId') {
+                    const container = this.liveAppState!.get('activeContainerId') as string;
+                    let validContainerId = this.state.activeContainerId || activeContainerId;
+                    if (validContainerId !== container) this.setState({ activeContainerId: container });
+                }
+            });
+
             // Set the initial state
             await this.liveNewContainerEvent.initialize();
         }
-
-        // Get URL parameters
-        const params = new URLSearchParams(window.location.search);
-        const activeContainerId = params.get("containerID");
 
         // Create a container manager to handle connections to remote containers
         const containerManager = new ContainerManager(locationID, { userId: context.user?.id, userName: context.user?.userPrincipalName })
@@ -73,7 +85,7 @@ class HoloRepo extends React.Component {
             view,
             containerManager,
             containers: await containerManager.listContainers(),
-            activeContainerId,
+            activeContainerId: activeContainerId || this.liveAppState?.get('activeContainerId')
         });
     }
 
@@ -96,7 +108,7 @@ class HoloRepo extends React.Component {
                 Please try again.
                 Error: ${err}`);
             // Update the view
-            if (result) this.setState({ activeContainerId: container.id });
+            if (result) this.liveAppState?.set('activeContainerId', container.id);
         }, newURL.href);
     }
 
@@ -141,7 +153,8 @@ class HoloRepo extends React.Component {
             if (view === "sidePanel")
                 content = "Side panel view";
             else if (view === "meetingStage")
-                content = <SharedCanvas container={activeContainerId} containerManager={containerManager!}/>;
+                content = "Meeting stage view";
+                // content = <SharedCanvas container={activeContainerId} containerManager={containerManager!}/>;
         } else
             content = "Unknown view";
 

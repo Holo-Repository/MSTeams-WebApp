@@ -57,7 +57,7 @@ class ContainerManager {
         return this.tableClient.getEntity(this.locationId, this.locationId)
             .then((entity) => entity)
             .catch((err) => {
-                console.log(err);
+                console.log(`Failed to retrieve entity, remaining attempt: ${attempts - 1}`, err);
                 if (err.statusCode === 404) {
                     this.initializeEntity();
                     if (attempts > 0)
