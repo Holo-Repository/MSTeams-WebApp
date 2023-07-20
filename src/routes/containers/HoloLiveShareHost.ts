@@ -7,15 +7,20 @@ import { AzureLiveShareHost, INtpTimeInfo } from "@microsoft/live-share";
 class HoloLiveShareHost {
     private constructor() {}
 
-    public static create(): AzureLiveShareHost {
+    public static create(retries: number = 3, retryDelay: number = 1 * 1000): AzureLiveShareHost {
         const lsh = AzureLiveShareHost.create() as AzureLiveShareHost;
 
+        const fetchRetry = require('fetch-retry')(global.fetch, { retries, retryDelay }) as typeof global.fetch;
+
         async function getNtpTime(): Promise<INtpTimeInfo> {
-            const now = new Date();
-            return Promise.resolve({
-                ntpTime: now.toUTCString(),
-                ntpTimeInUTC: now.getTime(),
-            });
+            // Fetch time from worldtimeapi.org with no cache
+            const time = await (await fetchRetry('http://worldtimeapi.org/api/timezone/Europe/London', {
+                cache: 'no-cache'
+            })).json();
+            return {
+                ntpTime: time.datetime,
+                ntpTimeInUTC: time.unixtime
+            } as INtpTimeInfo;
         }
 
         // Override the getNtpTime method to use the server timestamp
