@@ -34,16 +34,13 @@ class HoloRepo extends React.Component {
         super(props);
         this.openContainer = this.openContainer.bind(this);
         this.createContainer = this.createContainer.bind(this);
+        this.closeContainer = this.closeContainer.bind(this);
     }
 
     async componentDidMount() {
         const context = await app.getContext();
         const locationID = (context.channel ?? context.chat)?.id;
         const view = context.page.frameContext;
-
-        // Get URL parameters
-        const params = new URLSearchParams(window.location.search);
-        const activeContainerId = params.get("containerID");
 
         // Connect to a Fluid container handles by Teams
         // This acts a message queue to synchronize the state of the app across multiple views
@@ -68,8 +65,7 @@ class HoloRepo extends React.Component {
             this.liveAppState.on('valueChanged', (changed, local) => {
                 if (changed.key === 'activeContainerId') {
                     const container = this.liveAppState!.get('activeContainerId') as string;
-                    let validContainerId = this.state.activeContainerId || activeContainerId;
-                    if (validContainerId !== container) this.setState({ activeContainerId: container });
+                    if (this.state.activeContainerId !== container) this.setState({ activeContainerId: container });
                 }
             });
 
@@ -85,7 +81,7 @@ class HoloRepo extends React.Component {
             view,
             containerManager,
             containers: await containerManager.listContainers(),
-            activeContainerId: activeContainerId || this.liveAppState?.get('activeContainerId')
+            activeContainerId: this.liveAppState?.get('activeContainerId')
         });
     }
 
@@ -97,9 +93,13 @@ class HoloRepo extends React.Component {
      * @throws Error if the container cannot be opened in the current view.
      */
     openContainer(container: Container) {
+        // If the current view is the meeting stage then the call to shareAppContentToStage is invalid 
+        // and will throw an error so we just set the active container ID
+        if (this.state.view === 'meetingStage') return this.liveAppState?.set('activeContainerId', container.id);
+
+        // Otherwise we tell Teams to open the container in the meeting stage view
         // Add the container ID to the parameter "containerID" in the URL
         const newURL = new URL(window.location.href);
-        newURL.searchParams.set("containerID", container.id);
         // Open the container in the current view
         meeting.shareAppContentToStage((err, result) => {
             // Alert the user that something went wrong
@@ -126,6 +126,15 @@ class HoloRepo extends React.Component {
         await this.state.containerManager.createContainer(name, description);
         this.liveNewContainerEvent?.send('received')
         this.setState({ containers: await this.state.containerManager.listContainers() });
+    }
+
+    /**
+     * Close the open container.
+     * Propagates the change to all other clients connected to the app Fluid container.
+     */
+    closeContainer() {
+        // Close the container in the current view
+        this.liveAppState?.set('activeContainerId', undefined);
     }
 
     render() {
@@ -160,6 +169,7 @@ class HoloRepo extends React.Component {
 
         return (
             <div>
+                {activeContainerId && <button onClick={this.closeContainer}>Close</button>}
                 {content}
             </div>
         );
