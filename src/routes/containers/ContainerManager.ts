@@ -122,9 +122,7 @@ class ContainerManager {
         // Create host
         const host = HoloLiveShareHost.create();
         // Manually supplying a started timestamp provider because otherwise it would give an error that the provider had not been started
-        const tsp = new HostTimestampProvider(host); 
-        console.log("Starting timestamp provider");
-        tsp.start();
+        const tsp = new HostTimestampProvider(host); tsp.start();
         // Create the LiveShareRuntime, which is needed for `LiveDataObject` instances to work
         const runtime = new LiveShareRuntime(host, tsp);
         // Inject the LiveShareRuntime dependency into the ContainerSchema
@@ -151,7 +149,7 @@ class ContainerManager {
         await this.appendContainerId({ id, name:id, description:now, locationId: this.locationId } as Container);
 
         // Detach container
-        await container.disconnect();
+        container.disconnect();
 
         return id;
     }

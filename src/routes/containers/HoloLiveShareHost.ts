@@ -13,14 +13,7 @@ class HoloLiveShareHost {
         const fetchRetry = require('fetch-retry')(global.fetch, { retries, retryDelay }) as typeof global.fetch;
 
         async function getNtpTime(): Promise<INtpTimeInfo> {
-            console.log('Fetching time from worldtimeapi.org');
-            const now = Date.now();
-            return {
-                ntpTime: new Date(now).toISOString(),
-                ntpTimeInUTC: now
-            }
-            // Fetch time from worldtimeapi.org with no cache
-            const time = await (await fetchRetry('http://worldtimeapi.org/api/timezone/Europe/London', {
+            const time = await (await fetchRetry('https://worldtimeapi.org/api/timezone/Europe/London', {
                 cache: 'no-cache'
             })).json();
             return {
