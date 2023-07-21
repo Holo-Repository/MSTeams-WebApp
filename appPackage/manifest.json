@@ -53,7 +53,8 @@
     ],
     "validDomains": [
         "${{TAB_DOMAIN}}",
-        "*.azurewebsites.net"
+        "*.azurewebsites.net",
+        "worldtimeapi.org"
     ],
     "webApplicationInfo": {
         "id": "${{AAD_APP_CLIENT_ID}}",

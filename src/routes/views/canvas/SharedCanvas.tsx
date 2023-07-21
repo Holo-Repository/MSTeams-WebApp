@@ -20,6 +20,13 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         inkingManager: undefined,
     }
 
+    canvas: React.RefObject<HTMLDivElement>;
+
+    constructor(props: SharedCanvasProps) {
+        super(props);
+        this.canvas = React.createRef<HTMLDivElement>();
+    }
+
     /**
      * Initializes the Fluid container and the inking manager once the component is mounted.
      */
@@ -27,9 +34,8 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         const { container } = await this.props.containerManager.getContainer(this.props.container);
         const liveCanvas = container.initialObjects.liveCanvas as LiveCanvas;
 
-        // Get the canvas host element
-        const canvasHostElement = document.getElementById("canvas-host");
-        const inkingManager = new InkingManager(canvasHostElement!);
+        if (!this.canvas.current) throw new Error("Canvas host not found");
+        const inkingManager = new InkingManager(this.canvas.current);
         
         // Begin synchronization for LiveCanvas
         await liveCanvas.initialize(inkingManager);
@@ -39,14 +45,14 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
     }
     
     render(): React.ReactNode {
-        const { inkingManager: ink } = this.state;
+        const { inkingManager } = this.state;
 
         return (
             <div>
-                <div id="canvas-host"
+                <div id="canvas-host" ref={this.canvas}
                     style={{width: "100vw", height: "90vh", border: "1px solid black", backgroundColor: "white"}}
                 ></div>
-                {ink && <DrawingManager inkingManager={ink}/>}
+                {inkingManager && <DrawingManager inkingManager={inkingManager}/>}
             </div>
         );
     }

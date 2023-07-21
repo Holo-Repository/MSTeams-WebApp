@@ -21,7 +21,7 @@ import HoloLiveShareHost from "./HoloLiveShareHost";
 class ContainerManager {
     locationId: string;
     private tableClient: TableClient;
-    private liveShare: any;
+    private client: AzureClient;
 
     constructor(locationId?: string, user?: any) {
         if (!locationId || locationId === "") throw new Error("Location ID is required");
@@ -39,9 +39,7 @@ class ContainerManager {
             }
         };
         
-        this.liveShare = {
-            client: new AzureClient(options), // Initialize AzureClient instance
-        }
+        this.client = new AzureClient(options) // Initialize AzureClient instance
     }
 
     /**
@@ -124,7 +122,9 @@ class ContainerManager {
         // Create host
         const host = HoloLiveShareHost.create();
         // Manually supplying a started timestamp provider because otherwise it would give an error that the provider had not been started
-        const tsp = new HostTimestampProvider(host); tsp.start();
+        const tsp = new HostTimestampProvider(host); 
+        console.log("Starting timestamp provider");
+        tsp.start();
         // Create the LiveShareRuntime, which is needed for `LiveDataObject` instances to work
         const runtime = new LiveShareRuntime(host, tsp);
         // Inject the LiveShareRuntime dependency into the ContainerSchema
@@ -142,7 +142,7 @@ class ContainerManager {
      */
     async createContainer(name: string, description: string) {
         const { host, injectedSchema } = this.getSchema();
-        const { container, services } = await this.liveShare.client.createContainer(injectedSchema);
+        const { container, services } = await this.client.createContainer(injectedSchema);
         // host.setAudience(services.audience);
 
         const id = await container.attach();
@@ -165,10 +165,8 @@ class ContainerManager {
      */
     async getContainer(containerId: string) {
         const { host, injectedSchema } = this.getSchema();
-        const { container: c, services } = await this.liveShare.client.getContainer(containerId, injectedSchema);
+        const { container: c, services } = await this.client.getContainer(containerId, injectedSchema);
         host.setAudience(services.audience);
-        
-        await c.connect();
         
         return { container: c, services, host };
     }

@@ -5,7 +5,7 @@ import Container from "../../containers/Container";
 export interface ContainerPreviewProps {
     container: Container | undefined;
     canOpen: boolean;
-    open: (container: Container) => void;
+    open: (containerId: string) => void;
     create: (name: string, desc: string) => void;
 }
 
@@ -28,7 +28,7 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
             <div>
                 {container && <p>{container.name}</p>}
                 {container && <p>{container.description}</p>}
-                {container && canOpen && <button onClick={() => open(container)}>Open</button>}
+                {container && canOpen && <button onClick={() => open(container.id)}>Open</button>}
                 {!container && <button onClick={() => {create('Name', 'Desc')}}>+</button>}
             </div>
         );
