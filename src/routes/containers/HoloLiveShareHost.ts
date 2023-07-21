@@ -8,7 +8,7 @@ class HoloLiveShareHost {
     private constructor() {}
 
     public static create(retries: number = 3, retryDelay: number = 1 * 1000): AzureLiveShareHost {
-        const lsh = AzureLiveShareHost.create() as AzureLiveShareHost;
+        const lsh = AzureLiveShareHost.create();
 
         const fetchRetry = require('fetch-retry')(global.fetch, { retries, retryDelay }) as typeof global.fetch;
 

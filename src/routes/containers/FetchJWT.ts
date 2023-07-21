@@ -18,7 +18,7 @@ class FetchJWT {
     private expired(token: string): boolean {
         return true; // Disable caching for now
         // Check if the token is expired or not
-        const decoded = jose.decodeJwt(token) as jose.JWTPayload;
+        const decoded = jose.decodeJwt(token);
         const now = Math.floor(Date.now() / 1000);
         const exp = decoded.exp as number;
         return now >= exp;
