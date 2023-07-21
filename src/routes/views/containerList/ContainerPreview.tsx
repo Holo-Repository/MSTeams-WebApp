@@ -1,14 +1,18 @@
 import React from "react";
 
-import Container from "../../containers/Container";
+import ContainerMap from "../../containers/ContainerMap";
+
 
 export interface ContainerPreviewProps {
-    container: Container | undefined;
+    container: ContainerMap | undefined;
     canOpen: boolean;
     open: (containerId: string) => void;
     create: (name: string, desc: string) => void;
 }
 
+/**
+ * A preview of a fluid container.
+ */
 class ContainerPreview extends React.Component<ContainerPreviewProps> {
     static defaultProps = {
         container: undefined,
@@ -20,15 +24,15 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
     render() {
         const { container, create, open, canOpen } = this.props;
 
-        if (create === undefined && container === undefined) {
+        if (create === undefined && container === undefined)
             throw new Error("ContainerPreview: Either container or create must be defined.");
-        }
 
         return (
             <div>
                 {container && <p>{container.name}</p>}
                 {container && <p>{container.description}</p>}
                 {container && canOpen && <button onClick={() => open(container.id)}>Open</button>}
+                {/* TODO: Add a form so that the button gets the name and desc of the new container from the user */}
                 {!container && <button onClick={() => {create('Name', 'Desc')}}>+</button>}
             </div>
         );

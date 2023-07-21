@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Content from '../content/Content';
+import ContainerList from '../containerList/ContainerList';
 import ContainerManager from '../../containers/ContainerManager';
 import AppContainer from '../../containers/AppContainer';
 import { IValueChanged, SharedMap } from 'fluid-framework';
@@ -26,7 +26,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
 
     appState = undefined as SharedMap | undefined; // Global app state
     newContainerEvent = undefined as LiveEvent | undefined; // Event that triggers when a new container is created
-    contentRef = React.createRef<Content>();
+    contentRef = React.createRef<ContainerList>();
 
     constructor(props: CommonSidePanelMeetingStageProps) {
         super(props);
@@ -82,7 +82,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
      * @param description The description of the container.
      * @throws Error if the container cannot be created in the current location.
      */
-    async createContainer(name: string, description: string) {
+    async createContainer(name: string, description: string): Promise<void> {
         await this.props.containerManager.createContainer(name, description);
         // Signal to other clients that a new container has been created
         this.newContainerEvent?.send('received');

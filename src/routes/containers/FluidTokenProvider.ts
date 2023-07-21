@@ -4,6 +4,10 @@ import { ITokenProvider, ITokenResponse } from "@fluidframework/routerlicious-dr
 import FetchJWT from "./FetchJWT";
 
 
+/**
+ * Handle the retrieval of the JWT needed to authenticate with the Azure Fluid Relay.
+ * A basic implementation of the ITokenProvider interface.
+ */
 class FluidTokenProvider implements ITokenProvider {
     private readonly fetchJWT: FetchJWT;
 
@@ -54,12 +58,14 @@ class FluidTokenProvider implements ITokenProvider {
             additionalDetails: this.user?.additionalDetails,
         };
 
+        // Construct the request URL
         const reqQuery = Object.entries(reqQueryParams)
             .filter(([, value]) => value !== undefined)
             .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
             .join("&");
-
         const reqURL = `${this.tokenFunURL}?${reqQuery}`;
+
+        // Fetch the token
         const res = await this.fetchJWT.fetch(reqURL, {
             method: "GET",
             headers: {
@@ -68,7 +74,6 @@ class FluidTokenProvider implements ITokenProvider {
         });
 
         if (!res.ok) throw new Error(`Error fetching token: ${res.status} ${res.statusText}`);
-
         return { jwt: await res.text() };
     }
 }

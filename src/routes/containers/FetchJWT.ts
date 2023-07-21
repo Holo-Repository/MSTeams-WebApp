@@ -1,5 +1,10 @@
 import * as jose from 'jose'
 
+
+/**
+ * This class abstracts the complexity of fetching a JWT token.
+ * It handles automatic retries and caching.
+ */
 class FetchJWT {
     private readonly fetchRetry: typeof global.fetch;
 
@@ -11,7 +16,7 @@ class FetchJWT {
     }
 
     private expired(token: string): boolean {
-        return true;
+        return true; // Disable caching for now
         // Check if the token is expired or not
         const decoded = jose.decodeJwt(token) as jose.JWTPayload;
         const now = Math.floor(Date.now() / 1000);
@@ -39,7 +44,6 @@ class FetchJWT {
         
         // If the token is valid, update the cache
         if (response.ok) cache!.put(url, response.clone());
-
         return response;
     }
 }

@@ -14,10 +14,17 @@ import {
 import { LiveCanvas } from "@microsoft/live-share-canvas";
 
 import getTableClient from "./TableClient";
-import Container from "./Container";
+import ContainerMap from "./ContainerMap";
 import FluidTokenProvider from "./FluidTokenProvider";
 import HoloLiveShareHost from "./HoloLiveShareHost";
 
+
+/**
+ * This class provides a connection to the Azure Fluid Relay and the Table Storage where the
+ * mapping between location IDs and Fluid container IDs is stored.
+ * 
+ * It abstracts the complexity of creating, connecting and managing the Fluid containers.
+ */
 class ContainerManager {
     locationId: string;
     private tableClient: TableClient;
@@ -25,11 +32,12 @@ class ContainerManager {
 
     constructor(locationId?: string, user?: any) {
         if (!locationId || locationId === "") throw new Error("Location ID is required");
-
         this.locationId = locationId;
+
+        // Connect to the table storage
         this.tableClient = getTableClient();
 
-        // Define a custom connection
+        // Define a custom connection to the Azure Fluid Relay
         const options: AzureClientProps = {
             connection: {
                 tenantId: 'a04ee05a-7649-44cc-a6ab-39a91f793bb8',
@@ -38,7 +46,6 @@ class ContainerManager {
                 type: 'remote'
             }
         };
-        
         this.client = new AzureClient(options) // Initialize AzureClient instance
     }
 
@@ -51,7 +58,7 @@ class ContainerManager {
      * @returns Promise<any> The entity
      * @private
      */
-    private getEntity(attempts = 3): Promise<any> {
+    private getEntity(attempts: number = 3): Promise<any> {
         return this.tableClient.getEntity(this.locationId, this.locationId)
             .then((entity) => entity)
             .catch((err) => {
@@ -91,7 +98,7 @@ class ContainerManager {
      * @returns Promise<Container[]> The list of containers
      */
     async listContainers() {
-        return JSON.parse((await this.getEntity()).containers as string) as Container[]
+        return JSON.parse((await this.getEntity()).containers as string) as ContainerMap[]
     }
     
     /**
@@ -99,7 +106,7 @@ class ContainerManager {
      * 
      * @param container The container to append
      */
-    async appendContainerId(container: Container) {
+    async appendContainerId(container: ContainerMap) {
         const entity = await this.getEntity();
         entity.containers = JSON.stringify([...JSON.parse(entity.containers as string), container]);
         return this.tableClient.updateEntity(entity, 'Replace');
@@ -146,7 +153,7 @@ class ContainerManager {
         const id = await container.attach();
         // await this.appendContainerId({ id, name, description, locationId: this.locationId } as Container);
         const now = new Date().toISOString();
-        await this.appendContainerId({ id, name:id, description:now, locationId: this.locationId } as Container);
+        await this.appendContainerId({ id, name:id, description:now, locationId: this.locationId } as ContainerMap);
 
         // Detach container
         container.disconnect();

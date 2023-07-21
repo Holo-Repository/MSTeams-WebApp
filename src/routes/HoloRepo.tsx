@@ -5,10 +5,10 @@ import SidePanel from "./views/sidePanel/SidePanel";
 import MeetingStage from "./views/meetingStage/MeetingStage";
 import ContainerManager from "./containers/ContainerManager";
 
+
 /**
  * The HoloRepo component.
  * This component is responsible for rendering the correct view based on the context.
- * It is the main component of the app and holds all the reactive logic.
  * 
  * The view is determined by the context.page.frameContext value served by the Teams SDK.
  */
@@ -26,6 +26,7 @@ class HoloRepo extends React.Component {
         const context = await app.getContext();
         const view = context.page.frameContext;
         
+        // Connect to the container manager
         const locationID = (context.channel ?? context.chat)?.id;
         const user = { userId: context.user?.id, userName: context.user?.userPrincipalName };
         this.containerManager = new ContainerManager(locationID, user);

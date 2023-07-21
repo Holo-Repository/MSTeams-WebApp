@@ -20,17 +20,13 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         inkingManager: undefined,
     }
 
-    canvas: React.RefObject<HTMLDivElement>;
-
-    constructor(props: SharedCanvasProps) {
-        super(props);
-        this.canvas = React.createRef<HTMLDivElement>();
-    }
+    canvas = React.createRef<HTMLDivElement>();
 
     /**
      * Initializes the Fluid container and the inking manager once the component is mounted.
      */
     async componentDidMount() {
+        // Connect to the active Fluid container
         const { container } = await this.props.containerManager.getContainer(this.props.container);
         const liveCanvas = container.initialObjects.liveCanvas as LiveCanvas;
 
@@ -39,7 +35,6 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         
         // Begin synchronization for LiveCanvas
         await liveCanvas.initialize(inkingManager);
-        
         inkingManager.activate();
         this.setState({ inkingManager });
     }

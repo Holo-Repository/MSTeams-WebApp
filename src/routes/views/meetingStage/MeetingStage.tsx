@@ -1,16 +1,19 @@
 import CommonSidePanelMeetingStage, { CommonSidePanelMeetingStageProps } from "../utils/CommonSidePanelMeetingStage";
-import Content from '../content/Content';
+import ContainerList from '../containerList/ContainerList';
 import SharedCanvas from "../canvas/SharedCanvas";
 
 
 export type MeetingStageProps = CommonSidePanelMeetingStageProps;
 
+/**
+ * The meeting stage view.
+ */
 class MeetingStage extends CommonSidePanelMeetingStage {
     render() {
         if (this.state.mounting) return <div>Loading...</div>;
 
         if (!this.state.activeContainerId)
-            return <Content ref={this.contentRef}
+            return <ContainerList ref={this.contentRef}
                 containerManager={this.props.containerManager} 
                 canOpen={true} 
                 canCreate={true} 

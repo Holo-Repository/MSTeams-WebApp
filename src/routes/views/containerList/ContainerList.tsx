@@ -1,40 +1,36 @@
 import React from "react";
 
-import Container from "../../containers/Container";
+import ContainerMap from "../../containers/ContainerMap";
 import ContainerPreview from "./ContainerPreview";
 import ContainerManager from "../../containers/ContainerManager";
 
-export interface ContentProps {
+
+export interface ContainerListProps {
     containerManager: ContainerManager;
     canOpen: boolean;
     canCreate: boolean;
     openContainer: (containerId: string) => void;
-    createContainer: (name: string, desc: string) => void;
+    createContainer: (name: string, desc: string) => Promise<void>;
 }
 
-class Content extends React.Component<ContentProps> {
+/**
+ * A list of fluid containers.
+ */
+class ContainerList extends React.Component<ContainerListProps> {
     state = {
-        containers: [] as Container[],
+        containers: [] as ContainerMap[],
     };
 
-    constructor(props: ContentProps) {
+    constructor(props: ContainerListProps) {
         super(props);
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.createContainer = this.createContainer.bind(this);
     }
 
     async componentDidMount() {
+        // Get the list of containers for the current location from the Table Storage
         const containers = await this.props.containerManager.listContainers();
         this.setState({ containers });
     }
-    
-    async createContainer(name: string, desc: string) {
-        console.log('createContainer', name, desc);
-        await this.props.createContainer(name, desc);
-        console.log('createContainer', 'done');
-        // this.setState({ containers: await this.props.containerManager.listContainers() });
-    }
-
 
     render() {
         return (
@@ -53,4 +49,4 @@ class Content extends React.Component<ContentProps> {
     }
 }
 
-export default Content;
+export default ContainerList;
