@@ -16,7 +16,7 @@ class SizePicker extends React.Component<{defaultSize: number, setSize: (size: n
         selectedSize: this.props.defaultSize,
     };
 
-    setColor(size: number) {
+    setSize(size: number) {
         this.setState({ selectedSize: size });
         this.props.setSize(size);
     }
@@ -27,7 +27,7 @@ class SizePicker extends React.Component<{defaultSize: number, setSize: (size: n
                 <Button
                     className={this.state.selectedSize === size ? 'picker-selected' : 'picker-unselected'}
                     key={size}
-                    onClick={() => this.props.setSize(size)}
+                    onClick={() => this.setSize(size)}
                 >{size}</Button>
             )}
         </div>;

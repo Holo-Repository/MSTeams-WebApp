@@ -67,7 +67,7 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager, disp
         this.props.inkingManager.tool = tool;
         
         let doubleClicked = this.isSelected(tool) ? !this.state.doubleClicked : false;
-
+        
         this.setState({ 
             selectedTool: tool, 
             doubleClicked: doubleClicked,
@@ -86,7 +86,7 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager, disp
      */
     ext(callback: (inkingManager: InkingManager) => void = () => {}) {
         callback(this.props.inkingManager);
-        this.setState({ doubleClicked: false });
+        // this.setState({ doubleClicked: false });
     }
 
 
@@ -104,7 +104,7 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager, disp
         return (
             <div className='tool-second-level' style={{display: this.props.display}}>
                 {/* <FluentProvider theme={webLightTheme}> */}
-                <Toolbar>
+                <Toolbar className='popover'>
                     <Pen {...toolProps} icon={ <img src={require("../../../assets/ink-pen.png")} alt="Icon" />}/>
                     <Highlighter {...toolProps} icon={ <img src={require("../../../assets/highlighter.png")} alt="Icon" />} />
                     <Eraser {...toolProps} />

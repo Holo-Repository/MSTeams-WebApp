@@ -4,6 +4,8 @@ import { InkingTool, fromCssColor } from "@microsoft/live-share-canvas";
 import Tool, { ToolProps } from "./Tool";
 import ColorPicker from "./ColorPicker";
 import SizePicker from "./SizePicker";
+import MyColorPicker from "./MyColorPicker";
+import MySizePicker from "./MySizePicker";
 
 /**
  * The highlighter component.
@@ -60,9 +62,11 @@ class Highlighter extends Tool {
 
         return (
             <Tool {...this.props}>
-                <div className="popover">
+                <div>
                     {isDoubleClick && <ColorPicker defaultColor={this.state.color} setColor={this.setColor} />}
                     {isDoubleClick && <SizePicker defaultSize={this.state.size} setSize={this.setSize} />}
+                    {/* {isDoubleClick && <MyColorPicker defaultColor = {this.state.color} setColor={this.setColor}></MyColorPicker>}
+                    {isDoubleClick && <MySizePicker defaultSize = {this.state.size} setSize={this.setSize} />} */}
                 </div>
             </Tool>  
         );

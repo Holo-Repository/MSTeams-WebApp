@@ -4,6 +4,9 @@ import { IColor, InkingManager, InkingTool, fromCssColor } from "@microsoft/live
 import Tool, { ToolProps } from "./Tool";
 import ColorPicker from "./ColorPicker";
 import SizePicker from "./SizePicker";
+import MyColorPicker from "./MyColorPicker";
+import MySizePicker from "./MySizePicker";
+import { Slider } from "@fluentui/react-components";
 
 /**
  * The pen component.
@@ -20,7 +23,7 @@ class Pen extends Tool {
 
     state = {
         color: "#FF0000",
-        size: 5
+        size: 5,
     }
 
     constructor(props: ToolProps) {
@@ -37,7 +40,7 @@ class Pen extends Tool {
      * @param color The color of the pen.
      */
     setColor(color: string) {
-        this.state.color = color;
+        this.setState({color: color});
         this.props.ext(inkingManager => {
             inkingManager.penBrush.color = fromCssColor(color);
         });
@@ -49,7 +52,7 @@ class Pen extends Tool {
      * @param size The size of the pen.
      */
     setSize(size: number) {
-        this.state.size = size;
+        this.setState({size: size})
         this.props.ext(inkingManager => {
             inkingManager.penBrush.tipSize = size;
         });
@@ -60,9 +63,11 @@ class Pen extends Tool {
 
         return (
             <Tool {...this.props}>
-                <div className="popover">
-                    {isDoubleClick && <ColorPicker defaultColor = {this.state.color} setColor={this.setColor} />}
-                    {isDoubleClick && <SizePicker defaultSize = {this.state.size} setSize={this.setSize} />}
+                <div className="tool-third-level-2">
+                    {/* {isDoubleClick && <ColorPicker defaultColor = {this.state.color} setColor={this.setColor} />} */}
+                    {/* {isDoubleClick && <SizePicker defaultSize = {this.state.size} setSize={this.setSize} />} */}
+                    {isDoubleClick && <MyColorPicker defaultColor = {this.state.color} setColor={this.setColor}></MyColorPicker>}
+                    {isDoubleClick && <MySizePicker defaultSize = {this.state.size} setSize={this.setSize} />}
                 </div>
             </Tool>
         );

@@ -27,7 +27,7 @@ class Tool extends React.Component<ToolProps> {
         const { children, icon, tool, isSelected, selectTool } = this.props;
 
         return (
-            <div id="tool">
+            <div id="tool" className="popover">
                 <Button id="drawing-button"
                     appearance={isSelected(tool) ? "primary" : "subtle"}
                     onClick={() => selectTool(tool)}

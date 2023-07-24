@@ -1,79 +1,51 @@
 import * as React from 'react';
 import {
   ColorPicker,
-  IChoiceGroupOption,
   getColorFromString,
   IColor,
   IColorPickerStyles,
-  IColorPickerProps,
-  updateA,
-  mergeStyleSets,
 } from '@fluentui/react';
 
 const white = getColorFromString('#ffffff')!;
-const alphaOptions: IChoiceGroupOption[] = [
-  { key: 'alpha', text: 'Alpha' },
-  { key: 'transparency', text: 'Transparency' },
-  { key: 'none', text: 'None' },
-];
-
-const classNames = mergeStyleSets({
-  wrapper: { display: 'flex' },
-  column2: { marginLeft: 10 },
-});
 
 const colorPickerStyles: Partial<IColorPickerStyles> = {
-  panel: { padding: 12 },
+  panel: { padding: '10px 15px 0px 15px'},
   root: {
-    maxWidth: 352,
-    minWidth: 352,
+    minWidth: 200,
+    width: 230,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)'
   },
-  colorRectangle: { height: 268 },
+  colorRectangle: { minHeight: 160, minWidth: 200},
+  table: {display: 'none'},
+  colorSquare: {height: 20, width: 25, marginLeft: 10}
 };
 
 export interface MyColorPickerProps {
   color: IColor;
-  showPreview: boolean;
-  alphaType: IColorPickerProps['alphaType'];
 }
 
-class MyColorPicker extends React.Component<{}, MyColorPickerProps> {
+class MyColorPicker extends React.Component<{defaultColor: string, setColor: (color: string) => void}, MyColorPickerProps> {
   state = {
-    color: white,
+    color: getColorFromString(this.props.defaultColor)!,
     showPreview: true,
-    alphaType: 'alpha' as IColorPickerProps['alphaType'],
   };
 
   updateColor = (ev: any, colorObj: IColor) => {
     this.setState({ color: colorObj });
-  };
-
-  onShowPreviewClick = (ev: any, checked?: boolean) => {
-    this.setState({ showPreview: !!checked });
-  };
-
-  onAlphaTypeChange = (ev: any, option: IChoiceGroupOption = alphaOptions[0]) => {
-    if (option.key === 'none') {
-      // If hiding the alpha slider, remove transparency from the color
-      this.setState((state) => ({ color: updateA(state.color, 100) }));
-    }
-    this.setState({ alphaType: option.key as IColorPickerProps['alphaType'] });
+    this.props.setColor(colorObj.str);
   };
 
   render() {
-    const { color, showPreview, alphaType } = this.state;
+    const { color } = this.state;
 
     return (
-      <div className={classNames.wrapper}>
+      <div>
         <ColorPicker
           color={color}
           onChange={this.updateColor}
-          alphaType={alphaType}
-          showPreview={showPreview}
+          alphaType={"none"}
+          showPreview={true}
           styles={colorPickerStyles}
-          strings={{
-            hueAriaLabel: 'Hue',
-          }}
         />
       </div>
     );
