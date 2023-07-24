@@ -89,7 +89,6 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
     }
 
     render(): React.ReactNode {
-        const { selectedTool, doubleClicked } = this.state;
         let toolProps = {
             isSelected: this.isSelected,
             isDoubleClicked: this.isDoubleClicked,
