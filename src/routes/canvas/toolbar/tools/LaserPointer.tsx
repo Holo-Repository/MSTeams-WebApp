@@ -1,6 +1,10 @@
 import { InkingTool } from "@microsoft/live-share-canvas";
-
 import Tool from "./Tool";
+
+/**
+ * Path of the image of icon
+ */
+const imgPath = require('../../../../assets/laser.png');
 
 /**
  * The laser pointer component.
@@ -17,7 +21,7 @@ class LaserPointer extends Tool {
     render(): React.ReactNode {
 
         return (
-            <Tool {...this.props}>
+            <Tool {...this.props} icon={ <img src={imgPath} alt="Icon" />}>
             </Tool>
         );
     }

@@ -4,7 +4,13 @@ import { Button } from "@fluentui/react-components";
 import { Eraser24Regular, EraserSegment24Regular} from "@fluentui/react-icons"
 
 import Tool, { ToolProps } from "./Tool";
-import MySizePicker from "./MySizePicker";
+import SizeSelector from "./SizeSelector";
+import EraserButton from "./EraserButton";
+
+/**
+ * Path of the image of icon
+ */
+const imgPath = require("../../../../assets/eraser.png");
 
 /**
  * Properties for the standard eraser component.
@@ -36,7 +42,7 @@ const pointEraserProps = {
 class Eraser extends Tool {
     static defaultProps = eraserProps;
     state = {
-        size: 5,
+        size: 10,
         isPointEraser: false
     }
 
@@ -77,26 +83,16 @@ class Eraser extends Tool {
         const eraser = this.state.isPointEraser ? pointEraserProps : eraserProps;
 
         return (
-            <Tool {...this.props} icon={<img src={require("../../../../assets/eraser.png")} alt="Icon" />} tool={eraser.tool}>
+            <Tool {...this.props} icon={<img src={imgPath} alt="Icon" />} tool={eraser.tool}>
                 <div className="tool-third-level">
                     {/* Draw the button to select the other eraser */}
                     {isDoubleClick &&
                         <div>
-                            <Button onClick={() => this.setEraser(false)}
-                                id="eraser-button"
-                                className={!this.state.isPointEraser ? 'picker-selected' : 'picker-unselected'}
-                            >
-                                {eraserProps.icon}
-                            </Button>
-                            <Button onClick={() => this.setEraser(true)}
-                                id="eraser-button"
-                                className={this.state.isPointEraser ? 'picker-selected' : 'picker-unselected'}
-                            >
-                                {pointEraserProps.icon}
-                            </Button>
+                            <EraserButton isPointEraser={false} active={!this.state.isPointEraser} setEraser={this.setEraser} icon={eraserProps.icon}/>
+                            <EraserButton isPointEraser={true} active={this.state.isPointEraser} setEraser={this.setEraser} icon={pointEraserProps.icon} />
                         </div>
                     }
-                    {isDoubleClick && <MySizePicker defaultSize = {this.state.size} setSize={this.setSize} />}
+                    {isDoubleClick && <SizeSelector defaultSize = {this.state.size} setSize={this.setSize} />}
                 </div>
             </Tool>
         );

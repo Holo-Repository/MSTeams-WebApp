@@ -3,7 +3,12 @@ import { InkingTool, fromCssColor } from "@microsoft/live-share-canvas";
 
 import Tool, { ToolProps } from "./Tool";
 import ColorPicker from "./MyColorPicker";
-import MySizePicker from "./MySizePicker";
+import SizeSelector from "./SizeSelector";
+
+/**
+ * Path of the image of icon
+ */
+const imgPath = require('../../../../assets/highlighter.png');
 
 /**
  * The highlighter component.
@@ -59,10 +64,10 @@ class Highlighter extends Tool {
         const isDoubleClick = this.props.isDoubleClicked(this.props.tool);
 
         return (
-            <Tool {...this.props}>
+            <Tool {...this.props} icon={ <img src={imgPath} alt="Icon" />}>
                 <div className="tool-third-level">
                     {isDoubleClick && <ColorPicker defaultColor = {this.state.color} setColor={this.setColor}></ColorPicker>}
-                    {isDoubleClick && <MySizePicker defaultSize = {this.state.size} setSize={this.setSize} />}
+                    {isDoubleClick && <SizeSelector defaultSize = {this.state.size} setSize={this.setSize} />}
                 </div>
             </Tool>  
         );

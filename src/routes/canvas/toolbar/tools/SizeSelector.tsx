@@ -22,7 +22,7 @@ const sizePickerStyles: Partial<ISliderStyles> = {
  * This component uses Fluent UI's Slider to allow the user to pick a size between a defined minimum and maximum.
  * The picked size is then passed up to the parent component through the setSize prop.
  */
-class MySizePicker extends React.Component<{defaultSize: number, setSize: (size: number) => void}> {
+class SizeSelector extends React.Component<{defaultSize: number, setSize: (size: number) => void}> {
 
     /**
      * The state of the component, which includes the currently selected size.
@@ -58,4 +58,4 @@ class MySizePicker extends React.Component<{defaultSize: number, setSize: (size:
 
 }
 
-export default MySizePicker;
+export default SizeSelector;
