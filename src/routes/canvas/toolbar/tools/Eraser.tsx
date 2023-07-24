@@ -1,10 +1,9 @@
 import React from "react";
 import { InkingTool } from "@microsoft/live-share-canvas";
-import { Button, ToggleButton, Toolbar, ToolbarRadioButton, ToolbarRadioGroup } from "@fluentui/react-components";
+import { Button } from "@fluentui/react-components";
 import { Eraser24Regular, EraserSegment24Regular} from "@fluentui/react-icons"
 
 import Tool, { ToolProps } from "./Tool";
-import SizePicker from "./SizePicker";
 import MySizePicker from "./MySizePicker";
 
 /**
@@ -79,7 +78,7 @@ class Eraser extends Tool {
 
         return (
             <Tool {...this.props} icon={<img src={require("../../../../assets/eraser.png")} alt="Icon" />} tool={eraser.tool}>
-                <div className="tool-third-level-2">
+                <div className="tool-third-level">
                     {/* Draw the button to select the other eraser */}
                     {isDoubleClick &&
                         <div>
@@ -97,7 +96,6 @@ class Eraser extends Tool {
                             </Button>
                         </div>
                     }
-                    {/* {isDoubleClick && <SizePicker defaultSize={this.state.size} setSize={this.setSize} />} */}
                     {isDoubleClick && <MySizePicker defaultSize = {this.state.size} setSize={this.setSize} />}
                 </div>
             </Tool>

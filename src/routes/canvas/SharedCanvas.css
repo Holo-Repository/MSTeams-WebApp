@@ -48,18 +48,6 @@
 
 .tool-third-level {
   position: absolute;
-  margin: 0px 0px;
-  bottom: 100%;
-  left: 50%;
-  padding: 0px 0px;
-  border-radius: 5px;
-  box-shadow: 1px 1px 2px 1px rgba(181, 181, 181, 0.669);
-  z-index: 2;
-  color: black;
-}
-
-.tool-third-level-2 {
-  position: absolute;
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-2vh);
@@ -69,48 +57,19 @@
   color: black;
 }
 
-#eraser-picker {
-  padding: 0px 0px;
-  transform: translateX(-100%) translateY(-2vh);
-}
-
-#color-picker {
-  padding: 0px 0px;
-  transform: translateX(-100%) translateY(-2vh);
-}
-
-#color-picker-2 {
-  padding: 0px 0px;
-  transform: translateX(-50%);
-}
-
-#size-picker {
-  padding: 0px 0px;
-  transform: translateY(-2vh);
-}
-
-#size-picker-2 {
-  padding: 0px 0px;
-  transform: translateX(-50%) translateY(-7vh);
-}
-
 #eraser-button {
   min-width: 90px;
   height: 26px;
-  margin: 10px 5px 5px 13px;
+  margin: 10px 3px 5px 13px;
   border-radius: 15px;
   background-color: rgba(231, 230, 237, 0.9);
 }
 
-.tool-third-level-2 .picker-selected{
-  /* width: 105px;
-  margin: 10px 0px 5px 13px; */
+.tool-third-level .picker-selected{
   border: 2px solid #5155b6;
 }
 
-.tool-third-level-2 .picker-unselected{
-  /* width: 105px;
-  margin: 10px 0px 5px 13px; */
+.tool-third-level .picker-unselected{
   border: none;
 }
 

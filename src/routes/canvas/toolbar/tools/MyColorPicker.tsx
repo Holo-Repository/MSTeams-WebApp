@@ -6,8 +6,9 @@ import {
   IColorPickerStyles,
 } from '@fluentui/react';
 
-const white = getColorFromString('#ffffff')!;
-
+/**
+ * Styles for the ColorPicker component from Fluent UI.
+ */
 const colorPickerStyles: Partial<IColorPickerStyles> = {
   panel: { padding: '10px 15px 0px 15px'},
   root: {
@@ -20,16 +21,33 @@ const colorPickerStyles: Partial<IColorPickerStyles> = {
   colorSquare: {height: 20, width: 25, marginLeft: 10}
 };
 
+/**
+ * Props for the MyColorPicker component.
+ */
 export interface MyColorPickerProps {
   color: IColor;
 }
 
+/**
+ * A custom color picker component.
+ * This component uses Fluent UI's ColorPicker to allow the user to pick a color.
+ * The picked color is then passed up to the parent component through the setColor prop.
+ */
 class MyColorPicker extends React.Component<{defaultColor: string, setColor: (color: string) => void}, MyColorPickerProps> {
+  /**
+   * The state of the component, which includes the currently selected color.
+   */
   state = {
     color: getColorFromString(this.props.defaultColor)!,
     showPreview: true,
   };
 
+  /**
+   * A helper function to update the color both in the component's state and in the parent component.
+   * 
+   * @param ev The event that triggers the update.
+   * @param colorObj The new color.
+   */
   updateColor = (ev: any, colorObj: IColor) => {
     this.setState({ color: colorObj });
     this.props.setColor(colorObj.str);

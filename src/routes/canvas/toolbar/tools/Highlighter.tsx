@@ -2,9 +2,7 @@ import React from "react";
 import { InkingTool, fromCssColor } from "@microsoft/live-share-canvas";
 
 import Tool, { ToolProps } from "./Tool";
-import ColorPicker from "./ColorPicker";
-import SizePicker from "./SizePicker";
-import MyColorPicker from "./MyColorPicker";
+import ColorPicker from "./MyColorPicker";
 import MySizePicker from "./MySizePicker";
 
 /**
@@ -62,11 +60,9 @@ class Highlighter extends Tool {
 
         return (
             <Tool {...this.props}>
-                <div>
-                    {isDoubleClick && <ColorPicker defaultColor={this.state.color} setColor={this.setColor} />}
-                    {isDoubleClick && <SizePicker defaultSize={this.state.size} setSize={this.setSize} />}
-                    {/* {isDoubleClick && <MyColorPicker defaultColor = {this.state.color} setColor={this.setColor}></MyColorPicker>}
-                    {isDoubleClick && <MySizePicker defaultSize = {this.state.size} setSize={this.setSize} />} */}
+                <div className="tool-third-level">
+                    {isDoubleClick && <ColorPicker defaultColor = {this.state.color} setColor={this.setColor}></ColorPicker>}
+                    {isDoubleClick && <MySizePicker defaultSize = {this.state.size} setSize={this.setSize} />}
                 </div>
             </Tool>  
         );
