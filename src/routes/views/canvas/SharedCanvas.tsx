@@ -1,38 +1,39 @@
 import React from "react";
-import { LiveShareClient } from "@microsoft/live-share";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
-import { LiveShareHost } from "@microsoft/teams-js";
-import { ContainerSchema } from "fluid-framework";
 import './SharedCanvas.css'; 
 import MyToolBar from "./toolbar/MyToolBar";
+
+import ContainerManager from "../../containers/ContainerManager";
+
+
+export interface SharedCanvasProps {
+    container: string;
+    containerManager: ContainerManager;
+}
 
 /**
  * The shared canvas component.
  * This component is responsible for setting up the Fluid container and the inking manager.
  * As well as rendering the drawing manager component in the newly created live canvas.
  */
-class SharedCanvas extends React.Component {
+class SharedCanvas extends React.Component<SharedCanvasProps> {
     state = {
         inkingManager: undefined,
         myVisibleTool: undefined,
     }
 
+    canvas = React.createRef<HTMLDivElement>();
+
     /**
      * Initializes the Fluid container and the inking manager once the component is mounted.
      */
     async componentDidMount() {
-        // This code is taken directly from the live canvas documentation
-
-        // Setup the Fluid container
-        const host = LiveShareHost.create();
-        const liveShare = new LiveShareClient(host);
-        const schema: ContainerSchema = {initialObjects: { liveCanvas: LiveCanvas }};
-        const { container } = await liveShare.joinContainer(schema);
+        // Connect to the active Fluid container
+        const { container } = await this.props.containerManager.getContainer(this.props.container);
         const liveCanvas = container.initialObjects.liveCanvas as LiveCanvas;
 
-        // Get the canvas host element
-        const canvasHostElement = document.getElementById("canvas-host");
-        const inkingManager = new InkingManager(canvasHostElement!);
+        if (!this.canvas.current) throw new Error("Canvas host not found");
+        const inkingManager = new InkingManager(this.canvas.current);
         
         // Begin synchronization for LiveCanvas
         await liveCanvas.initialize(inkingManager);
@@ -51,12 +52,12 @@ class SharedCanvas extends React.Component {
     }
     
     render(): React.ReactNode {
-        const { inkingManager: ink } = this.state;
+        const { inkingManager } = this.state;
 
         return (
             <div>   
-                <div id="canvas-host" onClick={this.setVisibleTool}></div>
-                <MyToolBar ink={ink}></MyToolBar>
+                <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool}></div>
+                <MyToolBar ink={inkingManager}></MyToolBar>
             </div>
         );
     }
