@@ -2,8 +2,13 @@ import React from "react";
 import { InkingTool, fromCssColor } from "@microsoft/live-share-canvas";
 
 import Tool, { ToolProps } from "./Tool";
-import ColorPicker from "./ColorPicker";
-import SizePicker from "./SizePicker";
+import ColorPicker from "./ColorSelector";
+import SizeSelector from "./SizeSelector";
+
+/**
+ * Path of the image of icon
+ */
+const imgPath = require('../../../../../assets/highlighter.png');
 
 /**
  * The highlighter component.
@@ -18,10 +23,17 @@ class Highlighter extends Tool {
         tool: InkingTool.highlighter
     }
 
+    state = {
+        color: "#FFFF00",
+        size: 10
+    }
+
     constructor(props: ToolProps) {
         super(props);
         this.setColor = this.setColor.bind(this);
         this.setSize = this.setSize.bind(this);
+        this.setColor(this.state.color);
+        this.setSize(this.state.size);
     }
 
     /**
@@ -30,6 +42,7 @@ class Highlighter extends Tool {
      * @param color The color of the highlighter.
      */
     setColor(color: string) {
+        this.state.color = color;
         this.props.ext(inkingManager => {
             inkingManager.highlighterBrush.color = fromCssColor(color);
         });
@@ -41,6 +54,7 @@ class Highlighter extends Tool {
      * @param size The size of the highlighter.
      */
     setSize(size: number) {
+        this.state.size = size;
         this.props.ext(inkingManager => {
             inkingManager.highlighterBrush.tipSize = size;
         });
@@ -50,10 +64,12 @@ class Highlighter extends Tool {
         const isDoubleClick = this.props.isDoubleClicked(this.props.tool);
 
         return (
-            <Tool {...this.props}>
-                {isDoubleClick && <ColorPicker setColor={this.setColor} />}
-                {isDoubleClick && <SizePicker setSize={this.setSize} />}
-            </Tool>
+            <Tool {...this.props} icon={ <img src={imgPath} alt={this.props.icon as string} />}>
+                <div className="tool-third-level">
+                    {isDoubleClick && <ColorPicker defaultColor = {this.state.color} setColor={this.setColor}></ColorPicker>}
+                    {isDoubleClick && <SizeSelector defaultSize = {this.state.size} setSize={this.setSize} />}
+                </div>
+            </Tool>  
         );
     }
 }

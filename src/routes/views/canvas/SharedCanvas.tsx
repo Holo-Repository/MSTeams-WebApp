@@ -1,7 +1,8 @@
 import React from "react";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
+import './SharedCanvas.css'; 
+import MyToolBar from "./toolbar/MyToolBar";
 
-import DrawingManager from "./DrawingManager";
 import ContainerManager from "../../containers/ContainerManager";
 
 
@@ -18,6 +19,7 @@ export interface SharedCanvasProps {
 class SharedCanvas extends React.Component<SharedCanvasProps> {
     state = {
         inkingManager: undefined,
+        myVisibleTool: undefined,
     }
 
     canvas = React.createRef<HTMLDivElement>();
@@ -35,19 +37,27 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         
         // Begin synchronization for LiveCanvas
         await liveCanvas.initialize(inkingManager);
-        inkingManager.activate();
-        this.setState({ inkingManager });
+        
+        this.setState({
+            inkingManager
+        });
+    }
+
+    setVisibleTool = (event: any) => {
+        this.setState({myVisibleTool: event.currentTarget.value})
+    }
+
+    getVisibleTool() {
+        return this.state.myVisibleTool;
     }
     
     render(): React.ReactNode {
         const { inkingManager } = this.state;
 
         return (
-            <div>
-                <div id="canvas-host" ref={this.canvas}
-                    style={{width: "100vw", height: "90vh", border: "1px solid black", backgroundColor: "white"}}
-                ></div>
-                {inkingManager && <DrawingManager inkingManager={inkingManager}/>}
+            <div>   
+                <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool}></div>
+                <MyToolBar ink={inkingManager}></MyToolBar>
             </div>
         );
     }
