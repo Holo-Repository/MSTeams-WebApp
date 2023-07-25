@@ -23,9 +23,6 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager, disp
         doubleClicked: false,
     }
 
-    // Create a ref for the top-level div of the component
-    drawingManagerRef = React.createRef<HTMLDivElement>();
-
     constructor(props: {inkingManager: InkingManager, display: string}) {
         super(props);
         this.isSelected = this.isSelected.bind(this);
