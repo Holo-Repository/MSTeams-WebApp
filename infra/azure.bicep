@@ -17,7 +17,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   }
 }
 
-resource symbolicname 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
+resource fluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
   name: 'Test-Fluid-Relay'
   location: location
   identity: {
@@ -38,66 +38,77 @@ resource plan 'Microsoft.Web/serverfarms@2020-12-01' = {
   properties: {}
 }
 
-resource symbolicname 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: 'string'
-  location: 'string'
-  tags: {
-    tagName1: 'tagValue1'
-    tagName2: 'tagValue2'
-  }
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+  name: 'test-Hc-Key-Vault'
+  location: location
   properties: {
     accessPolicies: [
       {
-        applicationId: 'string'
-        objectId: 'string'
+        tenantId: '1faf88fe-a998-4c5b-93c9-210a11d9a5c2'
+        objectId: '68441a01-70cb-4f0b-bfe2-87fa645be89c'
         permissions: {
           certificates: [
-            'string'
+            'Get'
+            'List'
+            'Update'
+            'Create'
+            'Import'
+            'Delete'
+            'Recover'
+            'Backup'
+            'Restore'
+            'ManageContacts'
+            'ManageIssuers'
+            'GetIssuers'
+            'ListIssuers'
+            'SetIssuers'
+            'DeleteIssuers'
+            'Purge'
           ]
           keys: [
-            'string'
+            'Get'
+            'List'
+            'Update'
+            'Create'
+            'Import'
+            'Delete'
+            'Recover'
+            'Backup'
+            'Restore'
+            'GetRotationPolicy'
+            'SetRotationPolicy'
+            'Rotate'
+            'Encrypt'
+            'Decrypt'
+            'UnwrapKey'
+            'WrapKey'
+            'Verify'
+            'Sign'
+            'Purge'
+            'Release'
           ]
           secrets: [
-            'string'
+            'Get'
+            'List'
+            'Set'
+            'Delete'
+            'Recover'
+            'Backup'
+            'Restore'
+            'Purge'
           ]
-          storage: [
-            'string'
-          ]
-        }
-        tenantId: 'string'
+        }       
       }
     ]
-    createMode: 'string'
-    enabledForDeployment: bool
-    enabledForDiskEncryption: bool
-    enabledForTemplateDeployment: bool
-    enablePurgeProtection: bool
-    enableRbacAuthorization: bool
-    enableSoftDelete: bool
-    networkAcls: {
-      bypass: 'string'
-      defaultAction: 'string'
-      ipRules: [
-        {
-          value: 'string'
-        }
-      ]
-      virtualNetworkRules: [
-        {
-          id: 'string'
-          ignoreMissingVnetServiceEndpoint: bool
-        }
-      ]
-    }
-    provisioningState: 'string'
-    publicNetworkAccess: 'string'
+    createMode: 'default'
+    enablePurgeProtection: true
+    enableSoftDelete: true
     sku: {
       family: 'A'
-      name: 'string'
+      name: 'standard'
     }
-    softDeleteRetentionInDays: int
-    tenantId: 'string'
-    vaultUri: 'string'
+    tenantId: '1faf88fe-a998-4c5b-93c9-210a11d9a5c2'
+    vaultUri: 'https://test-holocollab-key-valut.vault.azure.net/'
   }
 }
 
