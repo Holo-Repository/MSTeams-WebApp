@@ -1,14 +1,14 @@
 import React from "react";
-import { IColor, InkingManager, InkingTool, fromCssColor } from "@microsoft/live-share-canvas";
+import { InkingTool, fromCssColor } from "@microsoft/live-share-canvas";
 
 import Tool, { ToolProps } from "./Tool";
-import MyColorPicker from "./MyColorPicker";
+import ColorSelector from "./ColorSelector";
 import SizeSelector from "./SizeSelector";
 
 /**
  * Path of the image of icon
  */
-const imgPath = require("../../../../assets/ink-pen.png");
+const imgPath = require("../../../../../assets/ink-pen.png");
 
 /**
  * The pen component.
@@ -64,9 +64,9 @@ class Pen extends Tool {
         const isDoubleClick = this.props.isDoubleClicked(this.props.tool);
 
         return (
-            <Tool {...this.props} icon={ <img src={imgPath} alt="Icon" />}>
+            <Tool {...this.props} icon={ <img src={imgPath} alt={this.props.icon as string} />}>
                 <div className="tool-third-level">
-                    {isDoubleClick && <MyColorPicker defaultColor = {this.state.color} setColor={this.setColor}></MyColorPicker>}
+                    {isDoubleClick && <ColorSelector defaultColor = {this.state.color} setColor={this.setColor}></ColorSelector>}
                     {isDoubleClick && <SizeSelector defaultSize = {this.state.size} setSize={this.setSize} />}
                 </div>
             </Tool>

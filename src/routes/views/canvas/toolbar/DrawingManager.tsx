@@ -1,5 +1,5 @@
 import React from 'react';
-import { IPointerMoveEvent, IPointerMovedEventArgs, InkingManager, InkingTool } from "@microsoft/live-share-canvas";
+import { InkingManager, InkingTool } from "@microsoft/live-share-canvas";
 import {Toolbar} from "@fluentui/react-components";
 
 import Pen from "./tools/Pen";

@@ -1,6 +1,5 @@
 import React from "react";
 import { InkingTool } from "@microsoft/live-share-canvas";
-import { Button } from "@fluentui/react-components";
 import { Eraser24Regular, EraserSegment24Regular} from "@fluentui/react-icons"
 
 import Tool, { ToolProps } from "./Tool";
@@ -10,7 +9,7 @@ import EraserButton from "./EraserButton";
 /**
  * Path of the image of icon
  */
-const imgPath = require("../../../../assets/eraser.png");
+const imgPath = require("../../../../../assets/eraser.png");
 
 /**
  * Properties for the standard eraser component.
@@ -83,7 +82,7 @@ class Eraser extends Tool {
         const eraser = this.state.isPointEraser ? pointEraserProps : eraserProps;
 
         return (
-            <Tool {...this.props} icon={<img src={imgPath} alt="Icon" />} tool={eraser.tool}>
+            <Tool {...this.props} icon={<img src={imgPath} alt="Eraser" />} tool={eraser.tool}>
                 <div className="tool-third-level">
                     {/* Draw the button to select the other eraser */}
                     {isDoubleClick &&

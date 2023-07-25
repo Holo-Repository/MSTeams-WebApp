@@ -24,7 +24,7 @@ const colorPickerStyles: Partial<IColorPickerStyles> = {
 /**
  * Props for the MyColorPicker component.
  */
-export interface MyColorPickerProps {
+export interface ColorSelectorProps {
   defaultColor: string,
   setColor: (color: string) => void,
 }
@@ -34,7 +34,7 @@ export interface MyColorPickerProps {
  * This component uses Fluent UI's ColorPicker to allow the user to pick a color.
  * The picked color is then passed up to the parent component through the setColor prop.
  */
-class MyColorPicker extends React.Component<MyColorPickerProps> {
+class ColorSelector extends React.Component<ColorSelectorProps> {
   /**
    * The state of the component, which includes the currently selected color.
    */
@@ -71,4 +71,4 @@ class MyColorPicker extends React.Component<MyColorPickerProps> {
   }
 }
 
-export default MyColorPicker;
+export default ColorSelector;
