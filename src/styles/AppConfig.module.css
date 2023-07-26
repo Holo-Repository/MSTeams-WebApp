@@ -1,12 +1,26 @@
-.config {
-    width: 100vw;
-    height: 90vh;
-}
-
 .arrow {
-    transform: scaleX(-1);
     /* Position such that the bottom right corner of the element is placed at the bottom right of the parent */
     position: absolute;
     bottom: 0;
     right: 0;
+
+    padding: 0;
+    margin: 0;
+    
+    /* Set the size */
+    width: 100px;
+    height: 100px;
+
+    animation: bounce 0.8s infinite alternate-reverse;
+    animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
+}
+
+@keyframes bounce {
+    0% { transform: translateY(-20px); }
+    100% { transform: translateY(0); }
+}
+
+.stack {
+    width: 100vw;
+    height: 100vh;
 }
