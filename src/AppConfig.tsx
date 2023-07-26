@@ -1,6 +1,11 @@
 import React from "react";
 import {app, pages} from "@microsoft/teams-js";
 
+import styles from "./styles/AppConfig.module.css";
+
+const arrow = require("./assets/curved-arrow.png");
+
+
 /**
  * The 'Config' component is used to display your group tabs
  * user configuration options.  Here you will allow the user to
@@ -36,11 +41,8 @@ class AppConfig extends React.Component {
         });
 
         return (
-            <div>
-                <h1>App Configuration</h1>
-                <div>
-                    This is where you will add your app configuration options the user can choose when the app is added to your meeting.
-                </div>
+            <div className={styles.config}>
+                <img src={arrow} alt="arrow" className={styles.arrow} />
             </div>
         );
     }

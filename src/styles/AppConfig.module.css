@@ -1,0 +1,12 @@
+.config {
+    width: 100vw;
+    height: 90vh;
+}
+
+.arrow {
+    transform: scaleX(-1);
+    /* Position such that the bottom right corner of the element is placed at the bottom right of the parent */
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}

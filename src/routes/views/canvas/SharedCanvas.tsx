@@ -1,9 +1,10 @@
 import React from "react";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
-import './SharedCanvas.css'; 
-import MyToolBar from "./toolbar/MyToolBar";
 
+import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
+import '../../../styles/SharedCanvas.css'; 
+
 
 
 export interface SharedCanvasProps {
