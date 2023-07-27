@@ -17,6 +17,16 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   }
 }
 
+resource tableservice 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = {
+  name: 'default'
+  parent: storage
+}
+
+resource table 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-09-01' = {
+  name: 'TestLocationIDtoFluidKey'
+  parent: tableservice
+}
+
 resource fluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
   name: 'Test-Fluid-Relay'
   location: location
@@ -28,18 +38,20 @@ resource fluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
   }
 }
 
-resource plan 'Microsoft.Web/serverfarms@2020-12-01' = {
+resource plan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: 'test-ASP-TeamsApp-98c4'
   location: location
-  kind: 'functionapp'
+  kind: 'linux'
   sku: {
     name: 'Y1'
   }
-  properties: {}
+  properties: {
+    reserved: true
+  }
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: 'test-Hc-Key-Vault'
+  name: 't-Holoc-Key-Vault'
   location: location
   properties: {
     accessPolicies: [
@@ -101,14 +113,24 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       }
     ]
     createMode: 'default'
-    enablePurgeProtection: true
-    enableSoftDelete: true
+    enableSoftDelete: false
     sku: {
       family: 'A'
       name: 'standard'
     }
     tenantId: '1faf88fe-a998-4c5b-93c9-210a11d9a5c2'
     vaultUri: 'https://test-holocollab-key-valut.vault.azure.net/'
+  }
+}
+
+resource secretfluid 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: 'test-Fluid-Relay-Key1'
+  parent: keyVault
+  properties: {
+    attributes: {
+      enabled: true
+    }
+    value: listKeys(fluidRelay.id, '2022-06-01')['key1']
   }
 }
 
