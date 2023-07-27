@@ -1,14 +1,21 @@
-param resourceBaseName string
+param storageBaseName string
+param vaultBaseName string
+param fluidBaseName string
+param ASPBaseName string
 param storageSku string
+param teamsAppTenantId string
 
-param storageName string = resourceBaseName
+param storageName string = storageBaseName
+param vaultName string = vaultBaseName
+param fluidName string = fluidBaseName
+param ASPName string = ASPBaseName
 param location string = resourceGroup().location
 
 // Azure Storage that hosts your static web site
 resource storage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
-  kind: 'StorageV2'
-  location: location
   name: storageName
+  location: location
+  kind: 'StorageV2'
   properties: {
     supportsHttpsTrafficOnly: true
   }
@@ -28,7 +35,7 @@ resource table 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-09-0
 }
 
 resource fluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
-  name: 'Test-Fluid-Relay'
+  name: fluidName
   location: location
   identity: {
     type: 'None'
@@ -39,7 +46,7 @@ resource fluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
 }
 
 resource plan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: 'test-ASP-TeamsApp-98c4'
+  name: ASPName
   location: location
   kind: 'linux'
   sku: {
@@ -51,32 +58,14 @@ resource plan 'Microsoft.Web/serverfarms@2022-03-01' = {
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: 't-Holoc-Key-Vault'
+  name: vaultName
   location: location
   properties: {
     accessPolicies: [
       {
-        tenantId: '1faf88fe-a998-4c5b-93c9-210a11d9a5c2'
+        tenantId: teamsAppTenantId
         objectId: '68441a01-70cb-4f0b-bfe2-87fa645be89c'
         permissions: {
-          certificates: [
-            'Get'
-            'List'
-            'Update'
-            'Create'
-            'Import'
-            'Delete'
-            'Recover'
-            'Backup'
-            'Restore'
-            'ManageContacts'
-            'ManageIssuers'
-            'GetIssuers'
-            'ListIssuers'
-            'SetIssuers'
-            'DeleteIssuers'
-            'Purge'
-          ]
           keys: [
             'Get'
             'List'
@@ -109,6 +98,24 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
             'Restore'
             'Purge'
           ]
+          certificates: [
+            'Get'
+            'List'
+            'Update'
+            'Create'
+            'Import'
+            'Delete'
+            'Recover'
+            'Backup'
+            'Restore'
+            'ManageContacts'
+            'ManageIssuers'
+            'GetIssuers'
+            'ListIssuers'
+            'SetIssuers'
+            'DeleteIssuers'
+            'Purge'
+          ]
         }       
       }
     ]
@@ -118,13 +125,12 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       family: 'A'
       name: 'standard'
     }
-    tenantId: '1faf88fe-a998-4c5b-93c9-210a11d9a5c2'
-    vaultUri: 'https://test-holocollab-key-valut.vault.azure.net/'
+    tenantId: teamsAppTenantId
   }
 }
 
 resource secretfluid 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: 'test-Fluid-Relay-Key1'
+  name: 'Fluid-Relay-Key1'
   parent: keyVault
   properties: {
     attributes: {
@@ -135,7 +141,7 @@ resource secretfluid 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
 }
 
 resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
-  name: 'test-Fluid-JWT-Provider'
+  name: 'Fluid-Provider'
   location: location
   kind: 'functionapp'
   properties: {
@@ -152,7 +158,7 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
           }
           {
             name: 'FluidRelayKey'
-            value: '@Microsoft.KeyVault(SecretUri=https://holocollab-key-valut.vault.azure.net/secrets/Fluid-Relay-Key1/)'
+            value: '@Microsoft.KeyVault(VaultName=myvault;SecretName=mysecret)'
           }
           {
             name: 'FUNCTIONS_EXTENSION_VERSION'

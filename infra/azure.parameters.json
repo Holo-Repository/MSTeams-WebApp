@@ -2,8 +2,20 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "resourceBaseName": {
-        "value": "test${{RESOURCE_SUFFIX}}"
+      "storageBaseName": {
+        "value": "storage${{RESOURCE_SUFFIX}}"
+      },
+      "fluidBaseName": {
+        "value": "Fluid${{RESOURCE_SUFFIX}}"
+      },
+      "vaultBaseName": {
+        "value": "Vault-${{RESOURCE_SUFFIX}}"
+      },
+      "ASPBaseName": {
+        "value": "ASP-${{RESOURCE_SUFFIX}}"
+      },
+      "teamsAppTenantId": {
+        "value": "${{TEAMS_APP_TENANT_ID}}"
       },
       "storageSku": {
         "value": "Standard_LRS"
