@@ -2,8 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "resourceBaseName": {
-        "value": "test${{RESOURCE_SUFFIX}}"
+      "storageBaseName": {
+        "value": "storage${{RESOURCE_SUFFIX}}"
+      },
+      "vaultBaseName": {
+        "value": "key-vault-${{RESOURCE_SUFFIX}}"
+      },
+      "ASPBaseName": {
+        "value": "ASP-${{RESOURCE_SUFFIX}}"
       },
       "storageSku": {
         "value": "Standard_LRS"

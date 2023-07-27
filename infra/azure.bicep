@@ -1,123 +1,107 @@
-param resourceBaseName string
 param storageSku string
 
-param storageName string = resourceBaseName
+param storageBaseName string
+param storageName string = storageBaseName
+
+param vaultBaseName string
+param vaultName string = vaultBaseName
+
+param ASPBaseName string
+param ASPName string = ASPBaseName
+
+var functionName = 'Fluid-Relay-JWT-Provider'
+
 param location string = resourceGroup().location
 
 // Azure Storage that hosts your static web site
-resource storage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
+resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: 'StorageV2'
   location: location
   name: storageName
-  properties: {
-    supportsHttpsTrafficOnly: true
-  }
-  sku: {
-    name: storageSku
-  }
+  properties: { supportsHttpsTrafficOnly: true }
+  sku: { name: storageSku }
 }
 
-resource fluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
-  name: 'Test-Fluid-Relay'
-  location: location
-  identity: {
-    type: 'None'
-  }
-  properties: {
-    storagesku: 'standard'
-  }
+resource tableService 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = {
+  name: 'default'
+  parent: storage
 }
 
-resource plan 'Microsoft.Web/serverfarms@2020-12-01' = {
-  name: 'test-ASP-TeamsApp-98c4'
-  location: location
-  kind: 'functionapp'
-  sku: {
-    name: 'Y1'
-  }
-  properties: {}
+resource table 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-09-01' = {
+  name: 'LocationIDtoFluidKey'
+  parent: tableService
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: 'test-Hc-Key-Vault'
+resource FluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
+  name: 'Fluid-Relay'
+  location: location
+  identity: { type: 'None' }
+  properties: { storagesku: 'standard' }
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
+  name: vaultName
   location: location
   properties: {
-    accessPolicies: [
-      {
-        tenantId: '1faf88fe-a998-4c5b-93c9-210a11d9a5c2'
-        objectId: '68441a01-70cb-4f0b-bfe2-87fa645be89c'
-        permissions: {
-          certificates: [
-            'Get'
-            'List'
-            'Update'
-            'Create'
-            'Import'
-            'Delete'
-            'Recover'
-            'Backup'
-            'Restore'
-            'ManageContacts'
-            'ManageIssuers'
-            'GetIssuers'
-            'ListIssuers'
-            'SetIssuers'
-            'DeleteIssuers'
-            'Purge'
-          ]
-          keys: [
-            'Get'
-            'List'
-            'Update'
-            'Create'
-            'Import'
-            'Delete'
-            'Recover'
-            'Backup'
-            'Restore'
-            'GetRotationPolicy'
-            'SetRotationPolicy'
-            'Rotate'
-            'Encrypt'
-            'Decrypt'
-            'UnwrapKey'
-            'WrapKey'
-            'Verify'
-            'Sign'
-            'Purge'
-            'Release'
-          ]
-          secrets: [
-            'Get'
-            'List'
-            'Set'
-            'Delete'
-            'Recover'
-            'Backup'
-            'Restore'
-            'Purge'
-          ]
-        }       
-      }
-    ]
-    createMode: 'default'
-    enablePurgeProtection: true
-    enableSoftDelete: true
     sku: {
       family: 'A'
       name: 'standard'
     }
-    tenantId: '1faf88fe-a998-4c5b-93c9-210a11d9a5c2'
-    vaultUri: 'https://test-holocollab-key-valut.vault.azure.net/'
+    tenantId: subscription().tenantId
+    enableRbacAuthorization: false
+    enabledForTemplateDeployment: true
+    accessPolicies: [
+      {
+        tenantId: subscription().tenantId
+        objectId: functionIdentity.properties.principalId
+        permissions: { secrets: [ 'all' ] }
+      }
+    ]
   }
 }
 
-resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
-  name: 'test-Fluid-JWT-Provider'
+resource secret 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
+  name: 'Fluid-Relay-Key1'
+  parent: keyVault
+  properties: { value: FluidRelay.listKeys().key1 }
+}
+
+resource servicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+  name: ASPName
   location: location
+  kind: 'linux'
+  sku: { name: 'Y1' }
+  properties: { reserved: true }
+}
+
+resource functionIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: 'Function-Identity'
+  location: location
+}
+
+resource shareService 'Microsoft.Storage/storageAccounts/fileServices@2022-09-01' = {
+  name: 'default'
+  parent: storage
+}
+
+resource share 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-09-01' = {
+  name: toLower(functionName)
+  parent: shareService
+}
+
+resource function 'Microsoft.Web/sites@2022-09-01' = {
+  name: functionName
   kind: 'functionapp'
+  location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${functionIdentity.id}': {}
+    }
+  }
   properties: {
-    serverFarmId: plan.id
+    httpsOnly: true
+    serverFarmId: servicePlan.id
     siteConfig: {
       appSettings: [
           {
@@ -126,11 +110,11 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
           }
           {
             name: 'AzureWebJobsStorage'
-            value: 'DefaultEndpointsProtocol=https;AccountName=genericfluidstorage;AccountKey=vKSZOCsXHjXaE36fIm63kQ/+a5aa1kTFmWDCLpoHCMewtXWvmh/DZKWFQn15/trr3hRgNCM5TUgT+ASt0ND6Ig==;EndpointSuffix=core.windows.net'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${storage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
           }
           {
             name: 'FluidRelayKey'
-            value: '@Microsoft.KeyVault(SecretUri=https://holocollab-key-valut.vault.azure.net/secrets/Fluid-Relay-Key1/)'
+            value: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${secret.name})'
           }
           {
             name: 'FUNCTIONS_EXTENSION_VERSION'
@@ -142,22 +126,20 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
           }
           {
             name: 'keyVaultReferenceIdentity'
-            value: '/subscriptions/a2f6cb3c-7458-4872-8099-fcd096f29d7f/resourcegroups/Teams-App/provid ers/Microsoft.ManagedIdentity/userAssignedIdentities/Fluid-Relay-MA'
+            value: functionIdentity.id
           }
           {
             name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-            value: 'DefaultEndpointsProtocol=https;AccountName=genericfluidstorage;AccountKey=vKSZOCsXHjXaE36fIm63kQ/+a5aa1kTFmWDCLpoHCMewtXWvmh/DZKWFQn15/trr3hRgNCM5TUgT+ASt0ND6Ig==;EndpointSuffix=core.windows.net'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${storage.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
           }
           {
             name: 'WEBSITE_CONTENTSHARE'
-            value: 'fluid-jwt-providerb804'
+            value: share.name
           }
       ]
     }
-    httpsOnly: true
   }
 }
-
 
 var siteDomain = replace(replace(storage.properties.primaryEndpoints.web, 'https://', ''), '/', '')
 
