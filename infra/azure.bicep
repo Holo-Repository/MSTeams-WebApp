@@ -3,9 +3,6 @@ param storageSku string
 param storageBaseName string
 param storageName string = storageBaseName
 
-param vaultBaseName string
-param vaultName string = vaultBaseName
-
 param ASPBaseName string
 param ASPName string = ASPBaseName
 
@@ -13,7 +10,7 @@ var functionName = 'Fluid-Relay-JWT-Provider'
 
 param location string = resourceGroup().location
 
-// Azure Storage that hosts your static web site
+// Generic Azure Storage
 resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: 'StorageV2'
   location: location
@@ -22,6 +19,15 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   sku: { name: storageSku }
 }
 
+// Outputs
+var siteDomain = replace(replace(storage.properties.primaryEndpoints.web, 'https://', ''), '/', '')
+// The output will be persisted in .env.{envName}. Visit https://aka.ms/teamsfx-actions/arm-deploy for more details.
+output TAB_AZURE_STORAGE_RESOURCE_ID string = storage.id // used in deploy stage
+output TAB_DOMAIN string = siteDomain
+var endpoint = 'https://${siteDomain}'
+output TAB_ENDPOINT string = endpoint
+
+// Azure Storage Table to store LocationIDtoFluidKey
 resource tableService 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = {
   name: 'default'
   parent: storage
@@ -32,6 +38,7 @@ resource table 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-09-0
   parent: tableService
 }
 
+// Azure Fluid Relay Server
 resource FluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
   name: 'Fluid-Relay'
   location: location
@@ -39,33 +46,7 @@ resource FluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
   properties: { storagesku: 'standard' }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
-  name: vaultName
-  location: location
-  properties: {
-    sku: {
-      family: 'A'
-      name: 'standard'
-    }
-    tenantId: subscription().tenantId
-    enableRbacAuthorization: false
-    enabledForTemplateDeployment: true
-    accessPolicies: [
-      {
-        tenantId: subscription().tenantId
-        objectId: functionIdentity.properties.principalId
-        permissions: { secrets: [ 'all' ] }
-      }
-    ]
-  }
-}
-
-resource secret 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
-  name: 'Fluid-Relay-Key1'
-  parent: keyVault
-  properties: { value: FluidRelay.listKeys().key1 }
-}
-
+// Azure Function App Service Plan
 resource servicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: ASPName
   location: location
@@ -74,11 +55,7 @@ resource servicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   properties: { reserved: true }
 }
 
-resource functionIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: 'Function-Identity'
-  location: location
-}
-
+// Azure Storage File Share to store Azure Function App code
 resource shareService 'Microsoft.Storage/storageAccounts/fileServices@2022-09-01' = {
   name: 'default'
   parent: storage
@@ -89,20 +66,23 @@ resource share 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-09-01
   parent: shareService
 }
 
+// Azure Function App
 resource function 'Microsoft.Web/sites@2022-09-01' = {
   name: functionName
   kind: 'functionapp'
   location: location
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${functionIdentity.id}': {}
-    }
-  }
   properties: {
     httpsOnly: true
     serverFarmId: servicePlan.id
     siteConfig: {
+      linuxFxVersion: 'NODE|18'
+      cors: {
+        allowedOrigins: [
+          'https://portal.azure.com'
+          'https://localhost:53000'
+          endpoint
+        ]
+      }
       appSettings: [
           {
             name: 'AzureWebJobsFeatureFlags'
@@ -114,7 +94,7 @@ resource function 'Microsoft.Web/sites@2022-09-01' = {
           }
           {
             name: 'FluidRelayKey'
-            value: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${secret.name})'
+            value: FluidRelay.listKeys().key1
           }
           {
             name: 'FUNCTIONS_EXTENSION_VERSION'
@@ -123,10 +103,6 @@ resource function 'Microsoft.Web/sites@2022-09-01' = {
           {
             name: 'FUNCTIONS_WORKER_RUNTIME'
             value: 'node'
-          }
-          {
-            name: 'keyVaultReferenceIdentity'
-            value: functionIdentity.id
           }
           {
             name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
@@ -141,9 +117,3 @@ resource function 'Microsoft.Web/sites@2022-09-01' = {
   }
 }
 
-var siteDomain = replace(replace(storage.properties.primaryEndpoints.web, 'https://', ''), '/', '')
-
-// The output will be persisted in .env.{envName}. Visit https://aka.ms/teamsfx-actions/arm-deploy for more details.
-output TAB_AZURE_STORAGE_RESOURCE_ID string = storage.id // used in deploy stage
-output TAB_DOMAIN string = siteDomain
-output TAB_ENDPOINT string = 'https://${siteDomain}'

@@ -5,9 +5,6 @@
       "storageBaseName": {
         "value": "storage${{RESOURCE_SUFFIX}}"
       },
-      "vaultBaseName": {
-        "value": "key-vault-${{RESOURCE_SUFFIX}}"
-      },
       "ASPBaseName": {
         "value": "ASP-${{RESOURCE_SUFFIX}}"
       },
