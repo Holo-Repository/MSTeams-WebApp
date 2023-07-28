@@ -1,9 +1,13 @@
-import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
 import React from "react";
-import DrawingManager from "./DrawingManager";
-import MyToolbarButton from "./MyToolBarButton";
+import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
 import {LocationArrow28Filled, Pen24Filled, NoteEdit24Filled} from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
+
+import DrawingManager from "./DrawingManager";
+import MyToolbarButton from "./MyToolBarButton";
+import ViewerLoader from "../../../unity/ViewerLoader";
+import ContainerManager from "../../../containers/ContainerManager";
+
 
 /**
  * Interface defining the properties for MyToolbar component
@@ -13,7 +17,9 @@ import { InkingManager } from "@microsoft/live-share-canvas";
  */
 export interface MyToolbarProps {
     children?: React.ReactNode,
-    ink: InkingManager | undefined
+    ink: InkingManager | undefined,
+    containerId: string,
+    containerManager: ContainerManager,
 }
 
 /**
@@ -90,11 +96,8 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             icon={<Pen24Filled />}
                             onClick={this.setSelectedTool}
                         >
-                            {ink && 
-                                <DrawingManager 
-                                    inkingManager={ink}
-                                    display = {this.getSelectedTool() === "Annotation" && this.state.isDisplayed ? 'block' : 'none'}
-                                />
+                            {this.getSelectedTool() === "Annotation" && this.state.isDisplayed && ink && 
+                                <DrawingManager inkingManager={ink} display={this.getSelectedTool() === "Annotation" && this.state.isDisplayed ? 'block' : 'none'} />
                             }
                         </MyToolbarButton>
 
@@ -104,11 +107,20 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             icon={<NoteEdit24Filled />}
                             onClick={this.setSelectedTool}
                         >
-                            {<div 
-                                className="tool-second-level"
-                                style={{display : this.getSelectedTool() === "Notes" && this.state.isDisplayed ? 'block' : 'none'}}
-                            >
+                            {this.getSelectedTool() === "Notes" && this.state.isDisplayed && <div className="tool-second-level" >
                                 Add new component here
+                            </div>
+                            }
+                        </MyToolbarButton>
+
+                        <MyToolbarButton
+                            value="Model"
+                            name="tools"
+                            icon={<NoteEdit24Filled />}
+                            onClick={this.setSelectedTool}
+                        >
+                            {this.getSelectedTool() === "Model" && this.state.isDisplayed && <div className="tool-second-level" >
+                                <ViewerLoader containerManager={this.props.containerManager} containerId={this.props.containerId}/>
                             </div>
                             }
                         </MyToolbarButton>

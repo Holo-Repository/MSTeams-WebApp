@@ -54,7 +54,8 @@
     "validDomains": [
         "${{TAB_DOMAIN}}",
         "*.azurewebsites.net",
-        "worldtimeapi.org"
+        "worldtimeapi.org",
+        "*.blob.core.windows.net"
     ],
     "webApplicationInfo": {
         "id": "${{AAD_APP_CLIENT_ID}}",
