@@ -33,15 +33,9 @@ resource tableService 'Microsoft.Storage/storageAccounts/tableServices@2022-09-0
   parent: storage
 }
 
-resource fluidRelay 'Microsoft.FluidRelay/fluidRelayServers@2022-06-01' = {
-  name: 'Test-Fluid-Relay'
-  location: location
-  identity: {
-    type: 'None'
-  }
-  properties: {
-    storagesku: 'standard'
-  }
+resource table 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-09-01' = {
+  name: 'LocationIDtoFluidKey'
+  parent: tableService
 }
 
 // Azure Fluid Relay Server
@@ -122,4 +116,3 @@ resource function 'Microsoft.Web/sites@2022-09-01' = {
     }
   }
 }
-
