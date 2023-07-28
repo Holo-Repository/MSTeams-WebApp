@@ -4,6 +4,8 @@ import ContainerMap from "../../containers/ContainerMap";
 import ContainerPreview from "./ContainerPreview";
 import ContainerManager from "../../containers/ContainerManager";
 
+import './ContainerList.css'
+
 
 export interface ContainerListProps {
     containerManager: ContainerManager;
@@ -11,6 +13,7 @@ export interface ContainerListProps {
     canCreate: boolean;
     openContainer: (containerId: string) => void;
     createContainer: (name: string, desc: string) => Promise<void>;
+    // closeContainer: (containerId: string) => void
 }
 
 /**
@@ -34,16 +37,17 @@ class ContainerList extends React.Component<ContainerListProps> {
 
     render() {
         return (
-            <div>
-                <h1>Containers</h1>
-                <ul>
+            <div> 
+                <h3>Recent Collab Case</h3>
+                <div className="flex-container-list">
                     {this.state.containers.map((container) => (
-                        <li key={container.id}>
-                            <ContainerPreview container={container} open={this.props.openContainer} canOpen={this.props.canOpen}/>
-                        </li>
+                        <div className="flex-item" key={container.id}>
+                            <ContainerPreview container={container} open={this.props.openContainer}
+                            /*close={this.props.closeContainer}*/ canOpen={this.props.canOpen}/>
+                        </div>
                     ))}
-                    {this.props.canCreate && <li><ContainerPreview create={this.props.createContainer}/></li>}
-                </ul>
+                    {this.props.canCreate && <div className="flex-item"><ContainerPreview create={this.props.createContainer}/></div>}
+                </div>
             </div>
         );
     }

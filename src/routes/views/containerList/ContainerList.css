@@ -1,0 +1,50 @@
+.flex-container-list {
+    display: felx;
+    display: -webkit-flex;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.flex-container-list .flex-item {
+    margin: 10px 25px 10px 0px;
+}
+
+.container {
+    display: inline-flex;
+    position: relative;
+    width: 100%;
+    max-width: 280px;
+}
+
+.container img {
+    width: inherit;
+    z-index: 0;
+}
+
+.display-area {
+    position: absolute;
+    width: inherit;
+    max-width: 300px;
+    height: 85px;
+    bottom: 0%;
+    border-radius: 3% 3% 0 0;
+    background-color: rgba(61, 61, 61, 0.75);
+    padding: 5px 10px;
+    z-index: 1;
+}
+
+.display-area * {
+    margin: 2px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.display-area button {
+    width: inherit;
+    height: 35%;
+    background-color: #5b5fc7;
+    color: aliceblue;
+    border: none;
+}

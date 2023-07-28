@@ -1,5 +1,7 @@
 import CommonSidePanelMeetingStage, { CommonSidePanelMeetingStageProps } from "../utils/CommonSidePanelMeetingStage";
 import ContainerList from '../containerList/ContainerList';
+import { Spinner } from "@fluentui/react-components";
+import '../meetingStage/MeetingStage.css'
 
 
 export type SidePanelProps = CommonSidePanelMeetingStageProps;
@@ -9,7 +11,12 @@ export type SidePanelProps = CommonSidePanelMeetingStageProps;
  */
 class SidePanel extends CommonSidePanelMeetingStage {
     render() {
-        if (this.state.mounting) return <div>Loading...</div>;
+        if (this.state.mounting) 
+            return(
+                <div className="flex-loading">
+                    <Spinner appearance="primary" size="small" label="Loading" />
+                </div>
+            );
 
         if (!this.state.activeContainerId)
             return <ContainerList ref={this.contentRef}
@@ -18,6 +25,7 @@ class SidePanel extends CommonSidePanelMeetingStage {
                 canCreate={true} 
                 openContainer={this.openContainer} 
                 createContainer={this.createContainer}
+                // closeContainer={this.closeContainer}
             />;
 
         return (
