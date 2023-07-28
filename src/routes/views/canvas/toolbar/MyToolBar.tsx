@@ -4,6 +4,7 @@ import DrawingManager from "./DrawingManager";
 import MyToolbarButton from "./MyToolBarButton";
 import {LocationArrow28Filled, Pen24Filled, NoteEdit24Filled} from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
+import { DocumentAdd24Regular } from "@fluentui/react-icons";
 
 /**
  * Interface defining the properties for MyToolbar component
@@ -112,6 +113,25 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             </div>
                             }
                         </MyToolbarButton>
+
+                        <MyToolbarButton 
+                            value="ShareFile"
+                            name="tools"
+                            icon={<DocumentAdd24Regular/>}
+                            onClick={this.setSelectedTool}
+                        >
+                            {<div 
+                                className="tool-second-level"
+                                style={{display : this.getSelectedTool() === "Notes" && this.state.isDisplayed ? 'block' : 'none'}}
+                            >
+                                upload file here
+                            
+                            </div>
+                            }
+                        </MyToolbarButton>
+
+
+                        
                         
                     </ToolbarRadioGroup>
                 </Toolbar>
