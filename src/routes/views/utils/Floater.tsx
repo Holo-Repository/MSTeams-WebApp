@@ -1,15 +1,21 @@
 import { IFluidHandle } from "@fluidframework/core-interfaces";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ModelViewer from "../../unity/ModelViewer";
 
 function Floater(props: {handle : IFluidHandle}) {
-    const [data, setData] = useState(undefined as unknown as { [key: string]: any } );
+    const [dataMap, setDataMap] = useState(undefined as unknown as { [key: string]: any } );
+
+    useEffect(() => {(async () => {
+        const dataMap = await props.handle.get();
+        setDataMap(dataMap);
+    })();}, [props.handle]);
 
     let content = <p>Loading...</p>;
 
-    if (data) 
-    switch (data.type) {
+    if (dataMap) 
+    switch (dataMap.get('type')) {
         case "model":
-            content = <p>Model</p>;
+            content = <ModelViewer objMap={dataMap} />;
             break;
         default:
             content = <p>Unknown</p>;

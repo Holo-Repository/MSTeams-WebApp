@@ -46,7 +46,8 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         
         this.floaters = container.initialObjects.floaters as SharedMap;
         const floaterHandles: { [key: string]: IFluidHandle } = {};
-        for (const [key, value] of this.floaters.entries()) floaterHandles[key] = value;
+        for (const [key, value] of this.floaters.entries()) 
+            if (value.get) floaterHandles[key] = value;
         this.floaters.on("valueChanged", this.handleFloaterChange);
         
         this.setState({
