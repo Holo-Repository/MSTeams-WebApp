@@ -1,0 +1,76 @@
+#canvas-host {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  border: 1px solid black;
+  background-color: white;
+  z-Index: 1;
+  }
+
+#tool-first-level {
+  position: absolute;
+  display: inline-flex;
+  top: 87%;
+  left: 50%;
+  z-index: 2;
+  padding: 3px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 1px 1px 5px 1px rgba(181, 181, 181, 0.669);
+  border-radius: 5px;
+}
+
+#tool-first-level span {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+#drawing-button {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.popover{
+  position: relative;
+}
+
+.tool-second-level {
+  position: absolute;
+  margin: 0px 0px;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2vh);
+  padding: 1px 0px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px 1px rgba(181, 181, 181, 0.669);
+  z-index: 2;
+  color: black;
+}
+
+.tool-third-level {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2vh);
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px 1px rgba(181, 181, 181, 0.669);
+  z-index: 2;
+  color: black;
+}
+
+#eraser-button {
+  min-width: 90px;
+  height: 26px;
+  margin: 10px 3px 5px 13px;
+  border-radius: 15px;
+  background-color: rgba(231, 230, 237, 0.9);
+}
+
+.tool-third-level .picker-selected{
+  border: 2px solid #5155b6;
+}
+
+.tool-third-level .picker-unselected{
+  border: none;
+}
+

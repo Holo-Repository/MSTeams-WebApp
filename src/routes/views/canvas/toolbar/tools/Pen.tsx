@@ -2,8 +2,13 @@ import React from "react";
 import { InkingTool, fromCssColor } from "@microsoft/live-share-canvas";
 
 import Tool, { ToolProps } from "./Tool";
-import ColorPicker from "./ColorPicker";
-import SizePicker from "./SizePicker";
+import ColorSelector from "./ColorSelector";
+import SizeSelector from "./SizeSelector";
+
+/**
+ * Path of the image of icon
+ */
+const imgPath = require("../../../../../assets/ink-pen.png");
 
 /**
  * The pen component.
@@ -18,10 +23,17 @@ class Pen extends Tool {
         tool: InkingTool.pen
     }
 
+    state = {
+        color: "#FF0000",
+        size: 5,
+    }
+
     constructor(props: ToolProps) {
         super(props);
         this.setColor = this.setColor.bind(this);
         this.setSize = this.setSize.bind(this);
+        this.setColor(this.state.color);
+        this.setSize(this.state.size);
     }
 
     /**
@@ -30,6 +42,7 @@ class Pen extends Tool {
      * @param color The color of the pen.
      */
     setColor(color: string) {
+        this.setState({color: color});
         this.props.ext(inkingManager => {
             inkingManager.penBrush.color = fromCssColor(color);
         });
@@ -41,6 +54,7 @@ class Pen extends Tool {
      * @param size The size of the pen.
      */
     setSize(size: number) {
+        this.setState({size: size})
         this.props.ext(inkingManager => {
             inkingManager.penBrush.tipSize = size;
         });
@@ -50,9 +64,11 @@ class Pen extends Tool {
         const isDoubleClick = this.props.isDoubleClicked(this.props.tool);
 
         return (
-            <Tool {...this.props}>
-                {isDoubleClick && <ColorPicker setColor={this.setColor} />}
-                {isDoubleClick && <SizePicker setSize={this.setSize} />}
+            <Tool {...this.props} icon={ <img src={imgPath} alt={this.props.icon as string} />}>
+                <div className="tool-third-level">
+                    {isDoubleClick && <ColorSelector defaultColor = {this.state.color} setColor={this.setColor}></ColorSelector>}
+                    {isDoubleClick && <SizeSelector defaultSize = {this.state.size} setSize={this.setSize} />}
+                </div>
             </Tool>
         );
     }

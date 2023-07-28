@@ -1,11 +1,11 @@
 import React from 'react';
 import { InkingManager, InkingTool } from "@microsoft/live-share-canvas";
+import {Toolbar} from "@fluentui/react-components";
 
 import Pen from "./tools/Pen";
 import Eraser from './tools/Eraser';
 import Highlighter from './tools/Highlighter';
 import LaserPointer from './tools/LaserPointer';
-
 
 /**
  * The drawing manager component.
@@ -17,18 +17,60 @@ import LaserPointer from './tools/LaserPointer';
  * 
  * @param inkingManager The inking manager that is used to draw on the canvas.
  */
-class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
+class DrawingManager extends React.Component<{inkingManager: InkingManager, display: string}> {
     state = {
         selectedTool: InkingTool.pen,
         doubleClicked: false,
     }
 
-    constructor(props: {inkingManager: InkingManager}) {
+    constructor(props: {inkingManager: InkingManager, display: string}) {
         super(props);
         this.isSelected = this.isSelected.bind(this);
         this.isDoubleClicked = this.isDoubleClicked.bind(this);
         this.setTool = this.setTool.bind(this);
         this.ext = this.ext.bind(this);
+        this.handleBeginInking = this.handleBeginInking.bind(this);
+    }
+
+    /**
+     * This method gets invoked right after a React component has been mounted.
+     * Within this method, event listeners 'AddPoints' and 'StrokesRemoved' are being registered on the InkingManager.
+     * When user is drawing or erasing on the canvas, @function handleBeginInking will be called
+     */
+    componentDidMount() {
+        this.props.inkingManager.addListener('AddPoints', this.handleBeginInking)
+        this.props.inkingManager.addListener('StrokesRemoved', this.handleBeginInking)
+    }
+
+    /**
+     * This method gets invoked immediately prior to unmounting and destruction of a React component.
+     * Within this method, the event listeners are being deregistered.
+     * This is crucial to prevent potential memory leaks that might be caused by these unused event listeners.
+     */
+    componentWillUnmount() {
+        this.props.inkingManager.removeListener('AddPoints', this.handleBeginInking);
+        this.props.inkingManager.removeListener('StrokesRemoved', this.handleBeginInking);
+    }
+
+    /**
+     * This method gets invoked immediately subsequent to the updating of a React component.
+     * Within this function, it checks if the prop 'display' has undergone a change and whether
+     * its new value is 'none'. If these conditions are satisfied, it updates the state
+     * 'doubleClicked' to be false.
+     * @param prevProps - Previous props before the component got updated.
+     */
+    componentDidUpdate(prevProps: {display: string}): void {
+        if(prevProps.display !== this.props.display && this.props.display === 'none') {
+            this.setState({doubleClicked: false});
+        }
+
+    }
+
+    /**
+     * This method will be called when the user begins adding strokes on the canvas
+     */
+    handleBeginInking() {
+        this.setState({ doubleClicked: false });
     }
 
     /**
@@ -66,7 +108,7 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
         this.props.inkingManager.tool = tool;
         
         let doubleClicked = this.isSelected(tool) ? !this.state.doubleClicked : false;
-
+        
         this.setState({ 
             selectedTool: tool, 
             doubleClicked: doubleClicked,
@@ -85,8 +127,10 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
      */
     ext(callback: (inkingManager: InkingManager) => void = () => {}) {
         callback(this.props.inkingManager);
-        this.setState({ doubleClicked: false });
+        // this.setState({ doubleClicked: false });
     }
+
+
 
     render(): React.ReactNode {
         let toolProps = {
@@ -97,12 +141,15 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager}> {
         }
 
         return (
-            <div>
-                <Pen {...toolProps} />
-                <Highlighter {...toolProps} />
-                <Eraser {...toolProps} />
-                <LaserPointer {...toolProps} />
+            <div className='tool-second-level' style={{display: this.props.display}}>
+                <Toolbar className='popover'>
+                    <Pen {...toolProps} />
+                    <Highlighter {...toolProps} />
+                    <Eraser {...toolProps} />
+                    <LaserPointer {...toolProps} />
+                </Toolbar>
             </div>
+            
         );
     }
 }
