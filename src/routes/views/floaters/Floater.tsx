@@ -10,7 +10,7 @@ import FloaterInteraction from "./FloaterInteraction";
 import {
     appToCanvasPos,
     canvasToAppPos,
-} from './FloaterUtils';
+} from '../utils/FloaterUtils';
 import { IValueChanged, SharedMap } from "fluid-framework";
 
 

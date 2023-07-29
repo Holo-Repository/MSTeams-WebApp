@@ -2,11 +2,13 @@ import React from "react";
 import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
 import { LocationArrow28Filled, Pen24Filled, NoteEdit24Filled } from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
+import { BsBadge3DFill as ModelIcon } from "react-icons/bs";
 
 import DrawingManager from "./DrawingManager";
 import MyToolbarButton from "./MyToolBarButton";
 import ViewerLoader from "../../../unity/ViewerLoader";
 import { IFluidContainer } from "fluid-framework";
+
 
 
 /**
@@ -120,7 +122,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                         <MyToolbarButton
                             value="Model"
                             name="tools"
-                            icon={<NoteEdit24Filled />}
+                            icon={<ModelIcon />}
                             onClick={this.setSelectedTool}
                         >
                             {this.getSelectedTool() === "Model" && this.state.isDisplayed && <div className="tool-second-level" >

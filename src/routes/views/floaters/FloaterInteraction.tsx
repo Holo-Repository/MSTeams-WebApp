@@ -1,10 +1,9 @@
+import { Toolbar, ToolbarButton, ToolbarDivider } from "@fluentui/react-components";
 import {
-    Pin12Filled as Pin,
-    Delete12Filled as Delete,
+    Pin12Regular as Pin,
+    Delete12Regular as Delete,
+    Drag24Regular as Drag,
 } from "@fluentui/react-icons";
-
-import styles from '../../../styles/FloaterInteraction.module.css'
-import { Text } from "@fluentui/react-components";
 
 
 export interface FloaterInteractionProps {
@@ -13,11 +12,15 @@ export interface FloaterInteractionProps {
 }
 
 function FloaterInteraction(props: FloaterInteractionProps) {
-    return <div className={styles.body}>
-                <Text className={styles.pin} onClick={() => {}}><Pin /></Text>
-                <Text className={styles.handle} draggable onDrag={props.drag}></Text>
-                <Text className={styles.delete} onClick={props.delete}><Delete /></Text>
-            </div>
+    return (
+        <Toolbar aria-label="Subtle" size="small" >
+            <ToolbarButton icon={<Pin />} title="Pin" as="button" appearance="subtle"/>
+            <ToolbarDivider />
+            <ToolbarButton icon={<Drag />} title="Drag" as="button" appearance="subtle" draggable onDrag={props.drag}/>
+            <ToolbarDivider />
+            <ToolbarButton icon={<Delete />} title="Delete" as="button" appearance="subtle" onClick={props.delete}/>
+        </Toolbar>
+    );
 } 
 
 export default FloaterInteraction
