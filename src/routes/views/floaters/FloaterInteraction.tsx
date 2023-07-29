@@ -7,10 +7,15 @@ import styles from '../../../styles/FloaterInteraction.module.css'
 import { Text } from "@fluentui/react-components";
 
 
-function FloaterInteraction(props: {delete : () => void}) {
+export interface FloaterInteractionProps {
+    delete : () => void;
+    drag : (event: any) => void;
+}
+
+function FloaterInteraction(props: FloaterInteractionProps) {
     return <div className={styles.body}>
                 <Text className={styles.pin} onClick={() => {}}><Pin /></Text>
-                <Text className={styles.handle}></Text>
+                <Text className={styles.handle} draggable onDrag={props.drag}></Text>
                 <Text className={styles.delete} onClick={props.delete}><Delete /></Text>
             </div>
 } 

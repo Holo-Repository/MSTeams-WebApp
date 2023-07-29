@@ -8,7 +8,6 @@ function ViewerLoader(props: {container: IFluidContainer}) {
     // /------/ Code related to issue described later in this file
     const [canLoad, setCanLoad] = useState(false);
     const isLoadEnabled = () => {
-        console.log(floaters, floaters?.get("model"), (floaters && floaters.get("model") === undefined) as boolean);
         setCanLoad((floaters && floaters.get("model") === undefined) as boolean)
     };
     useEffect(() => {isLoadEnabled()}, [floaters]);

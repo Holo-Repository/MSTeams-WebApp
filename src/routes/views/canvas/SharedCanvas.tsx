@@ -25,7 +25,6 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         inkingManager: undefined as InkingManager | undefined,
         myVisibleTool: undefined as string | undefined,
         floaterHandles: {} as { [key: string]: IFluidHandle },
-        pointerSelected: true,
     }
     
     canvas = React.createRef<HTMLDivElement>();
@@ -52,6 +51,8 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         for (const [key, value] of this.floaters.entries()) 
             if (value.get) floaterHandles[key] = value;
         this.floaters.on("valueChanged", this.handleFloaterChange);
+
+        this.isPointerSelected(true);
         
         this.setState({
             inkingManager,
@@ -89,19 +90,18 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
     }
 
     isPointerSelected = (selected: boolean) => {
-        this.setState({pointerSelected: selected})
+        if (this.canvas.current) this.canvas.current.style.pointerEvents = selected ? 'none' : 'auto';
     }
 
     render(): React.ReactNode {
         const { 
             inkingManager,
             floaterHandles,
-            pointerSelected,
         } = this.state;
 
         return (
             <div id='canvas-background'>
-                <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool} style={{pointerEvents: pointerSelected ? 'none' : 'auto'}} />
+                <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool} />
                 {this.container && <MyToolBar ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected}/>}
                 <div id='floaters' >
                     {inkingManager && Object.entries(floaterHandles).map(([key, value]) => 

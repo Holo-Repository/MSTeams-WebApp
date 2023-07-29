@@ -12,3 +12,9 @@
     height: 5px;
     border-radius: 5px;
 }
+.handle:hover {
+    cursor: grab;
+}
+.handle:active {
+    cursor: grabbing;
+}
