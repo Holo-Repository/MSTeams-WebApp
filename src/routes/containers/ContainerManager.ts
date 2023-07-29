@@ -153,7 +153,7 @@ class ContainerManager {
         const id = await container.attach();
         // await this.appendContainerId({ id, name, description, locationId: this.locationId } as Container);
         const now = new Date().toISOString();
-        await this.appendContainerId({ id, name:id, description:now, locationId: this.locationId } as ContainerMap);
+        await this.appendContainerId({ id, name:name, description:description, locationId: this.locationId } as ContainerMap);
 
         // Detach container
         container.disconnect();
