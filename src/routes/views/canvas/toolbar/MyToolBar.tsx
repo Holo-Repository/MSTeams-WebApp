@@ -6,7 +6,7 @@ import { InkingManager } from "@microsoft/live-share-canvas";
 import DrawingManager from "./DrawingManager";
 import MyToolbarButton from "./MyToolBarButton";
 import ViewerLoader from "../../../unity/ViewerLoader";
-import ContainerManager from "../../../containers/ContainerManager";
+import { IFluidContainer } from "fluid-framework";
 
 
 /**
@@ -18,8 +18,7 @@ import ContainerManager from "../../../containers/ContainerManager";
 export interface MyToolbarProps {
     children?: React.ReactNode,
     ink: InkingManager | undefined,
-    containerId: string,
-    containerManager: ContainerManager,
+    container: IFluidContainer,
 }
 
 /**
@@ -120,7 +119,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             onClick={this.setSelectedTool}
                         >
                             {this.getSelectedTool() === "Model" && this.state.isDisplayed && <div className="tool-second-level" >
-                                <ViewerLoader containerManager={this.props.containerManager} containerId={this.props.containerId}/>
+                                <ViewerLoader container={this.props.container} />
                             </div>
                             }
                         </MyToolbarButton>

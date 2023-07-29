@@ -5,7 +5,7 @@ import { IFluidHandle } from "@fluidframework/core-interfaces";
 import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
-import { SharedMap } from "fluid-framework";
+import { IFluidContainer, SharedMap } from "fluid-framework";
 import Floater from "../utils/Floater";
 
 
@@ -26,17 +26,18 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         myVisibleTool: undefined as string | undefined,
         floaterHandles: {} as { [key: string]: IFluidHandle },
     }
-
+    
     canvas = React.createRef<HTMLDivElement>();
     floaters = undefined as SharedMap | undefined;
+    container = undefined as IFluidContainer | undefined
 
     /**
      * Initializes the Fluid container and the inking manager once the component is mounted.
      */
     async componentDidMount() {
         // Connect to the active Fluid container
-        const { container } = await this.props.containerManager.getContainer(this.props.container);
-        const liveCanvas = container.initialObjects.liveCanvas as LiveCanvas;
+        this.container = (await this.props.containerManager.getContainer(this.props.container)).container;
+        const liveCanvas = this.container.initialObjects.liveCanvas as LiveCanvas;
         
         if (!this.canvas.current) throw new Error("Canvas host not found");
         const inkingManager = new InkingManager(this.canvas.current);
@@ -44,7 +45,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         // Begin synchronization for LiveCanvas
         await liveCanvas.initialize(inkingManager);
         
-        this.floaters = container.initialObjects.floaters as SharedMap;
+        this.floaters = this.container.initialObjects.floaters as SharedMap;
         const floaterHandles: { [key: string]: IFluidHandle } = {};
         for (const [key, value] of this.floaters.entries()) 
             if (value.get) floaterHandles[key] = value;
@@ -58,7 +59,6 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
 
     handleFloaterChange = (changed: any) => {
         const newValue = this.floaters!.get(changed.key);
-        console.log(newValue)
         if (newValue)
             this.setState({
                 floaterHandles: {
@@ -95,7 +95,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         return (
             <div>   
                 <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool}></div>
-                <MyToolBar ink={inkingManager} containerManager={this.props.containerManager} containerId={this.props.container} />
+                {this.container && <MyToolBar ink={inkingManager} container={this.container} />}
                 <div id='floaters' >
                     {Object.entries(floaterHandles).map(([key, value]) => 
                         <Floater key={key} handle={value} delete={() => {this.deleteFloater(key)}} />

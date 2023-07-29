@@ -1,30 +1,24 @@
 import { useEffect, useState } from 'react';
 import { IFluidContainer, SharedMap } from 'fluid-framework';
 
-import ContainerManager from '../containers/ContainerManager';
 
-
-// Declare the props
-export interface ViewerLoaderProps {
-    containerManager: ContainerManager;
-    containerId: string;
-}
-
-function ViewerLoader(props: ViewerLoaderProps) {
-    const [fluidObjects, setFluidObjects] = useState<{ container: IFluidContainer, floaters: SharedMap } | undefined>(undefined);
+function ViewerLoader(props: {container: IFluidContainer}) {
+    const [floaters, setFloaters] = useState<SharedMap | undefined>(undefined);
     
     // /------/ Code related to issue described later in this file
     const [canLoad, setCanLoad] = useState(false);
-    const isLoadEnabled = () => {setCanLoad((fluidObjects && fluidObjects.floaters.get("model") === undefined) as boolean)};
-    useEffect(isLoadEnabled, [fluidObjects]);
+    const isLoadEnabled = () => {
+        console.log(floaters, floaters?.get("model"), (floaters && floaters.get("model") === undefined) as boolean);
+        setCanLoad((floaters && floaters.get("model") === undefined) as boolean)
+    };
+    useEffect(() => {isLoadEnabled()}, [floaters]);
     // /------/ End of code related to issue
     
     useEffect(() => {(async () => {
         // Connect to the active Fluid container
-        const { container } = await props.containerManager.getContainer(props.containerId);
-        const floaters = container.initialObjects.floaters as SharedMap;
-        floaters.on("valueChanged", isLoadEnabled);
-        setFluidObjects({ container, floaters });
+        const floaters = props.container.initialObjects.floaters as SharedMap;
+        floaters.on("valueChanged", (changed) => { if (changed.key === "model") isLoadEnabled() });
+        setFloaters(floaters);
     })()}, [props]);
     
     async function loadModel() {
@@ -34,7 +28,7 @@ function ViewerLoader(props: ViewerLoaderProps) {
         };
 
         // Generate a dynamic map object
-        const floater = await fluidObjects!.container.create(SharedMap);
+        const floater = await props.container.create(SharedMap);
         // Add the model to the map
         Object.entries(model).forEach(([key, value]) => floater.set(key, value));
 
@@ -53,11 +47,11 @@ Disabled code that would allow multiple models to be displayed at once:
 ======================================================================================== */
 
         // If no model is loaded, load the model
-        if (canLoad) fluidObjects!.floaters.set("model", floater.handle);
+        if (canLoad) floaters!.set("model", floater.handle);
     }
 
     // Display a button to load a model
-    if (!fluidObjects) return <p>Loading...</p>;
+    if (!floaters) return <p>Loading...</p>;
     if (canLoad) return <button onClick={loadModel}>Load Model</button>;
     else return <p>Another model is already loaded</p>;
 }
