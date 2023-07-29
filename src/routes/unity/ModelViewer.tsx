@@ -82,11 +82,10 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
             {!isLoaded && (
                 <p>Loading Application... {Math.round(loadingProgression * 100)}%</p>
             )}
-            <div id="unity-container" style={{ visibility: isLoaded ? "visible" : "hidden" }}>Unity</div>
-            {/* <Unity
+            <Unity
                 unityProvider={unityProvider}
                 style={{ visibility: isLoaded ? "visible" : "hidden" }}
-            /> */}
+            />
         </>
     );
 }

@@ -6,7 +6,7 @@ import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
 import { IFluidContainer, SharedMap } from "fluid-framework";
-import Floater from "../utils/Floater";
+import Floater from "../floaters/Floater";
 
 
 
@@ -25,6 +25,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         inkingManager: undefined as InkingManager | undefined,
         myVisibleTool: undefined as string | undefined,
         floaterHandles: {} as { [key: string]: IFluidHandle },
+        pointerSelected: true,
     }
     
     canvas = React.createRef<HTMLDivElement>();
@@ -44,6 +45,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         
         // Begin synchronization for LiveCanvas
         await liveCanvas.initialize(inkingManager);
+        inkingManager.referencePoint = 'center';
         
         this.floaters = this.container.initialObjects.floaters as SharedMap;
         const floaterHandles: { [key: string]: IFluidHandle } = {};
@@ -85,21 +87,30 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
     getVisibleTool() {
         return this.state.myVisibleTool;
     }
-    
+
+    isPointerSelected = (selected: boolean) => {
+        this.setState({pointerSelected: selected})
+    }
+
     render(): React.ReactNode {
         const { 
             inkingManager,
-            floaterHandles
+            floaterHandles,
+            pointerSelected,
         } = this.state;
 
         return (
-            <div>   
-                <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool}></div>
-                {this.container && <MyToolBar ink={inkingManager} container={this.container} />}
+            <div id='canvas-background'>
+                <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool} style={{pointerEvents: pointerSelected ? 'none' : 'auto'}} />
+                {this.container && <MyToolBar ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected}/>}
                 <div id='floaters' >
-                    {Object.entries(floaterHandles).map(([key, value]) => 
-                        <Floater key={key} handle={value} delete={() => {this.deleteFloater(key)}} />
-                    )}
+                    {inkingManager && Object.entries(floaterHandles).map(([key, value]) => 
+                        <Floater 
+                        key={key} 
+                        handle={value} delete={() => {this.deleteFloater(key)}}
+                        inkingManager={inkingManager}
+                        />
+                        )}
                 </div>
             </div>
         );

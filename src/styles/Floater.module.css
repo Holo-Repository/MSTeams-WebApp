@@ -1,0 +1,18 @@
+.content {
+    width: 10em;
+    height: 10em;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: white;
+    border-color: transparent;
+
+    padding: 2px;
+    border-radius: 2px;
+
+    position: fixed;
+    z-index: 0;
+}

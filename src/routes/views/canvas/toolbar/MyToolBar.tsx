@@ -1,6 +1,6 @@
 import React from "react";
 import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
-import {LocationArrow28Filled, Pen24Filled, NoteEdit24Filled} from "@fluentui/react-icons";
+import { LocationArrow28Filled, Pen24Filled, NoteEdit24Filled } from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
 
 import DrawingManager from "./DrawingManager";
@@ -19,6 +19,7 @@ export interface MyToolbarProps {
     children?: React.ReactNode,
     ink: InkingManager | undefined,
     container: IFluidContainer,
+    pointerSelected: (isSelected: boolean) => void,
 }
 
 /**
@@ -45,13 +46,16 @@ class MyToolBar extends React.Component<MyToolbarProps>{
     setSelectedTool = (event: any) => {
         const tool = event.currentTarget.value;
 
+        
         // If the current tool is already selected, toggle its display status
         if (this.state.selectedTool === tool) {
-            this.state.isDisplayed ? this.setState({isDisplayed: false}) : this.setState({isDisplayed: true});
+            const isDisplayed = this.state.isDisplayed;
+            this.setState({ isDisplayed: !isDisplayed })
+            this.props.pointerSelected(tool === "Select" && !isDisplayed);
         } else {
-             // If a different tool is selected, update the selected tool and set isDisplayed to true.
+            // If a different tool is selected, update the selected tool and set isDisplayed to true.
             this.setState({selectedTool: tool, isDisplayed: true});
-
+            
             // If there's an InkingManager instance provided via props, activate or deactivate 
             // the InkingManager based on whether the selected tool is "Annotation".
             if (this.props.ink) {
@@ -61,6 +65,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                     this.props.ink.deactivate();
                 }
             }
+            this.props.pointerSelected(tool === "Select");
         }    
     }
 
