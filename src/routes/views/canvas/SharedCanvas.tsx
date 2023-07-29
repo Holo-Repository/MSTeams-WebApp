@@ -57,12 +57,25 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
     }
 
     handleFloaterChange = (changed: any) => {
-        this.setState({
-            floaterHandles: {
-                ...this.state.floaterHandles,
-                [changed.key]: this.floaters!.get(changed.key),
-            },
-        });
+        const newValue = this.floaters!.get(changed.key);
+        console.log(newValue)
+        if (newValue)
+            this.setState({
+                floaterHandles: {
+                    ...this.state.floaterHandles,
+                    [changed.key]: newValue
+                },
+            });
+        else
+            this.setState({
+                floaterHandles: Object.fromEntries(
+                    Object.entries(this.state.floaterHandles).filter(([key, value]) => key !== changed.key)
+                ),
+            });
+    }
+
+    deleteFloater = (key: string) => {
+        this.floaters!.delete(key);
     }
 
     setVisibleTool = (event: any) => {
@@ -84,7 +97,9 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
                 <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool}></div>
                 <MyToolBar ink={inkingManager} containerManager={this.props.containerManager} containerId={this.props.container} />
                 <div id='floaters' >
-                    {Object.entries(floaterHandles).map(([key, value]) => <Floater key={key} handle={value} />)}
+                    {Object.entries(floaterHandles).map(([key, value]) => 
+                        <Floater key={key} handle={value} delete={() => {this.deleteFloater(key)}} />
+                    )}
                 </div>
             </div>
         );

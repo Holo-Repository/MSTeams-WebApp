@@ -2,7 +2,7 @@ import { IFluidHandle } from "@fluidframework/core-interfaces";
 import { useEffect, useState } from "react";
 import ModelViewer from "../../unity/ModelViewer";
 
-function Floater(props: {handle : IFluidHandle}) {
+function Floater(props: {handle : IFluidHandle, delete: () => void}) {
     const [dataMap, setDataMap] = useState(undefined as unknown as { [key: string]: any } );
 
     useEffect(() => {(async () => {
@@ -15,7 +15,10 @@ function Floater(props: {handle : IFluidHandle}) {
     if (dataMap) 
     switch (dataMap.get('type')) {
         case "model":
-            content = <ModelViewer objMap={dataMap} />;
+            content = <>
+                <ModelViewer objMap={dataMap} />
+                <button onClick={props.delete}>Remove</button>
+            </>
             break;
         default:
             content = <p>Unknown</p>;
