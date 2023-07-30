@@ -1,6 +1,9 @@
 import CommonSidePanelMeetingStage, { CommonSidePanelMeetingStageProps } from "../utils/CommonSidePanelMeetingStage";
 import ContainerList from '../containerList/ContainerList';
 import SharedCanvas from "../canvas/SharedCanvas";
+import { Spinner } from "@fluentui/react-components";
+
+import commonStyles from '../../../styles/CommonSidePanelMeetingStage.module.css';
 
 
 export type MeetingStageProps = CommonSidePanelMeetingStageProps;
@@ -10,7 +13,7 @@ export type MeetingStageProps = CommonSidePanelMeetingStageProps;
  */
 class MeetingStage extends CommonSidePanelMeetingStage {
     render() {
-        if (this.state.mounting) return <div>Loading...</div>;
+        if (this.state.mounting) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
 
         if (!this.state.activeContainerId)
             return <ContainerList ref={this.contentRef}
