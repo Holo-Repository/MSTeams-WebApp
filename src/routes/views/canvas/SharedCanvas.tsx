@@ -47,9 +47,10 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         inkingManager.referencePoint = 'center';
         
         this.floaters = this.container.initialObjects.floaters as SharedMap;
+        // this.floaters.clear();
         const floaterHandles: { [key: string]: IFluidHandle } = {};
         for (const [key, value] of this.floaters.entries()) 
-            if (value && value.get) floaterHandles[key] = value;
+            if (value?.get) floaterHandles[key] = value;
         this.floaters.on("valueChanged", this.handleFloaterChange);
 
         this.isPointerSelected(true);
