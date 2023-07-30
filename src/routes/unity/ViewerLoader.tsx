@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { IFluidContainer, SharedMap } from 'fluid-framework';
+import IFloaterObject from '../views/floaters/IFloaterObject';
 
 
 function ViewerLoader(props: {container: IFluidContainer}) {
@@ -24,7 +25,8 @@ function ViewerLoader(props: {container: IFluidContainer}) {
         const model = {
             type: "model",
             pos: { x: 0, y: 0 },
-        };
+            size: { width: 100, height: 50 },
+        } as IFloaterObject;
 
         // Generate a dynamic map object
         const floater = await props.container.create(SharedMap);

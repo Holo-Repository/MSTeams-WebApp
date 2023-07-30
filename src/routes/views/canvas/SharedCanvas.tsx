@@ -49,7 +49,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         this.floaters = this.container.initialObjects.floaters as SharedMap;
         const floaterHandles: { [key: string]: IFluidHandle } = {};
         for (const [key, value] of this.floaters.entries()) 
-            if (value.get) floaterHandles[key] = value;
+            if (value && value.get) floaterHandles[key] = value;
         this.floaters.on("valueChanged", this.handleFloaterChange);
 
         this.isPointerSelected(true);
@@ -106,11 +106,11 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
                 <div id='floaters' >
                     {inkingManager && Object.entries(floaterHandles).map(([key, value]) => 
                         <Floater 
-                        key={key} 
-                        handle={value} delete={() => {this.deleteFloater(key)}}
-                        inkingManager={inkingManager}
+                            key={key} 
+                            handle={value} delete={() => {this.deleteFloater(key)}}
+                            inkingManager={inkingManager}
                         />
-                        )}
+                    )}
                 </div>
             </div>
         );

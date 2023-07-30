@@ -13,10 +13,10 @@ export interface FloaterInteractionProps {
 
 function FloaterInteraction(props: FloaterInteractionProps) {
     return (
-        <Toolbar aria-label="Subtle" size="small" >
-            <ToolbarButton icon={<Pin />} title="Pin" as="button" appearance="subtle"/>
-            <ToolbarDivider />
+        <Toolbar size="small" >
             <ToolbarButton icon={<Drag />} title="Drag" as="button" appearance="subtle" draggable onDrag={props.drag}/>
+            <ToolbarDivider />
+            <ToolbarButton icon={<Pin />} title="Pin" as="button" appearance="subtle"/>
             <ToolbarDivider />
             <ToolbarButton icon={<Delete />} title="Delete" as="button" appearance="subtle" onClick={props.delete}/>
         </Toolbar>

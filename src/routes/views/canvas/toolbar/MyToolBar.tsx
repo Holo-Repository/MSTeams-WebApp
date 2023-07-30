@@ -48,12 +48,12 @@ class MyToolBar extends React.Component<MyToolbarProps>{
     setSelectedTool = (event: any) => {
         const tool = event.currentTarget.value;
 
+        this.props.pointerSelected(tool === "Select");
         
         // If the current tool is already selected, toggle its display status
         if (this.state.selectedTool === tool) {
             const isDisplayed = this.state.isDisplayed;
             this.setState({ isDisplayed: !isDisplayed })
-            this.props.pointerSelected(tool === "Select" && !isDisplayed);
         } else {
             // If a different tool is selected, update the selected tool and set isDisplayed to true.
             this.setState({selectedTool: tool, isDisplayed: true});
@@ -67,7 +67,6 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                     this.props.ink.deactivate();
                 }
             }
-            this.props.pointerSelected(tool === "Select");
         }    
     }
 
