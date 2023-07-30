@@ -101,7 +101,7 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
                         <img src={imgPath} alt='preview' />
                         <div className="display-area">
                             <h4>{container.name}</h4>
-                            <p>{container.description}</p>
+                            <p>{container.time}</p>
                             {canOpen && <button onClick={() => open(container.id)}>Work Together</button>}
                         </div>
                     </div>

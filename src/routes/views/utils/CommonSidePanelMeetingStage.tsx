@@ -2,6 +2,7 @@ import React from 'react';
 
 import ContainerList from '../containerList/ContainerList';
 import ContainerManager from '../../containers/ContainerManager';
+import ContainerMap from '../../containers/ContainerMap';
 import AppContainer from '../../containers/AppContainer';
 import { IValueChanged, SharedMap } from 'fluid-framework';
 import { LiveEvent } from '@microsoft/live-share';
@@ -83,9 +84,10 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
      * @throws Error if the container cannot be created in the current location.
      */
     async createContainer(name: string, description: string): Promise<void> {
-        await this.props.containerManager.createContainer(name, description);
+        const id = await this.props.containerManager.createContainer(name, description);
         // Signal to other clients that a new container has been created
         this.newContainerEvent?.send('received');
+        this.openContainer(id);
     }
 
     /**
@@ -100,7 +102,9 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.appState.set('activeContainerId', containerId);
     }
 
-    closeContainer() {
+    async closeContainer() {
+        const containerMap= {time: new Date().toISOString()}
+        await this.props.containerManager.updateContainerProperty(this.state.activeContainerId as string, containerMap)
         this.openContainer(undefined as unknown as string);
     }
 
