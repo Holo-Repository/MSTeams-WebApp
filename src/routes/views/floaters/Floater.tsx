@@ -97,7 +97,7 @@ function Floater(props: FloaterProps) {
     if (dataMap) {
         switch (dataMap.get('type')) {
             case "model":
-                content = <p style={{backgroundColor:"black"}}>Model</p>//<ModelViewer objMap={dataMap} />
+                content = <ModelViewer objMap={dataMap} />
                 break;
             default:
                 content = <p>Unknown</p>;

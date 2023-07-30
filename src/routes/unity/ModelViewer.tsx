@@ -1,3 +1,4 @@
+import { Text } from "@fluentui/react-components";
 import React from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
@@ -80,7 +81,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     return (
         <>
             {!isLoaded && (
-                <p>Loading Application... {Math.round(loadingProgression * 100)}%</p>
+                <Text>Loading Application... {Math.round(loadingProgression * 100)}%</Text>
             )}
             <Unity
                 unityProvider={unityProvider}

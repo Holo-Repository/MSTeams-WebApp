@@ -7,12 +7,12 @@ import ContainerManager from "./containers/ContainerManager";
 
 
 /**
- * The HoloRepo component.
+ * The HoloCollab component.
  * This component is responsible for rendering the correct view based on the context.
  * 
  * The view is determined by the context.page.frameContext value served by the Teams SDK.
  */
-class HoloRepo extends React.Component {
+class HoloCollab extends React.Component {
     state = {
         // Expected values: "default", "content", "sidePanel", "meetingStage"
         // Represents the current view where the app is running.
@@ -49,4 +49,4 @@ class HoloRepo extends React.Component {
     }
 }
 
-export default HoloRepo;
+export default HoloCollab;
