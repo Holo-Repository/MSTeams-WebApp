@@ -111,7 +111,7 @@ function Floater(props: FloaterProps) {
     const contentStyle = { ...pos, ...size };
     
     return (
-        <Tooltip content={interaction} relationship="label" hideDelay={50} showDelay={10} >
+        <Tooltip content={interaction} relationship="label" hideDelay={50} showDelay={10} positioning='above-start' >
             <div 
                 ref={contentRef}
                 className={styles.content} 
