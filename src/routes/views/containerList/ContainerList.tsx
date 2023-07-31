@@ -28,7 +28,7 @@ class ContainerList extends React.Component<ContainerListProps> {
 
     state = {
         containers: [] as ContainerMap[],
-        activeContainer: undefined as undefined | ContainerMap
+        mounted: false,
     };
 
     constructor(props: ContainerListProps) {
@@ -45,7 +45,7 @@ class ContainerList extends React.Component<ContainerListProps> {
         // Get the list of containers for the current location from the Table Storage
         const containers = await this.props.containerManager.listContainers();
         containers.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
-        this.setState({ containers: containers });
+        this.setState({ containers: containers, mounted: true });
     }
 
     /**
@@ -60,7 +60,7 @@ class ContainerList extends React.Component<ContainerListProps> {
     render() {
         return (
             <div>
-                {!this.props.activeContainerId && <div>
+                {!this.props.activeContainerId && this.state.mounted && <div>
                     <h3>Recent Collab Case</h3>
                     <div className="flex-container-list">
                         {this.state.containers.map((container) => (
@@ -73,11 +73,14 @@ class ContainerList extends React.Component<ContainerListProps> {
                     </div>
                 </div>}
 
-                {this.props.activeContainerId && <div className="flex-container-list">
-                    <ContainerPreview container={this.getActiveContainer()} close={this.props.closeContainer}
-                    canClose={true}
-                    ></ContainerPreview>
-                </div>}
+                {this.props.activeContainerId && this.state.mounted && 
+                    <div className="flex-container-list">
+                        <ContainerPreview container={this.getActiveContainer()} close={this.props.closeContainer}
+                        canClose={true}
+                        ></ContainerPreview>
+                    </div>
+                }
+
             </div>
         );
     }
