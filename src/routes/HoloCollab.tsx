@@ -1,10 +1,11 @@
 import React from "react";
 import { app } from "@microsoft/teams-js";
+import { Spinner } from "@fluentui/react-components";
 
 import SidePanel from "./views/sidePanel/SidePanel";
 import MeetingStage from "./views/meetingStage/MeetingStage";
 import ContainerManager from "./containers/ContainerManager";
-
+import commonStyles from "../styles/CommonSidePanelMeetingStage.module.css";
 
 /**
  * The HoloCollab component.
@@ -37,7 +38,7 @@ class HoloCollab extends React.Component {
     render() {
         const { view } = this.state;
 
-        if (!this.containerManager) return 'Loading...';
+        if (!this.containerManager) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
 
         return (
             <>

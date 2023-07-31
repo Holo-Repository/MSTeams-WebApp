@@ -1,10 +1,11 @@
 import { IFluidHandle } from "@fluidframework/core-interfaces";
-import { useEffect, useRef, useState } from "react";
-import { Tooltip } from "@fluentui/react-components";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Text, Tooltip } from "@fluentui/react-components";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { getTheme } from '@fluentui/react';
 import { IValueChanged, SharedMap } from "fluid-framework";
 import { throttle } from 'lodash';
+import ReactDOM from "react-dom";
 
 import ModelViewer from "../../unity/ModelViewer";
 import styles from "../../../styles/Floater.module.css";
@@ -24,6 +25,7 @@ import {
 const theme = getTheme();
 const throttleTime = 100;
 const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => { 
+    console.log('SENDING POS', pos);
     if (dataMap) dataMap.set('pos', pos);
 }, throttleTime, { leading: true, trailing: true });
 const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
@@ -39,76 +41,74 @@ export interface FloaterProps {
 }
 
 function Floater(props: FloaterProps) {
-    const [dataMap, setDataMap] = useState(undefined as unknown as { [key: string]: any } );
-    const [appPos, setAppPos] = useState({ x: 0, y: 0 } as FloaterAppCoords);
-    const [appSize, setAppSize] = useState({ width: 0, height: 0 } as FloaterAppSize);
-    const contentRef = useRef(null);
-    const sizeObserver = new ResizeObserver((entires) => {
-        if (!entires || entires.length === 0) return;
-        const contentRect = entires[0].contentRect;
-        const screenSize = { width: contentRect.left + contentRect.right, height: contentRect.top + contentRect.bottom } as FloaterScreenSize;
-        handleResize(screenSize);
-    });
-    
-    useEffect(() => {(async () => {
-        const dm = await props.handle.get() as SharedMap;
-        dm.on("valueChanged", (change, local) => {handleChange(change, local)});
-        setAppPos(dm.get('pos') as FloaterAppCoords);
-        setAppSize(dm.get('size') as FloaterAppSize);
-        setDataMap(dm);
-    })();}, [props]);
+    const [screenPos, setScreenPos] = useState<FloaterScreenCoords | undefined>(undefined);
+    const [screenSize, setScreenSize] = useState<FloaterScreenSize | undefined>(undefined);
+    const [hasLoaded, setHasLoaded] = useState(false);
 
+    const floaterRef = useRef<SharedMap>();
     useEffect(() => {
+        props.handle.get().then((dataMap) => {
+            floaterRef.current = dataMap as SharedMap;
+            floaterRef.current.on("valueChanged", (changed: IValueChanged, local: boolean) => {
+                if (local) return;
+                if (changed.key === 'pos') {
+                    console.log('RECEIVED POS', floaterRef.current!.get('pos')!);
+                    setScreenPos(appToScreenPos(props.inkingManager, floaterRef.current!.get('pos')!));
+                }
+                if (changed.key === 'size') {
+                    console.log('RECEIVED SIZE', floaterRef.current!.get('size')!);
+                    setScreenSize(appToScreenSize(props.inkingManager, floaterRef.current!.get('pos')!, floaterRef.current!.get('size')!));
+                }
+            });
+            setScreenPos(appToScreenPos(props.inkingManager, floaterRef.current.get('pos')!));
+            setScreenSize(appToScreenSize(props.inkingManager, floaterRef.current.get('pos')!, floaterRef.current.get('size')!));
+            setHasLoaded(true);
+        });
+    }, [props.handle]);
+
+    const handleDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const newScreenPos = { left: e.clientX, top: e.clientY };
+        if (newScreenPos.left === 0 && newScreenPos.top === 0) return; // Ignore the last event
+        setScreenPos(newScreenPos); // Local update
+        setDMPos(floaterRef.current, screenToAppPos(props.inkingManager, newScreenPos)); // Remote update
+    }
+
+
+    const contentRef = useRef<HTMLDivElement>(null);
+    useLayoutEffect(() => {
         if (!contentRef.current) return;
-        const content = contentRef.current as unknown as HTMLElement;
-        sizeObserver.observe(content, { box: 'border-box' });
-        return () => { sizeObserver.unobserve(content); };
-    }, [contentRef]);
+        const content = contentRef.current;
+        console.log('INIT OBSERVER');
+        // Attach resize observer
+        const resizeObserver = new ResizeObserver((entries) => {
+            const rect = content.getBoundingClientRect() as DOMRect;
+            const newScreenSize = { width: rect.width, height: rect.height };
+            console.log('RESIZE', newScreenSize);
+            setDMSize(floaterRef.current, screenToAppSize(props.inkingManager, screenPos!, newScreenSize));
+        });
+        resizeObserver.observe(content);
+        return () => resizeObserver.disconnect();
+    }, [hasLoaded]);
+
+
+
+
+
+    // Render the floater
+    if (!screenPos || !screenSize) return <></>;
     
-    const handleChange = (changed: IValueChanged, local: boolean) => {
-        if (!dataMap) return;
-        if (!local && changed.key === 'pos') setAppPos(dataMap.get('pos') as FloaterAppCoords);
-        if (!local && changed.key === 'size') {
-            const newSize = dataMap.get('size') as FloaterAppSize;
-            console.log('RECEIVED SIZE', newSize);
-            setAppSize(newSize);
-        }
-    }
-
-    const handleResize = (newSize: FloaterScreenSize) => {
-        if (!dataMap || !appPos || newSize.width === 0 || newSize.height === 0) return;
-        const screenPos = appToScreenPos(props.inkingManager, appPos);
-        const newAppSize = screenToAppSize(props.inkingManager, screenPos, newSize);
-        setAppSize(newAppSize);
-        setDMSize(dataMap, newAppSize);
-    }
-
-    
-    const handleDrag = (event: any) => {
-        const canvasPos = { left: event.clientX, top: event.clientY } as FloaterScreenCoords;
-        if (canvasPos.left === 0 && canvasPos.top === 0) return;
-        const newAppPos = screenToAppPos(props.inkingManager, canvasPos);
-        setAppPos(newAppPos);
-        setDMPos(dataMap, newAppPos);
-    }
-
-    let content = <p>Loading...</p>;
-
-    if (dataMap) {
-        switch (dataMap.get('type')) {
-            case "model":
-                content = <ModelViewer objMap={dataMap} />
-                break;
-            default:
-                content = <p>Unknown</p>;
-                break;
-        }
-    }
+    let content = <Text>{JSON.stringify({...screenPos, ...screenSize})}</Text>;
+    // switch (dataMap.current.get('type')) {
+    //     case "model":
+    //         content = <p>Model</p>;<ModelViewer objMap={dataMap} />
+    //         break;
+    //     default:
+    //         content = <p>Unknown</p>;
+    //         break;
+    // }
     
     const interaction = <FloaterInteraction delete={props.delete} drag={handleDrag} />
-    const pos = dataMap ? appToScreenPos(props.inkingManager, appPos) : { top: 0, left: 0 };
-    const size = dataMap ? appToScreenSize(props.inkingManager, appPos, appSize) : { width: 0, height: 0 };
-    const contentStyle = { ...pos, ...size };
+    const contentStyle = { ...screenPos, ...screenSize };
     
     return (
         <Tooltip content={interaction} relationship="label" hideDelay={50} showDelay={10} positioning='above-start' >
