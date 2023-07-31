@@ -7,6 +7,7 @@ import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
 import { IFluidContainer, SharedMap } from "fluid-framework";
 import Floater from "../floaters/Floater";
+import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
 
 
 
@@ -101,7 +102,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         } = this.state;
 
         return (
-            <div id='canvas-background'>
+            <FluentProvider id='canvas-background' theme={teamsLightTheme}>
                 <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool} />
                 {this.container && <MyToolBar ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected}/>}
                 <div id='floaters' >
@@ -113,7 +114,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
                         />
                     )}
                 </div>
-            </div>
+            </FluentProvider>
         );
     }
 }

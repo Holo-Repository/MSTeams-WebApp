@@ -1,7 +1,10 @@
-import { Text } from "@fluentui/react-components";
+import { Field, ProgressBar, Text } from "@fluentui/react-components";
 import React from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
+
+import styles from "../../styles/ModelViewer.module.css";
+
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer/WebGL/Build";
 
@@ -80,12 +83,15 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
     return (
         <>
-            {!isLoaded && (
-                <Text>Loading Application... {Math.round(loadingProgression * 100)}%</Text>
-            )}
+            {!isLoaded && <div className={styles.progressContainer}>
+                <Field validationMessage={'Loading Unity Viewer...'} validationState="none" className={styles.progressBar}>
+                    <ProgressBar thickness="large" value={loadingProgression} />
+                </Field>
+            </div>}
             <Unity
                 unityProvider={unityProvider}
                 style={{ visibility: isLoaded ? "visible" : "hidden" }}
+                className={styles.unity}
             />
         </>
     );

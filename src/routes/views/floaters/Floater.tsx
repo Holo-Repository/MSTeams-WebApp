@@ -5,7 +5,6 @@ import { InkingManager } from "@microsoft/live-share-canvas";
 import { getTheme } from '@fluentui/react';
 import { IValueChanged, SharedMap } from "fluid-framework";
 import { throttle } from 'lodash';
-import ReactDOM from "react-dom";
 
 import ModelViewer from "../../unity/ModelViewer";
 import styles from "../../../styles/Floater.module.css";
@@ -95,17 +94,17 @@ function Floater(props: FloaterProps) {
 
 
     // Render the floater
-    if (!screenPos || !screenSize) return <></>;
+    if (!screenPos || !screenSize || !floaterRef.current) return <></>;
     
     let content = <Text>{JSON.stringify({...screenPos, ...screenSize})}</Text>;
-    // switch (dataMap.current.get('type')) {
-    //     case "model":
-    //         content = <p>Model</p>;<ModelViewer objMap={dataMap} />
-    //         break;
-    //     default:
-    //         content = <p>Unknown</p>;
-    //         break;
-    // }
+    switch (floaterRef.current.get('type')) {
+        case "model":
+            content = <ModelViewer objMap={floaterRef.current} />
+            break;
+        default:
+            content = <p>Unknown</p>;
+            break;
+    }
     
     const interaction = <FloaterInteraction delete={props.delete} drag={handleDrag} />
     const contentStyle = { ...screenPos, ...screenSize };
