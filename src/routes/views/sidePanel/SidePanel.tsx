@@ -18,23 +18,16 @@ class SidePanel extends CommonSidePanelMeetingStage {
                 </div>
             );
 
-        if (!this.state.activeContainerId)
-            return <ContainerList ref={this.contentRef}
-                containerManager={this.props.containerManager} 
-                canOpen={true} 
-                canCreate={true} 
-                openContainer={this.openContainer} 
-                createContainer={this.createContainer}
-                // closeContainer={this.closeContainer}
-            />;
-
-        return (
-            <div>
-                <button onClick={this.closeContainer}>Close</button>
-                Active Container: {this.state.activeContainerId}
-            </div>
-        );
-    }
+        return <ContainerList ref={this.contentRef}
+            containerManager={this.props.containerManager} 
+            activeContainerId = {this.state.activeContainerId}
+            canOpen={true} 
+            canCreate={true} 
+            openContainer={this.openContainer} 
+            closeContainer={this.closeContainer}
+            createContainer={this.createContainer}
+        />;
+}
 }
 
 export default SidePanel;

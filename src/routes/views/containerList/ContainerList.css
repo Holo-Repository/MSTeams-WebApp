@@ -44,9 +44,16 @@
 .display-area button {
     width: inherit;
     height: 35%;
-    background-color: #4f52b2;
     color: aliceblue;
     border: none
+}
+
+.display-area #open {
+    background-color: #4f52b2;
+}
+
+.display-area #close {
+    background-color: #bc2f32;
 }
 
 .new-container {

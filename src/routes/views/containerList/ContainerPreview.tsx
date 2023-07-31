@@ -34,8 +34,9 @@ const textFieldStyles: Partial<ITextFieldStyles> = {
 export interface ContainerPreviewProps {
     container: ContainerMap | undefined;
     canOpen: boolean;
+    canClose: boolean;
     open: (containerId: string) => void;
-    // close: (containerId: string) => void;
+    close: (containerId: string) => void;
     create: (name: string, desc: string) => void;
 }
 
@@ -47,8 +48,9 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
         container: undefined,
         create: undefined,
         open: () => {},
-        // close: () => {},
+        close: () => {},
         canOpen: false,
+        canClose: false,
     };
 
     state = {
@@ -56,19 +58,32 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
         newName: 'New Collab Case',
         newDesc: '',
         isNameValid: true,
-        // opened: false, 
     };
-
+    
+    /**
+     * Updates the 'newName' state when the name input field changes, and validates the new name.
+     * @param event - The event object from the change in the name input field.
+     * @param newValue - The new value of the name input field.
+     */
     handleNameInputChange = (event: React.FormEvent<HTMLTextAreaElement | HTMLInputElement>, newValue?: string) => {
         this.setState({newName: newValue}, () => {
             this.validateName();
         }); 
     }
 
+    /**
+     * Event handler for changes in the description input field. Updates 'newDesc' state with the new value.
+     * 
+     * @param event - The event object from the change in the description input field.
+     * @param newValue - The new value of the description input field.
+     */
     handleDescInputChange = (event: React.FormEvent<HTMLTextAreaElement | HTMLInputElement>, newValue?: string) => {
         this.setState({newDesc: newValue});
     }
 
+    /**
+     * Validates the 'newName' state. If 'newName' is an empty string, sets 'isNameValid' to false. Otherwise, sets 'isNameValid' to true.
+     */
     validateName = () => {
         const { newName: name } = this.state;
         if (name.trim() === '') {
@@ -84,12 +99,8 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
         this.setState({ formDisplayed:false, newName: 'New Collab Case', newDesc: ''});
     }
 
-    // toggleButton(containerId: string) {
-    //     this.state.opened ? this.props.close(containerId):this.props.open(containerId);
-    // }
-
     render() {
-        const { container, create, open, canOpen } = this.props;
+        const { container, create, open, close, canOpen, canClose } = this.props;
 
         if (create === undefined && container === undefined)
             throw new Error("ContainerPreview: Either container or create must be defined.");
@@ -102,7 +113,8 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
                         <div className="display-area">
                             <h4>{container.name}</h4>
                             <p>{container.time}</p>
-                            {canOpen && <button onClick={() => open(container.id)}>Work Together</button>}
+                            {canOpen && <Button id="open" onClick={() => open(container.id)}>Work Together</Button>}
+                            {canClose && <Button id="close" onClick={() => close(container.id)}>Close</Button>}
                         </div>
                     </div>
                 }

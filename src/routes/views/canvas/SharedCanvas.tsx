@@ -50,8 +50,9 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         //     const canvasSnapshot = await html2canvas(this.canvas.current); 
         //     const imgData = canvasSnapshot.toDataURL();
         // }
-        const containerMap= {time: new Date().toISOString()};
-        await this.props.containerManager.updateContainerProperty(this.props.container, containerMap);
+        
+        // const containerMap= {time: new Date().toISOString()};
+        // await this.props.containerManager.updateContainerProperty(this.props.container, containerMap);
     }
 
     setVisibleTool = (event: any) => {

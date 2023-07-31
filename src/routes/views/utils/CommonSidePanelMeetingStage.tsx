@@ -2,7 +2,6 @@ import React from 'react';
 
 import ContainerList from '../containerList/ContainerList';
 import ContainerManager from '../../containers/ContainerManager';
-import ContainerMap from '../../containers/ContainerMap';
 import AppContainer from '../../containers/AppContainer';
 import { IValueChanged, SharedMap } from 'fluid-framework';
 import { LiveEvent } from '@microsoft/live-share';
@@ -103,7 +102,13 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
     }
 
     async closeContainer() {
+        // Save the last edit time
+        const containerMap= {time: new Date().toISOString()};
+        await this.props.containerManager.updateContainerProperty(this.state.activeContainerId as string, containerMap);
         this.openContainer(undefined as unknown as string);
+        
+        // Redraw the component to update edit time
+        this.contentRef.current?.componentDidMount();
     }
 
     abstract render(): React.ReactNode;
