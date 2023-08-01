@@ -1,18 +1,19 @@
 import React from "react";
 import { app } from "@microsoft/teams-js";
+import { Spinner } from "@fluentui/react-components";
 
 import SidePanel from "./views/sidePanel/SidePanel";
 import MeetingStage from "./views/meetingStage/MeetingStage";
 import ContainerManager from "./containers/ContainerManager";
-
+import commonStyles from "../styles/CommonSidePanelMeetingStage.module.css";
 
 /**
- * The HoloRepo component.
+ * The HoloCollab component.
  * This component is responsible for rendering the correct view based on the context.
  * 
  * The view is determined by the context.page.frameContext value served by the Teams SDK.
  */
-class HoloRepo extends React.Component {
+class HoloCollab extends React.Component {
     state = {
         // Expected values: "default", "content", "sidePanel", "meetingStage"
         // Represents the current view where the app is running.
@@ -37,7 +38,7 @@ class HoloRepo extends React.Component {
     render() {
         const { view } = this.state;
 
-        if (!this.containerManager) return 'Loading...';
+        if (!this.containerManager) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
 
         return (
             <>
@@ -49,4 +50,4 @@ class HoloRepo extends React.Component {
     }
 }
 
-export default HoloRepo;
+export default HoloCollab;

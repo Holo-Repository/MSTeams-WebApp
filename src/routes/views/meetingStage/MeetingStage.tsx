@@ -3,7 +3,9 @@ import ContainerList from '../containerList/ContainerList';
 import SharedCanvas from "../canvas/SharedCanvas";
 import { Button, Spinner, Tooltip } from "@fluentui/react-components";
 import { Dismiss24Filled } from "@fluentui/react-icons";
-import './MeetingStage.css'; 
+
+import '../../../styles/MeetingStage.css'; 
+import commonStyles from '../../../styles/CommonSidePanelMeetingStage.module.css';
 
 
 export type MeetingStageProps = CommonSidePanelMeetingStageProps;
@@ -13,12 +15,7 @@ export type MeetingStageProps = CommonSidePanelMeetingStageProps;
  */
 class MeetingStage extends CommonSidePanelMeetingStage {
     render() {
-        if (this.state.mounting)
-            return(
-                <div className="flex-loading">
-                    <Spinner appearance="primary" size="small" label="Loading" />
-                </div>
-            );
+        if (this.state.mounting) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
 
         if (!this.state.activeContainerId)
             return(

@@ -1,11 +1,12 @@
 import React from "react";
+import { Spinner } from "@fluentui/react-components";
 
 import ContainerMap from "../../containers/ContainerMap";
 import ContainerPreview from "./ContainerPreview";
 import ContainerManager from "../../containers/ContainerManager";
 
 import './ContainerList.css'
-import { Spinner } from "@fluentui/react-components";
+
 
 export interface ContainerListProps {
     containerManager: ContainerManager;
@@ -62,7 +63,7 @@ class ContainerList extends React.Component<ContainerListProps> {
         return (
             <div>
                 {!this.state.mounted && <div className="flex-loading">
-                    <Spinner appearance="primary" size="small" label="Loading" />
+                    <Spinner labelPosition="below" label="Connecting..." />
                 </div>}
                 {this.state.mounted && !this.props.activeContainerId && <div>
                     <h3>Recent Collab Case</h3>

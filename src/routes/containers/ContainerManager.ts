@@ -5,7 +5,8 @@ import {
     LiveShareRuntime,
 } from "@microsoft/live-share";
 import {
-    ContainerSchema
+    ContainerSchema, 
+    SharedMap,
 } from "fluid-framework";
 import {
     AzureClientProps,
@@ -26,6 +27,15 @@ import HoloLiveShareHost from "./HoloLiveShareHost";
  * It abstracts the complexity of creating, connecting and managing the Fluid containers.
  */
 class ContainerManager {
+    schema = { // Define Fluid schema
+        initialObjects: {
+            // presence: LivePresence,
+            liveCanvas: LiveCanvas,
+            floaters: SharedMap,
+        },
+        dynamicObjectTypes: [ SharedMap ]
+    } as ContainerSchema;
+
     locationId: string;
     private tableClient: TableClient;
     private client: AzureClient;
@@ -142,13 +152,6 @@ class ContainerManager {
      * @private
      */
     private getSchema() {
-        const schema = { // Define Fluid schema
-            initialObjects: {
-                // presence: LivePresence,
-                liveCanvas: LiveCanvas,
-            }
-        };
-        
         // Create host
         const host = HoloLiveShareHost.create();
         // Manually supplying a started timestamp provider because otherwise it would give an error that the provider had not been started
@@ -156,7 +159,7 @@ class ContainerManager {
         // Create the LiveShareRuntime, which is needed for `LiveDataObject` instances to work
         const runtime = new LiveShareRuntime(host, tsp);
         // Inject the LiveShareRuntime dependency into the ContainerSchema
-        const injectedSchema: ContainerSchema = getLiveShareContainerSchemaProxy(schema, runtime);
+        const injectedSchema: ContainerSchema = getLiveShareContainerSchemaProxy(this.schema, runtime);
         return { host, injectedSchema };
     }
     
