@@ -3,6 +3,10 @@ import { IFluidContainer, SharedMap } from 'fluid-framework';
 import IFloaterObject from '../views/floaters/IFloaterObject';
 
 import useFloaterLoader from '../views/floaters/FloaterLoader';
+import { 
+    Button,
+    Text, 
+} from '@fluentui/react-components';
 
 
 function ViewerLoader(props: {container: IFluidContainer}) {
@@ -22,7 +26,7 @@ function ViewerLoader(props: {container: IFluidContainer}) {
     async function loadModel() {
         const model = {
             type: "model",
-            pos: { x: 0, y: 0 },
+            pos: { x: -200, y: -150 },
             size: { width: 400, height: 300 },
         } as IFloaterObject;
 /* ========================================================================================
@@ -36,9 +40,14 @@ See the code in ModelViewer.tsx for more details on the workaround used.
     }
 
     // Display a button to load a model
-    if (!floaters) return <p>Loading...</p>;
-    if (canLoad) return <button onClick={loadModel}>Load Model</button>;
-    else return <p>Can load: {JSON.stringify(canLoad)}</p>;
+    if (!floaters) return <Text>Loading...</Text>;
+    if (canLoad) return <Button onClick={loadModel} size='small' appearance='subtle'>Load Model</Button>;
+    else return (
+        <Text>
+            Only one model viewer can be open at a time.<br/>
+            Please close the current model viewer to open a new one.
+        </Text>
+    );
 }
 
 export default ViewerLoader;

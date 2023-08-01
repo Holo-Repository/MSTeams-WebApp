@@ -3,7 +3,7 @@ import ContainerList from '../containerList/ContainerList';
 import { Spinner } from "@fluentui/react-components";
 
 import commonStyles from '../../../styles/CommonSidePanelMeetingStage.module.css';
-import '../meetingStage/MeetingStage.css'
+import '../../../styles/MeetingStage.css'
 
 
 export type SidePanelProps = CommonSidePanelMeetingStageProps;

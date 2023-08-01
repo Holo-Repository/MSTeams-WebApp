@@ -4,7 +4,7 @@ import SharedCanvas from "../canvas/SharedCanvas";
 import { Button, Spinner, Tooltip } from "@fluentui/react-components";
 import { Dismiss24Filled } from "@fluentui/react-icons";
 
-import './MeetingStage.css'; 
+import '../../../styles/MeetingStage.css'; 
 import commonStyles from '../../../styles/CommonSidePanelMeetingStage.module.css';
 
 
