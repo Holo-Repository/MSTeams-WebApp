@@ -1,14 +1,15 @@
-import { Field, ProgressBar, Text } from "@fluentui/react-components";
-import React from "react";
+import React, { useEffect } from "react";
+import { Field, ProgressBar } from "@fluentui/react-components";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
+import { SharedMap } from "fluid-framework";
 
 import styles from "../../styles/ModelViewer.module.css";
 
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
 
-function ModelViewer(props: {objMap: { [key: string]: any }}) {
+function ModelViewer(props: {objMap: SharedMap}) {
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
 This is because when React unloads it deleted the unity canvas, which causes the unity engine to crash.
@@ -26,6 +27,31 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         frameworkUrl: `${buildURL}/WebGL.framework.js.gz`,
         codeUrl: `${buildURL}/WebGL.wasm.gz`,
     });
+    
+    // Register functions that unity can call
+    useEffect(() => {
+        const globalThis = window as any;
+        globalThis.syncCurrentRotation = (x: number, y: number, z: number) => {
+            props.objMap.set("modelRotation", {x, y, z});
+        }
+
+        if (unityInstance)
+            props.objMap.on("valueChanged", (changed, local) => {
+                if (local) return;
+                if (changed.key === "modelRotation") {
+                    const rotation = props.objMap.get('modelRotation') as { x: number, y: number, z: number };
+                    unityInstance.SendMessage("Target Manager", "SetRotationJS", JSON.stringify(rotation));
+                }
+            });
+
+        return () => {
+            globalThis.syncCurrentRotation = undefined;
+        }
+    }, [unityInstance]);
+
+
+
+
 
     const observerRef = React.useRef<MutationObserver | null>(null);
 

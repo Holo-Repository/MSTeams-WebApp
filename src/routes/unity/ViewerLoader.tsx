@@ -28,6 +28,7 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
             type: "model",
             pos: { x: -200, y: -150 },
             size: { width: 400, height: 300 },
+            modelRotation: { x: 0, y: 0, z: 0 },
         } as IFloaterObject;
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
