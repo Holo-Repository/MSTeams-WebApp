@@ -1,4 +1,5 @@
 import React from "react";
+// import html2canvas from "html2canvas";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 
 import MyToolBar from "./toolbar/MyToolBar";
@@ -44,6 +45,17 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         });
     }
 
+    async componentWillUnmount(){
+        // TODO: Save the Base64 image into Azure blob?
+        // if (this.canvas.current) {
+        //     const canvasSnapshot = await html2canvas(this.canvas.current); 
+        //     const imgData = canvasSnapshot.toDataURL();
+        // }
+        
+        // const containerMap= {time: new Date().toISOString()};
+        // await this.props.containerManager.updateContainerProperty(this.props.container, containerMap);
+    }
+
     setVisibleTool = (event: any) => {
         this.setState({myVisibleTool: event.currentTarget.value})
     }
@@ -56,7 +68,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         const { inkingManager } = this.state;
 
         return (
-            <div>   
+            <div> 
                 <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool}></div>
                 <MyToolBar ink={inkingManager}></MyToolBar>
             </div>

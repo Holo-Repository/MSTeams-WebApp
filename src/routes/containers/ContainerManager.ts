@@ -113,6 +113,29 @@ class ContainerManager {
     }
 
     /**
+     * Update a specific property of a container in this location
+     * 
+     * @param id The ID of the container to update
+     * @param updatedProperty An object containing the property to update and the new value
+     */
+    async updateContainerProperty(id: string, updatedProperty: Partial<ContainerMap>) {
+        const entity = await this.getEntity();
+        const containers = JSON.parse(entity.containers as string) as ContainerMap[];
+        const targetIndex = containers.findIndex(container => container.id === id);
+
+        // If the container was found
+        if (targetIndex !== -1) {
+            // Merge the original container with the updated properties
+            containers[targetIndex] = { ...containers[targetIndex], ...updatedProperty };
+            entity.containers = JSON.stringify(containers);
+            return this.tableClient.updateEntity(entity, 'Replace');
+        } else {
+            throw new Error(`Container with id ${id} not found.`);
+        }
+    }
+
+
+    /**
      * Get the host and container schema
      * 
      * @returns { host: AzureLiveShareHost, injectedSchema: ContainerSchema }
@@ -153,7 +176,7 @@ class ContainerManager {
         const id = await container.attach();
         // await this.appendContainerId({ id, name, description, locationId: this.locationId } as Container);
         const now = new Date().toISOString();
-        await this.appendContainerId({ id, name:id, description:now, locationId: this.locationId } as ContainerMap);
+        await this.appendContainerId({ id, name:name, time:now, description:description, locationId: this.locationId } as ContainerMap);
 
         // Detach container
         container.disconnect();
