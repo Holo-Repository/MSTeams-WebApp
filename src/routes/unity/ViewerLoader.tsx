@@ -23,7 +23,7 @@ function ViewerLoader(props: {container: IFluidContainer}) {
         const model = {
             type: "model",
             pos: { x: 0, y: 0 },
-            size: { width: 100, height: 50 },
+            size: { width: 400, height: 300 },
         } as IFloaterObject;
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 

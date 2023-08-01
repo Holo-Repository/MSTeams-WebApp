@@ -2,13 +2,13 @@ import React from "react";
 // import html2canvas from "html2canvas";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { IFluidHandle } from "@fluidframework/core-interfaces";
+import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
 
 import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
 import { IFluidContainer, SharedMap } from "fluid-framework";
 import Floater from "../floaters/Floater";
-import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
 
 
 
@@ -63,7 +63,7 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         });
     }
 
-    async componentWillUnmount(){
+    async componentWillUnmount() {
         // TODO: Save the Base64 image into Azure blob?
         // if (this.canvas.current) {
         //     const canvasSnapshot = await html2canvas(this.canvas.current); 
