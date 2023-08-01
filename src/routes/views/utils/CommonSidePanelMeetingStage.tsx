@@ -86,7 +86,6 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         const id = await this.props.containerManager.createContainer(name, description);
         // Signal to other clients that a new container has been created
         this.newContainerEvent?.send('received');
-        this.openContainer(id);
     }
 
     /**
