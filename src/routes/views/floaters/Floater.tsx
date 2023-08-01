@@ -23,12 +23,10 @@ import {
 
 const theme = getTheme();
 const throttleTime = 100;
-const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => { 
-    console.log('SENDING POS', pos);
+const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => {
     if (dataMap) dataMap.set('pos', pos);
 }, throttleTime, { leading: true, trailing: true });
 const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
-    console.log('SENDING SIZE', size);
     if (dataMap) dataMap.set('size', size);
 } , throttleTime, { leading: true, trailing: true });
 
@@ -51,11 +49,9 @@ function Floater(props: FloaterProps) {
             floaterRef.current.on("valueChanged", (changed: IValueChanged, local: boolean) => {
                 if (local) return;
                 if (changed.key === 'pos') {
-                    console.log('RECEIVED POS', floaterRef.current!.get('pos')!);
                     setScreenPos(appToScreenPos(props.inkingManager, floaterRef.current!.get('pos')!));
                 }
                 if (changed.key === 'size') {
-                    console.log('RECEIVED SIZE', floaterRef.current!.get('size')!);
                     setScreenSize(appToScreenSize(props.inkingManager, floaterRef.current!.get('pos')!, floaterRef.current!.get('size')!));
                 }
             });
@@ -77,12 +73,10 @@ function Floater(props: FloaterProps) {
     useLayoutEffect(() => {
         if (!contentRef.current) return;
         const content = contentRef.current;
-        console.log('INIT OBSERVER');
         // Attach resize observer
         const resizeObserver = new ResizeObserver((entries) => {
             const rect = content.getBoundingClientRect() as DOMRect;
             const newScreenSize = { width: rect.width, height: rect.height };
-            console.log('RESIZE', newScreenSize);
             setDMSize(floaterRef.current, screenToAppSize(props.inkingManager, screenPos!, newScreenSize));
         });
         resizeObserver.observe(content);
@@ -96,7 +90,7 @@ function Floater(props: FloaterProps) {
     // Render the floater
     if (!screenPos || !screenSize || !floaterRef.current) return <></>;
     
-    let content = <Text>{JSON.stringify({...screenPos, ...screenSize})}</Text>;
+    let content;
     switch (floaterRef.current.get('type')) {
         case "model":
             content = <ModelViewer objMap={floaterRef.current} />
