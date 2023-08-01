@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Field, ProgressBar } from "@fluentui/react-components";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
-import { SharedMap } from "fluid-framework";
+import { IValueChanged, SharedMap } from "fluid-framework";
 
 import styles from "../../styles/ModelViewer.module.css";
 
@@ -30,24 +30,27 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     
     // Register functions that unity can call
     useEffect(() => {
+        if (!isLoaded || !unityInstance) return;
+        
         const globalThis = window as any;
         globalThis.syncCurrentRotation = (x: number, y: number, z: number) => {
             props.objMap.set("modelRotation", {x, y, z});
         }
 
-        if (unityInstance)
-            props.objMap.on("valueChanged", (changed, local) => {
-                if (local) return;
-                if (changed.key === "modelRotation") {
-                    const rotation = props.objMap.get('modelRotation') as { x: number, y: number, z: number };
-                    unityInstance.SendMessage("Target Manager", "SetRotationJS", JSON.stringify(rotation));
-                }
-            });
+        const handleChange = (changed: IValueChanged, local: boolean) => {
+            if (local) return;
+            if (changed.key === "modelRotation") {
+                const rotation = props.objMap.get('modelRotation') as { x: number, y: number, z: number };
+                unityInstance.SendMessage("Target Manager", "SetRotationJS", JSON.stringify(rotation));
+            }
+        }
+        props.objMap.on("valueChanged", handleChange);
 
         return () => {
             globalThis.syncCurrentRotation = undefined;
+            props.objMap.off("valueChanged", handleChange);
         }
-    }, [unityInstance]);
+    }, [unityInstance, isLoaded]);
 
 
 
