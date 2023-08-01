@@ -84,9 +84,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
 
     setToolByValue(tool: string) {
         this.props.pointerSelected(tool === "Select");
-        this.setState({selectedTool: tool}, () => {
-            console.log(this.state.selectedTool);
-        });
+        this.setState({selectedTool: tool});
     }
 
     render(): React.ReactNode {
@@ -95,9 +93,6 @@ class MyToolBar extends React.Component<MyToolbarProps>{
         return(
             <div>
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
-                    // defaultCheckedValues={{
-                    //     tools: ["Select"]
-                    // }}
                     checkedValues={{tools: [this.state.selectedTool]}}
                 >
                     <ToolbarRadioGroup>
