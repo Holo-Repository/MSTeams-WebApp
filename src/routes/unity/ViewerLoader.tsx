@@ -9,7 +9,7 @@ import {
 } from '@fluentui/react-components';
 
 
-function ViewerLoader(props: {container: IFluidContainer}) {
+function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
     // /------/ Code related to issue described later in this file
     let [canLoad, setCanLoad] = useState(false);
     const checkLoad = (map: SharedMap) => map.get("model") === undefined;
@@ -36,7 +36,7 @@ This is a known issue with Unity WebGL, and there is no official solution yet.
 See the code in ModelViewer.tsx for more details on the workaround used.
 ======================================================================================== */
         // If no model is loaded, load the model with the key "model"
-        if (canLoad) loadFloater(model, "model");
+        if (canLoad) {loadFloater(model, "model"); props.setParentState("Select")}
     }
 
     // Display a button to load a model

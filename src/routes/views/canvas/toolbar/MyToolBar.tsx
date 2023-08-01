@@ -37,6 +37,11 @@ class MyToolBar extends React.Component<MyToolbarProps>{
     state={
         selectedTool: "Select",
         isDisplayed: true,
+    };
+
+    constructor(props: MyToolbarProps) {
+        super(props);
+        this.setToolByValue = this.setToolByValue.bind(this);
     }
 
     /**
@@ -77,15 +82,23 @@ class MyToolBar extends React.Component<MyToolbarProps>{
         return this.state.selectedTool;
     }
 
+    setToolByValue(tool: string) {
+        this.props.pointerSelected(tool === "Select");
+        this.setState({selectedTool: tool}, () => {
+            console.log(this.state.selectedTool);
+        });
+    }
+
     render(): React.ReactNode {
         const {ink} = this.props;
 
         return(
             <div>
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
-                    defaultCheckedValues={{
-                        tools: ["Select"]
-                    }}
+                    // defaultCheckedValues={{
+                    //     tools: ["Select"]
+                    // }}
+                    checkedValues={{tools: [this.state.selectedTool]}}
                 >
                     <ToolbarRadioGroup>
                         <MyToolbarButton 
@@ -125,7 +138,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             onClick={this.setSelectedTool}
                         >
                             {this.getSelectedTool() === "Model" && this.state.isDisplayed && <div className="tool-second-level" >
-                                <ViewerLoader container={this.props.container} />
+                                <ViewerLoader container={this.props.container} setParentState={this.setToolByValue} />
                             </div>
                             }
                         </MyToolbarButton>
