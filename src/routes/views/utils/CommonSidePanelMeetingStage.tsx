@@ -83,7 +83,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
      * @throws Error if the container cannot be created in the current location.
      */
     async createContainer(name: string, description: string): Promise<void> {
-        const id = await this.props.containerManager.createContainer(name, description);
+        await this.props.containerManager.createContainer(name, description);
         // Signal to other clients that a new container has been created
         this.newContainerEvent?.send('received');
     }

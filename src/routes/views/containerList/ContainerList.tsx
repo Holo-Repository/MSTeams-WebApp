@@ -59,11 +59,15 @@ class ContainerList extends React.Component<ContainerListProps> {
         return this.state.containers[index];
     }
 
+    setUnmounted = () => {
+        this.setState({mounted: false});
+    }
+
     render() {
         return (
             <div>
                 {!this.state.mounted && <div className="flex-loading">
-                    <Spinner labelPosition="below" label="Connecting..." />
+                    <Spinner labelPosition="below" label="Creating..." />
                 </div>}
                 {this.state.mounted && !this.props.activeContainerId && <div>
                     <h3>Recent Collab Case</h3>
@@ -74,7 +78,9 @@ class ContainerList extends React.Component<ContainerListProps> {
                                 canOpen={this.props.canOpen}/>
                             </div>
                         ))}
-                        {this.props.canCreate && <div className="flex-item"><ContainerPreview create={this.props.createContainer}/></div>}
+                        {this.props.canCreate && <div className="flex-item">
+                            <ContainerPreview create={(name, desc)=> {this.setUnmounted(); this.props.createContainer(name, desc)}}/>
+                            </div>}
                     </div>
                 </div>}
 
