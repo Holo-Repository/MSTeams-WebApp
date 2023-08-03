@@ -8,6 +8,7 @@ import styles from "../../styles/ModelViewer.module.css";
 
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
+const unityModelTarget = "Target Manager";
 
 function ModelViewer(props: {objMap: SharedMap}) {
 /* ========================================================================================
@@ -33,25 +34,28 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         if (!isLoaded || !unityInstance) return;
         const globalThis = window as any;
         
-        // Register rotation sync
-        globalThis.syncCurrentRotation = (x: number, y: number, z: number) => {
-            props.objMap.set("modelRotation", {x, y, z});
-        }
+        // Load actual model
+        const modelId = props.objMap.get('modelId');
+        console.log("Syncing initial modelId", modelId);
+        if (modelId) unityInstance.SendMessage(unityModelTarget, "Download3DModel", modelId);
+
         // Sync initial rotation
-        unityInstance.SendMessage("Target Manager", "SetRotationJS", JSON.stringify(props.objMap.get('modelRotation')));
+        unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get('modelRotation')));
+        
+        // Register rotation sync
+        globalThis.syncCurrentRotation = (x: number, y: number, z: number) => props.objMap.set("modelRotation", {x, y, z});
 
         const handleChange = (changed: IValueChanged, local: boolean) => {
             if (local) return;
             if (changed.key === "modelRotation") {
-                const rotation = props.objMap.get('modelRotation') as { x: number, y: number, z: number };
-                unityInstance.SendMessage("Target Manager", "SetRotationJS", JSON.stringify(rotation));
+                unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
             }
         }
         props.objMap.on("valueChanged", handleChange);
 
         return () => {
-            globalThis.syncCurrentRotation = undefined;
             props.objMap.off("valueChanged", handleChange);
+            globalThis.syncCurrentRotation = undefined;
         }
     }, [unityInstance, isLoaded]);
 
