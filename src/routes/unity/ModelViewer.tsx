@@ -31,11 +31,14 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     // Register functions that unity can call
     useEffect(() => {
         if (!isLoaded || !unityInstance) return;
-        
         const globalThis = window as any;
+        
+        // Register rotation sync
         globalThis.syncCurrentRotation = (x: number, y: number, z: number) => {
             props.objMap.set("modelRotation", {x, y, z});
         }
+        // Sync initial rotation
+        unityInstance.SendMessage("Target Manager", "SetRotationJS", JSON.stringify(props.objMap.get('modelRotation')));
 
         const handleChange = (changed: IValueChanged, local: boolean) => {
             if (local) return;
