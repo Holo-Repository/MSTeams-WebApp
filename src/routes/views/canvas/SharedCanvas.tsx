@@ -2,7 +2,7 @@ import React from "react";
 // import html2canvas from "html2canvas";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { IFluidHandle } from "@fluidframework/core-interfaces";
-import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
+import { FluentProvider, Spinner, teamsLightTheme } from "@fluentui/react-components";
 
 import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
@@ -116,16 +116,22 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         return (
             <FluentProvider id='canvas-background' theme={teamsLightTheme}>
                 <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool} />
-                {this.container && <MyToolBar ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected}/>}
-                <div id='floaters' >
-                    {inkingManager && Object.entries(floaterHandles).map(([key, value]) => 
-                        <Floater 
-                            key={key} 
-                            handle={value} delete={() => {this.deleteFloater(key)}}
-                            inkingManager={inkingManager}
-                        />
-                    )}
-                </div>
+                {(!this.container 
+                    || !this.floaters 
+                    || !inkingManager
+                ) ? <Spinner labelPosition="below" label="Connecting..." className="canvas-loading-spinner" />
+                : <>
+                    <MyToolBar ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected}/>
+                    <div id='floaters' >
+                        {Object.entries(floaterHandles).map(([key, value]) => 
+                            <Floater 
+                                key={key} 
+                                handle={value} delete={() => {this.deleteFloater(key)}}
+                                inkingManager={inkingManager}
+                            />
+                        )}
+                    </div>
+                </>}
             </FluentProvider>
         );
     }

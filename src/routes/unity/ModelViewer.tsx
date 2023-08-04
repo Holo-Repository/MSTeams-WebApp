@@ -36,11 +36,11 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         
         // Load actual model
         const modelId = props.objMap.get('modelId');
-        console.log("Syncing initial modelId", modelId);
-        if (modelId) unityInstance.SendMessage(unityModelTarget, "Download3DModel", modelId);
-
-        // Sync initial rotation
-        unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get('modelRotation')));
+        console.log("Syncing initial modelId", modelId, props.objMap.get("modelRotation"));
+        if (modelId) unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
+            hid: modelId,
+            rotation: props.objMap.get("modelRotation"),
+        }));
         
         // Register rotation sync
         globalThis.syncCurrentRotation = (x: number, y: number, z: number) => props.objMap.set("modelRotation", {x, y, z});
