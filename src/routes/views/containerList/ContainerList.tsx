@@ -6,6 +6,7 @@ import ContainerPreview from "./ContainerPreview";
 import ContainerManager from "../../containers/ContainerManager";
 
 import './ContainerList.css'
+import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
 
 
 export interface ContainerListProps {
@@ -62,7 +63,7 @@ class ContainerList extends React.Component<ContainerListProps> {
     render() {
         return (
             <div>
-                {!this.state.mounted && <div className="flex-loading">
+                {!this.state.mounted && <div className={commonStyles.loading}>
                     <Spinner labelPosition="below" label="Connecting..." />
                 </div>}
                 {this.state.mounted && !this.props.activeContainerId && <div>

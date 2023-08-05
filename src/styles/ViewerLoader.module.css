@@ -1,0 +1,10 @@
+.body {
+    margin: 10px;
+}
+
+.fieldBody {
+    display: flex;
+    flex-direction: row;
+
+    gap: 5px;
+}
