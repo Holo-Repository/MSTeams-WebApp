@@ -1,6 +1,6 @@
 import React from "react";
 import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
-import { LocationArrow28Filled, Pen24Filled, NoteEdit24Filled } from "@fluentui/react-icons";
+import { LocationArrow28Filled, Pen24Filled, NoteEdit24Filled  } from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { BsBadge3DFill as ModelIcon } from "react-icons/bs";
 
@@ -22,6 +22,8 @@ export interface MyToolbarProps {
     ink: InkingManager | undefined,
     container: IFluidContainer,
     pointerSelected: (isSelected: boolean) => void,
+    exportCanvas: () => void,
+    innerDivRef?: React.RefObject<HTMLDivElement>,
 }
 
 /**
@@ -39,6 +41,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
         isDisplayed: true,
     };
 
+    innerDivRef = this.props.innerDivRef;
     constructor(props: MyToolbarProps) {
         super(props);
         this.setToolByValue = this.setToolByValue.bind(this);
@@ -91,7 +94,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
         const {ink} = this.props;
 
         return(
-            <div>
+            <div ref={this.innerDivRef}>
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
                     checkedValues={{tools: [this.state.selectedTool]}}
                 >
@@ -136,6 +139,14 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                                 <ViewerLoader container={this.props.container} setParentState={this.setToolByValue} />
                             </div>
                             }
+                        </MyToolbarButton>
+
+                        <MyToolbarButton
+                            value="Model"
+                            name="tools"
+                            icon={<NoteEdit24Filled />}
+                            onClick={this.props.exportCanvas}
+                        >
                         </MyToolbarButton>
                         
                     </ToolbarRadioGroup>

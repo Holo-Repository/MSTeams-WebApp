@@ -1,14 +1,14 @@
 import React from "react";
-// import html2canvas from "html2canvas";
+import html2canvas from "html2canvas";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { IFluidHandle } from "@fluidframework/core-interfaces";
-import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
 
 import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
 import { IFluidContainer, SharedMap } from "fluid-framework";
 import Floater from "../floaters/Floater";
+import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
 
 
 
@@ -29,6 +29,8 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         floaterHandles: {} as { [key: string]: IFluidHandle },
     }
     
+    fluentProviderRef = React.createRef<HTMLDivElement>();
+    myToolBarDivRef = React.createRef<HTMLDivElement>();
     canvas = React.createRef<HTMLDivElement>();
     floaters = undefined as SharedMap | undefined;
     container = undefined as IFluidContainer | undefined
@@ -61,17 +63,6 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
             inkingManager,
             floaterHandles,
         });
-    }
-
-    async componentWillUnmount() {
-        // TODO: Save the Base64 image into Azure blob?
-        // if (this.canvas.current) {
-        //     const canvasSnapshot = await html2canvas(this.canvas.current); 
-        //     const imgData = canvasSnapshot.toDataURL();
-        // }
-        
-        // const containerMap= {time: new Date().toISOString()};
-        // await this.props.containerManager.updateContainerProperty(this.props.container, containerMap);
     }
 
     handleFloaterChange = (changed: any) => {
@@ -107,6 +98,25 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         if (this.canvas.current) this.canvas.current.style.pointerEvents = selected ? 'none' : 'auto';
     }
 
+    exportToPng = async () => {
+        const fluentProviderElement = this.fluentProviderRef.current;
+        if (fluentProviderElement) {
+            const canvas = await html2canvas(fluentProviderElement as HTMLElement, {
+                ignoreElements: (node) => {
+                    return node === this.myToolBarDivRef.current;
+                }
+            });
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = 'canvas.png';
+            a.click();
+        }
+    }
+    
+    
+      
+
+
     render(): React.ReactNode {
         const { 
             inkingManager,
@@ -114,9 +124,9 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         } = this.state;
 
         return (
-            <FluentProvider id='canvas-background' theme={teamsLightTheme}>
+            <FluentProvider id='canvas-background' theme={teamsLightTheme} ref={this.fluentProviderRef}>
                 <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool} />
-                {this.container && <MyToolBar ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected}/>}
+                {this.container && <MyToolBar innerDivRef={this.myToolBarDivRef}  ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected} exportCanvas={this.exportToPng}/>}
                 <div id='floaters' >
                     {inkingManager && Object.entries(floaterHandles).map(([key, value]) => 
                         <Floater 
