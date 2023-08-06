@@ -1,14 +1,16 @@
-import { Field, ProgressBar, Text } from "@fluentui/react-components";
-import React from "react";
+import React, { useEffect } from "react";
+import { Field, ProgressBar } from "@fluentui/react-components";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
+import { IValueChanged, SharedMap } from "fluid-framework";
 
 import styles from "../../styles/ModelViewer.module.css";
 
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
+const unityModelTarget = "Target Manager";
 
-function ModelViewer(props: {objMap: { [key: string]: any }}) {
+function ModelViewer(props: {objMap: SharedMap}) {
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
 This is because when React unloads it deleted the unity canvas, which causes the unity engine to crash.
@@ -26,6 +28,39 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         frameworkUrl: `${buildURL}/WebGL.framework.js.gz`,
         codeUrl: `${buildURL}/WebGL.wasm.gz`,
     });
+    
+    // Register functions that unity can call
+    useEffect(() => {
+        if (!isLoaded || !unityInstance) return;
+        const globalThis = window as any;
+        
+        // Load actual model
+        const modelId = props.objMap.get('modelId');
+        if (modelId) unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
+            hid: modelId,
+            rotation: props.objMap.get("modelRotation"),
+        }));
+        
+        // Register rotation sync
+        globalThis.syncCurrentRotation = (x: number, y: number, z: number) => props.objMap.set("modelRotation", {x, y, z});
+
+        const handleChange = (changed: IValueChanged, local: boolean) => {
+            if (local) return;
+            if (changed.key === "modelRotation") {
+                unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
+            }
+        }
+        props.objMap.on("valueChanged", handleChange);
+
+        return () => {
+            props.objMap.off("valueChanged", handleChange);
+            globalThis.syncCurrentRotation = undefined;
+        }
+    }, [unityInstance, isLoaded]);
+
+
+
+
 
     const observerRef = React.useRef<MutationObserver | null>(null);
 
