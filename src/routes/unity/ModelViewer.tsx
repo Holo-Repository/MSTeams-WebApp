@@ -1,14 +1,12 @@
 import { Field, ProgressBar, Text } from "@fluentui/react-components";
-import React from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
-
+import React, { forwardRef, useImperativeHandle } from "react";
 import styles from "../../styles/ModelViewer.module.css";
-
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
 
-function ModelViewer(props: {objMap: { [key: string]: any }}) {
+const ModelViewer = forwardRef((props: { objMap: { [key: string]: any } }, ref) => {
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
 This is because when React unloads it deleted the unity canvas, which causes the unity engine to crash.
@@ -20,12 +18,35 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     const [unityInstance, setUnityInstance] = React.useState(undefined as unknown as UnityInstance);
     const [canvasId, setCanvasId] = React.useState(undefined as unknown as string);
 
-    const { unityProvider, UNSAFE__unityInstance, loadingProgression, isLoaded, unload } = useUnityContext({
+    const UnityContextHook = useUnityContext({
         loaderUrl: `${buildURL}/WebGL.loader.js`,
         dataUrl: `${buildURL}/WebGL.data.gz`,
         frameworkUrl: `${buildURL}/WebGL.framework.js.gz`,
         codeUrl: `${buildURL}/WebGL.wasm.gz`,
     });
+    
+    const { 
+        unityProvider, 
+        UNSAFE__unityInstance, 
+        loadingProgression, 
+        isLoaded, 
+        unload 
+    } = UnityContextHook;
+    
+
+    const Export3Dmodel = (): string => {
+        const data = UnityContextHook.takeScreenshot("image/jpeg", 1.0);
+        if (data !== null && typeof data === "string") {
+            return data;
+        } else {
+            return ""; 
+        }
+    }
+    
+
+    useImperativeHandle(ref, () => ({
+        Export3Dmodel,
+    }))
 
     const observerRef = React.useRef<MutationObserver | null>(null);
 
@@ -95,6 +116,6 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
             />
         </>
     );
-}
+});
 
 export default ModelViewer;
