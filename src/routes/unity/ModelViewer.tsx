@@ -1,10 +1,13 @@
-import { Field, ProgressBar, Text } from "@fluentui/react-components";
+import React, { useEffect, forwardRef, useImperativeHandle } from "react";
+import { Field, ProgressBar } from "@fluentui/react-components";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
-import React, { forwardRef, useImperativeHandle } from "react";
+import { IValueChanged, SharedMap } from "fluid-framework";
+
 import styles from "../../styles/ModelViewer.module.css";
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
+const unityModelTarget = "Target Manager";
 
 const ModelViewer = forwardRef((props: { objMap: { [key: string]: any } }, ref) => {
 /* ========================================================================================
@@ -18,35 +21,83 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     const [unityInstance, setUnityInstance] = React.useState(undefined as unknown as UnityInstance);
     const [canvasId, setCanvasId] = React.useState(undefined as unknown as string);
 
-    const UnityContextHook = useUnityContext({
-        loaderUrl: `${buildURL}/WebGL.loader.js`,
-        dataUrl: `${buildURL}/WebGL.data.gz`,
-        frameworkUrl: `${buildURL}/WebGL.framework.js.gz`,
-        codeUrl: `${buildURL}/WebGL.wasm.gz`,
-    });
-    
     const { 
         unityProvider, 
         UNSAFE__unityInstance, 
         loadingProgression, 
         isLoaded, 
-        unload 
-    } = UnityContextHook;
+        unload,
+        takeScreenshot,
+    } = useUnityContext({
+        loaderUrl: `${buildURL}/WebGL.loader.js`,
+        dataUrl: `${buildURL}/WebGL.data.gz`,
+        frameworkUrl: `${buildURL}/WebGL.framework.js.gz`,
+        codeUrl: `${buildURL}/WebGL.wasm.gz`,
+        webglContextAttributes: {
+            preserveDrawingBuffer: true,
+        },
+    });
     
 
-    const Export3Dmodel = (): string => {
-        const data = UnityContextHook.takeScreenshot("image/jpeg", 1.0);
-        if (data !== null && typeof data === "string") {
-            return data;
+    
+    function downloadBase64Image(base64Data: string, filename: string) {
+        const link = document.createElement("a");
+        link.href = base64Data;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    function handleClickTakeScreenshot() {
+        // Assuming takeScreenshot function returns the image data in 'data' variable
+        const data = takeScreenshot("image/png", 1.0);
+        
+        console.log("data", data);
+        if (data !== undefined) {
+            downloadBase64Image(data, "screenshot.png");
         } else {
-            return ""; 
+            console.log("Screenshot data is undefined. Unable to download.");
         }
     }
     
 
     useImperativeHandle(ref, () => ({
-        Export3Dmodel,
+        handleClickTakeScreenshot,
     }))
+
+    // Register functions that unity can call
+    useEffect(() => {
+        if (!isLoaded || !unityInstance) return;
+        const globalThis = window as any;
+        
+        // Load actual model
+        const modelId = props.objMap.get('modelId');
+        if (modelId) unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
+            hid: modelId,
+            rotation: props.objMap.get("modelRotation"),
+        }));
+        
+        // Register rotation sync
+        globalThis.syncCurrentRotation = (x: number, y: number, z: number) => props.objMap.set("modelRotation", {x, y, z});
+
+        const handleChange = (changed: IValueChanged, local: boolean) => {
+            if (local) return;
+            if (changed.key === "modelRotation") {
+                unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
+            }
+        }
+        props.objMap.on("valueChanged", handleChange);
+
+        return () => {
+            props.objMap.off("valueChanged", handleChange);
+            globalThis.syncCurrentRotation = undefined;
+        }
+    }, [unityInstance, isLoaded]);
+
+
+
+
 
     const observerRef = React.useRef<MutationObserver | null>(null);
 

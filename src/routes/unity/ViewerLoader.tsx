@@ -1,15 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { IFluidContainer, SharedMap } from 'fluid-framework';
-import IFloaterObject from '../views/floaters/IFloaterObject';
-
-import useFloaterLoader from '../views/floaters/FloaterLoader';
-import { 
+import {
     Button,
-    Text, 
+    Field,
+    Input,
+    Spinner,
 } from '@fluentui/react-components';
+import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
+
+import IFloaterObject from '../views/floaters/IFloaterObject';
+import useFloaterLoader from '../views/floaters/FloaterLoader';
+
+import commonStyles from "../../styles/CommonSidePanelMeetingStage.module.css";
+import styles from "../../styles/ViewerLoader.module.css";
 
 
 function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [modelId, setModelId] = useState("");
+
     // /------/ Code related to issue described later in this file
     let [canLoad, setCanLoad] = useState(false);
     const checkLoad = (map: SharedMap) => map.get("model") === undefined;
@@ -24,10 +33,14 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
     });
     
     async function loadModel() {
+        if (!inputRef.current) throw new Error("Input ref not set");
+
         const model = {
             type: "model",
             pos: { x: -200, y: -150 },
             size: { width: 400, height: 300 },
+            modelRotation: { x: 0, y: 0, z: 0 },
+            modelId: modelId,
         } as IFloaterObject;
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
@@ -40,14 +53,25 @@ See the code in ModelViewer.tsx for more details on the workaround used.
     }
 
     // Display a button to load a model
-    if (!floaters) return <Text>Loading...</Text>;
-    if (canLoad) return <Button onClick={loadModel} size='small' appearance='subtle'>Load Model</Button>;
-    else return (
-        <Text>
-            Only one model viewer can be open at a time.<br/>
-            Please close the current model viewer to open a new one.
-        </Text>
-    );
+    if (!floaters) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
+    
+    return <div className={styles.body}>
+        <Field
+            label="Model ID"
+            validationState='none'
+            validationMessage={canLoad ? undefined : <div>Close current model to open a new one</div>}
+        >
+            <div className={styles.fieldBody}>
+                <Input 
+                    placeholder="Enter model ID"
+                    disabled={!canLoad}
+                    ref={inputRef}
+                    onChange={(e) => setModelId(e.target.value)}
+                />
+                <Button icon={<Upload />} appearance='primary' onClick={loadModel} disabled={!canLoad || modelId === ""} />
+            </div>
+        </Field>
+    </div>;
 }
 
 export default ViewerLoader;
