@@ -63,7 +63,7 @@ See the code in ModelViewer.tsx for more details on the workaround used.
         >
             <div className={styles.fieldBody}>
                 <Input 
-                    placeholder="Enter model ID"
+                    placeholder="E.g. lung1"
                     disabled={!canLoad}
                     ref={inputRef}
                     onChange={(e) => setModelId(e.target.value)}
