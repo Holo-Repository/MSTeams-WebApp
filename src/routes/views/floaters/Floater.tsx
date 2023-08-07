@@ -36,7 +36,7 @@ export interface FloaterProps {
 }
 
 interface ModelViewerRefType {
-    Export3Dmodel: () => string;
+    handleClickTakeScreenshot: () => string;
 }
 
 function Floater(props: FloaterProps) {
@@ -88,7 +88,7 @@ function Floater(props: FloaterProps) {
 
 
     const exportModel = () => {
-        ModelViewerRef.current?.Export3Dmodel();
+        ModelViewerRef.current?.handleClickTakeScreenshot();
     }
 
     // Render the floater
@@ -113,7 +113,8 @@ function Floater(props: FloaterProps) {
                 ref={contentRef}
                 className={styles.content} 
                 style={{...contentStyle, boxShadow: theme.effects.elevation8}}
-            >{content}</div>
+            >{content}
+            <button onClick={() => {exportModel()}}>Export</button></div>
         </Tooltip>
     );
 }
