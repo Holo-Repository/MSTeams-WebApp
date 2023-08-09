@@ -111,27 +111,14 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                         </MyToolbarButton>
 
                         <MyToolbarButton 
-                            value="Notes"
-                            name="tools"
-                            icon={<NoteEdit24Filled />}
-                            onClick={this.setSelectedTool}
-                        >
-                            {this.getSelectedTool() === "Notes" && this.state.isDisplayed && <div className="tool-second-level" >
-                                Add new component here
-                                
-                            </div>
-                            }
-                        </MyToolbarButton>
-
-                        <MyToolbarButton 
-                            value="ShareFile"
+                            value="ShareDocuments"
                             name="tools"
                             icon={<DocumentAdd24Regular/>}
                             onClick={this.setSelectedTool}
                         >
                             {<div 
                                 className="tool-second-level"
-                                style={{display : this.getSelectedTool() === "ShareFile" && this.state.isDisplayed ? 'block' : 'none'}}
+                                style={{display : this.getSelectedTool() === "ShareDocuments" && this.state.isDisplayed ? 'block' : 'none'}}
                             > 
                                 
                                 <FileSharing />
