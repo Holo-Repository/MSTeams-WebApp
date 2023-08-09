@@ -98,20 +98,34 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         if (this.canvas.current) this.canvas.current.style.pointerEvents = selected ? 'none' : 'auto';
     }
 
-    exportToPng = async () => {
+    canvasToDataUrl = async () => {
         const fluentProviderElement = this.fluentProviderRef.current;
+        let dataUrl = '';
         if (fluentProviderElement) {
             const canvas = await html2canvas(fluentProviderElement as HTMLElement, {
                 ignoreElements: (node) => {
                     return node === this.myToolBarDivRef.current;
                 }
             });
-            const a = document.createElement('a');
-            a.href = canvas.toDataURL('image/png');
-            a.download = 'canvas.png';
-            a.click();
+            dataUrl = canvas.toDataURL('image/png');
+        }
+        return dataUrl;
+    }
+    
+    downloadDataUrlAsPng = (dataUrl: string) => {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'canvas.png';
+        a.click();
+    }
+    
+    exportToPng = async () => {
+        const dataUrl = await this.canvasToDataUrl();
+        if (dataUrl) {
+            this.downloadDataUrlAsPng(dataUrl);
         }
     }
+    
     
     
       
