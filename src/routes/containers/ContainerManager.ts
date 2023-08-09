@@ -7,6 +7,7 @@ import {
 import {
     ContainerSchema, 
     SharedMap,
+    SharedString,
 } from "fluid-framework";
 import {
     AzureClientProps,
@@ -32,6 +33,7 @@ class ContainerManager {
             // presence: LivePresence,
             liveCanvas: LiveCanvas,
             floaters: SharedMap,
+            previewImage: SharedString,
         },
         dynamicObjectTypes: [ SharedMap ]
     } as ContainerSchema;
@@ -110,6 +112,24 @@ class ContainerManager {
     async listContainers() {
         return JSON.parse((await this.getEntity()).containers as string) as ContainerMap[]
     }
+
+    /**
+     * Get the list of preview images of containers
+     * 
+     * @returns Promise<string[]> The list of containers
+     */
+    async listPreviewImages() {
+        const entity = await this.getEntity();
+        const containers = JSON.parse(entity.containers as string) as ContainerMap[];
+        const ids = containers.map(container => container.id);
+
+        let previewImages: { [key: string]: string }  = {};
+        for (const id of ids) {
+            const container = (await this.getContainer(id)).container;
+            previewImages[id] = (container.initialObjects.previewImage as SharedString).getText()
+        }
+        return previewImages;
+    }
     
     /**
      * Append a container to the list of containers in this location
@@ -175,6 +195,8 @@ class ContainerManager {
         const { host, injectedSchema } = this.getSchema();
         const { container, services } = await this.client.createContainer(injectedSchema);
         // host.setAudience(services.audience);
+        
+        (container.initialObjects.previewImage as SharedString).insertText(0, "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/epDZC0AAAAASUVORK5CYII=");
 
         const id = await container.attach();
         // await this.appendContainerId({ id, name, description, locationId: this.locationId } as Container);
