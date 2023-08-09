@@ -5,6 +5,8 @@ import MyToolbarButton from "./MyToolBarButton";
 import {LocationArrow28Filled, Pen24Filled, NoteEdit24Filled} from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { DocumentAdd24Regular } from "@fluentui/react-icons";
+import { FileSharingProps } from "./filehandling/FileSharing";
+import FileSharing from "./filehandling/FileSharing";
 
 /**
  * Interface defining the properties for MyToolbar component
@@ -67,9 +69,10 @@ class MyToolBar extends React.Component<MyToolbarProps>{
         return this.state.selectedTool;
     }
 
+
     render(): React.ReactNode {
         const {ink} = this.props;
-
+        
         return(
             <div>
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
@@ -110,6 +113,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                                 style={{display : this.getSelectedTool() === "Notes" && this.state.isDisplayed ? 'block' : 'none'}}
                             >
                                 Add new component here
+                                
                             </div>
                             }
                         </MyToolbarButton>
@@ -122,22 +126,20 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                         >
                             {<div 
                                 className="tool-second-level"
-                                style={{display : this.getSelectedTool() === "Notes" && this.state.isDisplayed ? 'block' : 'none'}}
-                            >
-                                upload file here
-                            
+                                style={{display : this.getSelectedTool() === "ShareFile" && this.state.isDisplayed ? 'block' : 'none'}}
+                            > 
+                                
+                                <FileSharing />
                             </div>
                             }
                         </MyToolbarButton>
-
-
-                        
                         
                     </ToolbarRadioGroup>
                 </Toolbar>
+                
             </div>
         );
     }
 }
 
-export default MyToolBar
+export default MyToolBar;

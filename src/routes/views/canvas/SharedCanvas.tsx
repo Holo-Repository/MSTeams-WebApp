@@ -4,7 +4,7 @@ import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
-
+import ShareFile from "./toolbar/filehandling/FileSharing";
 
 
 export interface SharedCanvasProps {
