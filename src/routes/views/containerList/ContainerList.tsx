@@ -31,7 +31,6 @@ class ContainerList extends React.Component<ContainerListProps> {
 
     state = {
         containers: [] as ContainerMap[],
-        previewImages: {} as {[key: string]: string},
         mounted: false,
     };
 
@@ -48,11 +47,8 @@ class ContainerList extends React.Component<ContainerListProps> {
     async componentDidMount() {
         // Get the list of containers for the current location from the Table Storage
         const containers = await this.props.containerManager.listContainers();
-        // console.log(await this.props.containerManager.listPreviewImages());
-        const previewImages = await this.props.containerManager.listPreviewImages();
         containers.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
-        this.setState({ containers: containers, previewImages: previewImages, mounted: true });
-        console.log("list mounted");
+        this.setState({ containers: containers, mounted: true });
     }
 
     /**
@@ -79,8 +75,7 @@ class ContainerList extends React.Component<ContainerListProps> {
                     <div className="flex-container-list">
                         {this.state.containers.map((container) => (
                             <div className="flex-item" key={container.id}>
-                                <ContainerPreview container={container} previewImage={this.state.previewImages[container.id]}
-                                open={this.props.openContainer} canOpen={this.props.canOpen}/>
+                                <ContainerPreview container={container} open={this.props.openContainer} canOpen={this.props.canOpen}/>
                             </div>
                         ))}
                         {this.props.canCreate && <div className="flex-item">
@@ -91,8 +86,7 @@ class ContainerList extends React.Component<ContainerListProps> {
 
                 {this.state.mounted  && this.props.activeContainerId && 
                     <div className="flex-container-list">
-                        <ContainerPreview container={this.getActiveContainer()} close={this.props.closeContainer}
-                        canClose={true}
+                        <ContainerPreview container={this.getActiveContainer()} close={this.props.closeContainer} canClose={true}
                         ></ContainerPreview>
                     </div>
                 }

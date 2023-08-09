@@ -33,7 +33,6 @@ const textFieldStyles: Partial<ITextFieldStyles> = {
 
 export interface ContainerPreviewProps {
     container: ContainerMap | undefined;
-    previewImage: string;
     canOpen: boolean;
     canClose: boolean;
     open: (containerId: string) => void;
@@ -48,7 +47,6 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
     static defaultProps = {
         container: undefined,
         create: undefined,
-        previewImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/epDZC0AAAAASUVORK5CYII=",
         open: () => {},
         close: () => {},
         canOpen: false,
@@ -111,7 +109,7 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
             <div>
                 {container &&
                     <div className="container">
-                        <img src={this.props.previewImage} alt='preview' />
+                        <img src={container.previewImage} alt='preview' />
                         <div className="display-area">
                             <h4>{container.name}</h4>
                             <p>{container.time}</p>

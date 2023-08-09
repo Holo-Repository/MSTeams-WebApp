@@ -33,7 +33,6 @@ class ContainerManager {
             // presence: LivePresence,
             liveCanvas: LiveCanvas,
             floaters: SharedMap,
-            previewImage: SharedString,
         },
         dynamicObjectTypes: [ SharedMap ]
     } as ContainerSchema;
@@ -112,24 +111,6 @@ class ContainerManager {
     async listContainers() {
         return JSON.parse((await this.getEntity()).containers as string) as ContainerMap[]
     }
-
-    /**
-     * Get the list of preview images of containers
-     * 
-     * @returns Promise<string[]> The list of containers
-     */
-    async listPreviewImages() {
-        const entity = await this.getEntity();
-        const containers = JSON.parse(entity.containers as string) as ContainerMap[];
-        const ids = containers.map(container => container.id);
-
-        let previewImages: { [key: string]: string }  = {};
-        for (const id of ids) {
-            const container = (await this.getContainer(id)).container;
-            previewImages[id] = (container.initialObjects.previewImage as SharedString).getText()
-        }
-        return previewImages;
-    }
     
     /**
      * Append a container to the list of containers in this location
@@ -152,6 +133,7 @@ class ContainerManager {
         const entity = await this.getEntity();
         const containers = JSON.parse(entity.containers as string) as ContainerMap[];
         const targetIndex = containers.findIndex(container => container.id === id);
+        console.log(containers);
 
         // If the container was found
         if (targetIndex !== -1) {
@@ -195,13 +177,11 @@ class ContainerManager {
         const { host, injectedSchema } = this.getSchema();
         const { container, services } = await this.client.createContainer(injectedSchema);
         // host.setAudience(services.audience);
-        
-        (container.initialObjects.previewImage as SharedString).insertText(0, "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/epDZC0AAAAASUVORK5CYII=");
 
         const id = await container.attach();
         // await this.appendContainerId({ id, name, description, locationId: this.locationId } as Container);
         const now = new Date().toISOString();
-        await this.appendContainerId({ id, name:name, time:now, description:description, locationId: this.locationId } as ContainerMap);
+        await this.appendContainerId({ id, name:name, time:now, description:description, locationId: this.locationId, previewImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/epDZC0AAAAASUVORK5CYII=" } as ContainerMap);
 
         // Detach container
         container.disconnect();

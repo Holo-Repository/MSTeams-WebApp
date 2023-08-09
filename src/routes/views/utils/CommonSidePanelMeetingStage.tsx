@@ -100,9 +100,9 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.appState.set('activeContainerId', containerId);
     }
 
-    async closeContainer() {
+    async closeContainer(imgURL: string) {
         // Save the last edit time
-        const containerMap= {time: new Date().toISOString()};
+        const containerMap= {time: new Date().toISOString(), previewImage: imgURL};
         await this.props.containerManager.updateContainerProperty(this.state.activeContainerId as string, containerMap);
         this.openContainer(undefined as unknown as string);
         

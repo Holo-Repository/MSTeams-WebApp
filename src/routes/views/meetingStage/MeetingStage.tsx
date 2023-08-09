@@ -33,17 +33,12 @@ class MeetingStage extends CommonSidePanelMeetingStage {
         const canvasProps = {
             containerManager: this.props.containerManager,
             container: this.state.activeContainerId,
+            closeCanvas: this.closeContainer,
+
         }
 
         return (
             <div id="meeting-stage">
-                <div id="close-button">
-                    <Tooltip content="Close Collab Case" relationship="label">
-                        <Button
-                            icon={<Dismiss24Filled color="#424242"/>}
-                            onClick={this.closeContainer}/>
-                    </Tooltip>
-                </div>
                 <SharedCanvas {...canvasProps}/>
             </div>
         );
