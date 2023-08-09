@@ -20,7 +20,6 @@ import {
     FloaterScreenCoords,
 } from '../utils/FloaterUtils';
 
-
 const theme = getTheme();
 const throttleTime = 100;
 const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => {
@@ -30,17 +29,22 @@ const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
     if (dataMap) dataMap.set('size', size);
 } , throttleTime, { leading: true, trailing: true });
 
-
 export interface FloaterProps {
     handle: IFluidHandle;
     delete: () => void;
     inkingManager: InkingManager;
 }
 
+interface ModelViewerRefType {
+    handleClickTakeScreenshot: () => string;
+}
+
 function Floater(props: FloaterProps) {
     const [screenPos, setScreenPos] = useState<FloaterScreenCoords | undefined>(undefined);
     const [screenSize, setScreenSize] = useState<FloaterScreenSize | undefined>(undefined);
     const [hasLoaded, setHasLoaded] = useState(false);
+
+    const ModelViewerRef = useRef<ModelViewerRefType | null>(null);
 
     const floaterRef = useRef<SharedMap>();
     useEffect(() => {
@@ -68,7 +72,6 @@ function Floater(props: FloaterProps) {
         setDMPos(floaterRef.current, screenToAppPos(props.inkingManager, newScreenPos)); // Remote update
     }
 
-
     const contentRef = useRef<HTMLDivElement>(null);
     useLayoutEffect(() => {
         if (!contentRef.current) return;
@@ -84,8 +87,9 @@ function Floater(props: FloaterProps) {
     }, [hasLoaded]);
 
 
-
-
+    const exportModel = () => {
+        ModelViewerRef.current?.handleClickTakeScreenshot();
+    }
 
     // Render the floater
     if (!screenPos || !screenSize || !floaterRef.current) return <></>;
@@ -93,7 +97,7 @@ function Floater(props: FloaterProps) {
     let content;
     switch (floaterRef.current.get('type')) {
         case "model":
-            content = <ModelViewer objMap={floaterRef.current} />
+            content = <ModelViewer ref={ModelViewerRef} objMap={floaterRef.current} />
             break;
         default:
             content = <p>Unknown</p>;
@@ -109,7 +113,8 @@ function Floater(props: FloaterProps) {
                 ref={contentRef}
                 className={styles.content} 
                 style={{...contentStyle, boxShadow: theme.effects.elevation8}}
-            >{content}</div>
+            >{content}
+            <button onClick={() => {exportModel()}}>Export</button></div>
         </Tooltip>
     );
 }
