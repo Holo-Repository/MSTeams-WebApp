@@ -20,9 +20,9 @@ function FloaterInteraction(props: FloaterInteractionProps) {
             <ToolbarDivider />
             <ToolbarButton icon={<Pin />} title="Pin" as="button" appearance="subtle"/>
             <ToolbarDivider />
-            <ToolbarButton icon={<Delete />} title="Delete" as="button" appearance="subtle" onClick={props.delete}/>
-            <ToolbarDivider />
             <ToolbarButton icon={<Export />} title="Export" as="button" appearance="subtle" onClick={props.export}/>
+            <ToolbarDivider />
+            <ToolbarButton icon={<Delete />} title="Delete" as="button" appearance="subtle" onClick={props.delete}/>
         </Toolbar>
     );
 } 
