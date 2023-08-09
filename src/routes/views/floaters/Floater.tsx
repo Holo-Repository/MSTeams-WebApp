@@ -104,7 +104,7 @@ function Floater(props: FloaterProps) {
             break;
     }
     
-    const interaction = <FloaterInteraction delete={props.delete} drag={handleDrag} />
+    const interaction = <FloaterInteraction delete={props.delete} drag={handleDrag} export={exportModel} />
     const contentStyle = { ...screenPos, ...screenSize };
     
     return (
@@ -114,7 +114,7 @@ function Floater(props: FloaterProps) {
                 className={styles.content} 
                 style={{...contentStyle, boxShadow: theme.effects.elevation8}}
             >{content}
-            <button onClick={() => {exportModel()}}>Export</button></div>
+            </div>
         </Tooltip>
     );
 }
