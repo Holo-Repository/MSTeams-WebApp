@@ -14,7 +14,7 @@ import { useTeamsUserCredential } from "@microsoft/teamsfx-react";
 import config from "./config";
 // import Privacy from "./routes/Privacy";
 // import TermsOfUse from "./routes/TermsOfUse";
-import HoloRepo from "./routes/HoloRepo";
+import HoloCollab from "./routes/HoloCollab";
 import AppConfig from "./AppConfig";
 import { TeamsFxContext } from "./Context";
 
@@ -60,9 +60,9 @@ export default function App() {
                         <Routes>
                             {/* <Route path="/privacy" element={<Privacy/>} />
                             <Route path="/termsofuse" element={<TermsOfUse/>} /> */}
-                            <Route path="/holorepo" element={<HoloRepo/>}/>
+                            <Route path="/holocollab" element={<HoloCollab/>}/>
                             <Route path="/config" element={<AppConfig/>}/>
-                            <Route path="*" element={<Navigate to={"/holorepo"}/>}></Route>
+                            <Route path="*" element={<Navigate to={"/holocollab"}/>}></Route>
                         </Routes>
                     )}
                 </Router>
