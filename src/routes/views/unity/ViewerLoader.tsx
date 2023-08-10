@@ -11,8 +11,8 @@ import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
 import IFloaterObject from '../floaters/IFloaterObject';
 import useFloaterLoader from '../floaters/FloaterLoader';
 
-import commonStyles from "../../styles/CommonSidePanelMeetingStage.module.css";
-import styles from "../../styles/ViewerLoader.module.css";
+import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
+import styles from "../../../styles/ViewerLoader.module.css";
 
 
 function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {

@@ -7,7 +7,7 @@ import { Button, FluentProvider, Spinner, Tooltip, teamsLightTheme } from "@flue
 import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
-import { IFluidContainer, SharedMap, SharedString } from "fluid-framework";
+import { IFluidContainer, SharedMap } from "fluid-framework";
 import Floater from "../floaters/Floater";
 import { Dismiss24Filled } from "@fluentui/react-icons";
 
