@@ -32,7 +32,7 @@ function FileLoader(props: {container: IFluidContainer, setParentState: (tool: s
             fileType: fileType,
         } as IFloaterObject;
 
-        await loadFloater(file);
+        loadFloater(file);
         props.setParentState("Select");
     }
 

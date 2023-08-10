@@ -11,6 +11,7 @@ function FileViewer(props: { objMap: SharedMap }) {
     }, [props.objMap]);
 
     if (type === 'image') return <Image src={props.objMap.get('url')} fit="contain" />;
+    return <p>File type not supported</p>;
 }
 
 export default FileViewer;
