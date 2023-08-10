@@ -20,18 +20,14 @@ import {
     FloaterScreenCoords,
 } from '../utils/FloaterUtils';
 
-
 const theme = getTheme();
 const throttleTime = 100;
-const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => { 
-    console.log('SENDING POS', pos);
+const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => {
     if (dataMap) dataMap.set('pos', pos);
 }, throttleTime, { leading: true, trailing: true });
 const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
-    console.log('SENDING SIZE', size);
     if (dataMap) dataMap.set('size', size);
 } , throttleTime, { leading: true, trailing: true });
-
 
 export interface FloaterProps {
     handle: IFluidHandle;
@@ -39,10 +35,16 @@ export interface FloaterProps {
     inkingManager: InkingManager;
 }
 
+interface ModelViewerRefType {
+    handleClickTakeScreenshot: () => string;
+}
+
 function Floater(props: FloaterProps) {
     const [screenPos, setScreenPos] = useState<FloaterScreenCoords | undefined>(undefined);
     const [screenSize, setScreenSize] = useState<FloaterScreenSize | undefined>(undefined);
     const [hasLoaded, setHasLoaded] = useState(false);
+
+    const ModelViewerRef = useRef<ModelViewerRefType | null>(null);
 
     const floaterRef = useRef<SharedMap>();
     useEffect(() => {
@@ -51,11 +53,9 @@ function Floater(props: FloaterProps) {
             floaterRef.current.on("valueChanged", (changed: IValueChanged, local: boolean) => {
                 if (local) return;
                 if (changed.key === 'pos') {
-                    console.log('RECEIVED POS', floaterRef.current!.get('pos')!);
                     setScreenPos(appToScreenPos(props.inkingManager, floaterRef.current!.get('pos')!));
                 }
                 if (changed.key === 'size') {
-                    console.log('RECEIVED SIZE', floaterRef.current!.get('size')!);
                     setScreenSize(appToScreenSize(props.inkingManager, floaterRef.current!.get('pos')!, floaterRef.current!.get('size')!));
                 }
             });
@@ -72,17 +72,14 @@ function Floater(props: FloaterProps) {
         setDMPos(floaterRef.current, screenToAppPos(props.inkingManager, newScreenPos)); // Remote update
     }
 
-
     const contentRef = useRef<HTMLDivElement>(null);
     useLayoutEffect(() => {
         if (!contentRef.current) return;
         const content = contentRef.current;
-        console.log('INIT OBSERVER');
         // Attach resize observer
         const resizeObserver = new ResizeObserver((entries) => {
             const rect = content.getBoundingClientRect() as DOMRect;
             const newScreenSize = { width: rect.width, height: rect.height };
-            console.log('RESIZE', newScreenSize);
             setDMSize(floaterRef.current, screenToAppSize(props.inkingManager, screenPos!, newScreenSize));
         });
         resizeObserver.observe(content);
@@ -90,23 +87,24 @@ function Floater(props: FloaterProps) {
     }, [hasLoaded]);
 
 
-
-
+    const exportModel = () => {
+        ModelViewerRef.current?.handleClickTakeScreenshot();
+    }
 
     // Render the floater
     if (!screenPos || !screenSize || !floaterRef.current) return <></>;
     
-    let content = <Text>{JSON.stringify({...screenPos, ...screenSize})}</Text>;
+    let content;
     switch (floaterRef.current.get('type')) {
         case "model":
-            content = <ModelViewer objMap={floaterRef.current} />
+            content = <ModelViewer ref={ModelViewerRef} objMap={floaterRef.current} />
             break;
         default:
             content = <p>Unknown</p>;
             break;
     }
     
-    const interaction = <FloaterInteraction delete={props.delete} drag={handleDrag} />
+    const interaction = <FloaterInteraction delete={props.delete} drag={handleDrag} export={exportModel} />
     const contentStyle = { ...screenPos, ...screenSize };
     
     return (
@@ -115,7 +113,8 @@ function Floater(props: FloaterProps) {
                 ref={contentRef}
                 className={styles.content} 
                 style={{...contentStyle, boxShadow: theme.effects.elevation8}}
-            >{content}</div>
+            >{content}
+            </div>
         </Tooltip>
     );
 }

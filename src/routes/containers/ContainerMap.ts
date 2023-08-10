@@ -5,6 +5,8 @@
 export default interface ContainerMap {
     id: string;
     name: string;
+    time: string;
     description: string;
     locationId: string;
+    previewImage: string;
 }

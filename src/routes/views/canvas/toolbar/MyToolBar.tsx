@@ -1,6 +1,6 @@
 import React from "react";
 import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
-import { LocationArrow28Filled, Pen24Filled } from "@fluentui/react-icons";
+import { LocationArrow28Filled, Pen24Filled, NoteEdit24Filled, ArrowDownload24Filled  } from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { BsBadge3DFill as ModelIcon } from "react-icons/bs";
 import { DocumentAdd24Regular } from "@fluentui/react-icons";
@@ -24,6 +24,8 @@ export interface MyToolbarProps {
     ink: InkingManager | undefined,
     container: IFluidContainer,
     pointerSelected: (isSelected: boolean) => void,
+    exportCanvas: () => void,
+    innerDivRef?: React.RefObject<HTMLDivElement>,
 }
 
 /**
@@ -39,6 +41,12 @@ class MyToolBar extends React.Component<MyToolbarProps>{
     state={
         selectedTool: "Select",
         isDisplayed: true,
+    };
+
+    innerDivRef = this.props.innerDivRef;
+    constructor(props: MyToolbarProps) {
+        super(props);
+        this.setToolByValue = this.setToolByValue.bind(this);
     }
 
     /**
@@ -79,16 +87,18 @@ class MyToolBar extends React.Component<MyToolbarProps>{
         return this.state.selectedTool;
     }
 
+    setToolByValue(tool: string) {
+        this.props.pointerSelected(tool === "Select");
+        this.setState({selectedTool: tool});
+    }
 
     render(): React.ReactNode {
         const {ink} = this.props;
         
         return(
-            <div>
+            <div ref={this.innerDivRef}>
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
-                    defaultCheckedValues={{
-                        tools: ["Select"]
-                    }}
+                    checkedValues={{tools: [this.state.selectedTool]}}
                 >
                     <ToolbarRadioGroup>
                         <MyToolbarButton 
@@ -131,9 +141,17 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             onClick={this.setSelectedTool}
                         >
                             {this.getSelectedTool() === "Model" && this.state.isDisplayed && <div className="tool-second-level" >
-                                <ViewerLoader container={this.props.container} />
+                                <ViewerLoader container={this.props.container} setParentState={this.setToolByValue} />
                             </div>
                             }
+                        </MyToolbarButton>
+
+                        <MyToolbarButton
+                            value="Export"
+                            name="tools"
+                            icon={<ArrowDownload24Filled />}
+                            onClick={this.props.exportCanvas}
+                        >
                         </MyToolbarButton>
                         
                     </ToolbarRadioGroup>

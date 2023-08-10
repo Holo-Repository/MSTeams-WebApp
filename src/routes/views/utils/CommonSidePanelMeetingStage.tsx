@@ -100,8 +100,12 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.appState.set('activeContainerId', containerId);
     }
 
-    closeContainer() {
+    async closeContainer() {
+        // Save the last edit time
         this.openContainer(undefined as unknown as string);
+        
+        // Redraw the component to update edit time
+        this.contentRef.current?.componentDidMount();
     }
 
     abstract render(): React.ReactNode;

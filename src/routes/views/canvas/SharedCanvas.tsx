@@ -1,19 +1,22 @@
 import React from "react";
+import html2canvas from "html2canvas";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { IFluidHandle } from "@fluidframework/core-interfaces";
+import { Button, FluentProvider, Spinner, Tooltip, teamsLightTheme } from "@fluentui/react-components";
 
 import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
-import { IFluidContainer, SharedMap } from "fluid-framework";
+import { IFluidContainer, SharedMap, SharedString } from "fluid-framework";
 import Floater from "../floaters/Floater";
-import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
+import { Dismiss24Filled } from "@fluentui/react-icons";
 
 
 
 export interface SharedCanvasProps {
     container: string;
     containerManager: ContainerManager;
+    closeCanvas: () => Promise<void>;
 }
 
 /**
@@ -28,6 +31,9 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         floaterHandles: {} as { [key: string]: IFluidHandle },
     }
     
+    fluentProviderRef = React.createRef<HTMLDivElement>();
+    closeButtonRef = React.createRef<HTMLDivElement>();
+    myToolBarDivRef = React.createRef<HTMLDivElement>();
     canvas = React.createRef<HTMLDivElement>();
     floaters = undefined as SharedMap | undefined;
     container = undefined as IFluidContainer | undefined
@@ -95,6 +101,48 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         if (this.canvas.current) this.canvas.current.style.pointerEvents = selected ? 'none' : 'auto';
     }
 
+    canvasToDataUrl = async (scale: number = 1) => {
+        const fluentProviderElement = this.fluentProviderRef.current;
+        let dataUrl = '';
+        if (fluentProviderElement) {
+            const ignoredNodes = [this.myToolBarDivRef.current, this.closeButtonRef.current];
+            const canvas = await html2canvas(fluentProviderElement as HTMLElement, {
+                ignoreElements: (node) => {
+                    return ignoredNodes.includes(node as HTMLDivElement);
+                }, scale: window.devicePixelRatio * scale
+            });
+            dataUrl = canvas.toDataURL('image/png');
+        }
+        return dataUrl;
+    }
+    
+    downloadDataUrlAsPng = (dataUrl: string) => {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'canvas.png';
+        a.click();
+    }
+    
+    exportToPng = async () => {
+        const dataUrl = await this.canvasToDataUrl();
+        if (dataUrl) {
+            this.downloadDataUrlAsPng(dataUrl);
+        }
+    }
+
+    async closeCanvas() {
+        let scale = 1;
+        let imgUrl;
+        do {
+            scale /= 2;
+            imgUrl = await this.canvasToDataUrl(scale);
+        } while (imgUrl.length > 30720);
+        const containerMap = {time: new Date().toISOString(), previewImage: imgUrl};
+        await this.props.containerManager.updateContainerProperty(this.props.container, containerMap);
+        this.props.closeCanvas();
+    }
+
+
     render(): React.ReactNode {
         const { 
             inkingManager,
@@ -102,9 +150,16 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         } = this.state;
 
         return (
-            <FluentProvider id='canvas-background' theme={teamsLightTheme}>
+            <FluentProvider id='canvas-background' theme={teamsLightTheme} ref={this.fluentProviderRef}>
+                <div ref={this.closeButtonRef} id="close-button">
+                    <Tooltip content="Close Collab Case" relationship="label">
+                        <Button
+                            icon={<Dismiss24Filled color="#424242"/>}
+                            onClick={this.closeCanvas.bind(this)}/>
+                    </Tooltip>
+                </div>
                 <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool} />
-                {this.container && <MyToolBar ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected}/>}
+                {this.container && <MyToolBar innerDivRef={this.myToolBarDivRef}  ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected} exportCanvas={this.exportToPng}/>}
                 <div id='floaters' >
                     {inkingManager && Object.entries(floaterHandles).map(([key, value]) => 
                         <Floater 
