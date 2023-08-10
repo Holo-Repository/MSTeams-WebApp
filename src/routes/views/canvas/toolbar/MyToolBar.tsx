@@ -8,7 +8,7 @@ import { IFluidContainer } from "fluid-framework";
 
 import DrawingManager from "./DrawingManager";
 import MyToolbarButton from "./MyToolBarButton";
-import FileSharing from "../../fileSharing/FileSharing";
+import FileLoader from "../../fileSharing/FileLoader";
 import ViewerLoader from "../../unity/ViewerLoader";
 
 
@@ -118,9 +118,8 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             {<div 
                                 className="tool-second-level"
                                 style={{display : this.getSelectedTool() === "ShareDocuments" && this.state.isDisplayed ? 'block' : 'none'}}
-                            > 
-                                
-                                <FileSharing />
+                            >
+                                <FileLoader />
                             </div>
                             }
                         </MyToolbarButton>

@@ -10,14 +10,14 @@ import ShareFiles from './ShareFiles';
  * @property files: Array of type Files which holds the files to be shared
  * @property filesURLs: Array of type URL which holds the URLs to be shared
  */
-export interface FileSharingProps {
+export interface FileLoaderProps {
     files: File[];
     fileURLs: URL[];
 }
 
 // State properties for FileSharing component, contains arrays for files and URLs to be shared. 
 // Optional properties for a single file and fileURL to be shared.
-type FileSharingState = {
+type FileLoaderState = {
     file?: File;
     files: File[];
     fileURL?: URL;
@@ -29,14 +29,14 @@ type FileSharingState = {
  *  It renders a div named SharedFile containing a DropZoneComponent,
  *  and a Form to allow user to input a url a view a file.
  */
-class FileSharing extends React.Component<{}, FileSharingState> {
+class FileLoader extends React.Component<{}, FileLoaderState> {
     constructor(props: {}) {
         super(props);
         this.state = {files: [], fileURLs: []};
         this.setShareFiles = this.setShareFiles.bind(this);
     }
 
-    setShareFiles(getFiles: FileSharingProps) {        
+    setShareFiles(getFiles: FileLoaderProps) {        
         if (!getFiles) throw new Error("getFiles is null or undefined");
 
         // getFiles.files.forEach(file => {
@@ -226,11 +226,7 @@ class FileSharing extends React.Component<{}, FileSharingState> {
                 <li>No files have been added.</li>
             );
         }
-
     }
- 
-
-//<button onClick={() => console.log(window.location.href)}>Print Window Location</button>  
 
     // Render the dropzone and fileURL input form in a div which will be displayed when the ShareFile icon on the toolbar is selected.
     render() {
@@ -267,4 +263,4 @@ class FileSharing extends React.Component<{}, FileSharingState> {
     }
 }
 
-export default FileSharing;
+export default FileLoader;

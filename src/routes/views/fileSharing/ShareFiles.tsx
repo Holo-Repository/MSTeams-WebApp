@@ -1,7 +1,7 @@
 import { FC, Dispatch, useState } from "react";
 import { Button, Text, Input } from '@fluentui/react-components';
 
-import { FileSharingProps } from './FileSharing';
+import { FileLoaderProps } from './FileLoader';
 import DropZoneComponent from "./DropZoneAddFile";
 import "../../../styles/DropZone.css";
 
@@ -10,7 +10,7 @@ import "../../../styles/DropZone.css";
  * The shareFiles functional component renders a div with a form to input URLs and a DropZone to input files.
  *  It records the input Files and URLs as arrays and dispatches them to the FileSharing component.
  */
-const ShareFiles: FC<{ shareFiles: Dispatch<FileSharingProps> }> = ({ shareFiles }) => {
+const ShareFiles: FC<{ shareFiles: Dispatch<FileLoaderProps> }> = ({ shareFiles }) => {
 
     const [file, setfile] = useState<File>();
     const [files, setfiles] = useState<File[]>([]);
