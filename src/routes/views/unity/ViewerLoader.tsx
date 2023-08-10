@@ -32,7 +32,7 @@ This is a known issue with Unity WebGL, and there is no official solution yet.
 See the code in ModelViewer.tsx for more details on the workaround used.
 ======================================================================================== */
         // If no model is loaded, load the model with the key "model"
-        if (canLoad) loadFloater(model, "model");
+        if (canLoad) await loadFloater(model, "model");
     }
 
     // Display a button to load a model

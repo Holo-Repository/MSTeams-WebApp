@@ -14,17 +14,16 @@ export type HookFloaterLoader = {
     loadFloater: (floater: IFloaterObject, id?: string) => Promise<void>;
 };
 
-
-function useFloaterLoader(props: IFloaterLoader): HookFloaterLoader {
+function useFloaterLoader(options: IFloaterLoader): HookFloaterLoader {
     const floaters = useMemo(() => {
-        const f = props.container.initialObjects.floaters as SharedMap;
-        if (props.valueChangedCallback) f.on("valueChanged", props.valueChangedCallback);
+        const f = options.container.initialObjects.floaters as SharedMap;
+        if (options.valueChangedCallback) f.on("valueChanged", options.valueChangedCallback);
         return f;
-    }, [props.container]);
+    }, [options.container]);
 
     const loadFloater = async (floater: IFloaterObject, id?: string) => {
         // Generate a dynamic map object
-        const floaterMap = await props.container.create(SharedMap);
+        const floaterMap = await options.container.create(SharedMap);
         // Add the model to the map
         Object.entries(floater).forEach(([key, value]) => floaterMap.set(key, value));
         // Generate a random id if none is provided
@@ -36,7 +35,7 @@ function useFloaterLoader(props: IFloaterLoader): HookFloaterLoader {
     }
 
     // Never trigger a re-render in the callback
-    props.postInitCallback?.(floaters);
+    options.postInitCallback?.(floaters);
 
     return {
         floaters,
