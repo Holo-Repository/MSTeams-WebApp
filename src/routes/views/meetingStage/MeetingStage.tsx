@@ -34,7 +34,6 @@ class MeetingStage extends CommonSidePanelMeetingStage {
             containerManager: this.props.containerManager,
             container: this.state.activeContainerId,
             closeCanvas: this.closeContainer,
-
         }
 
         return (

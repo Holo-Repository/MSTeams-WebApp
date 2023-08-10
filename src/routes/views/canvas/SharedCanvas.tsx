@@ -131,8 +131,13 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
     }
 
     async closeCanvas() {
-        const imgUrl = await this.canvasToDataUrl(.25);   
-        const containerMap= {time: new Date().toISOString(), previewImage: imgUrl};
+        let scale = 1;
+        let imgUrl;
+        do {
+            scale /= 2;
+            imgUrl = await this.canvasToDataUrl(scale);
+        } while (imgUrl.length > 30720);
+        const containerMap = {time: new Date().toISOString(), previewImage: imgUrl};
         await this.props.containerManager.updateContainerProperty(this.props.container, containerMap);
         this.props.closeCanvas();
     }
