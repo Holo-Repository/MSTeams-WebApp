@@ -133,7 +133,7 @@ function SharedCanvas(props: SharedCanvasProps) {
                 </Tooltip>
             </div>
             <div id="canvas-host" ref={canvasRef} />
-            {true && <div className='shared-canvas-loading'><Spinner labelPosition="below" label="Loading..." /></div>}
+            {!container && <div className='shared-canvas-loading'><Spinner labelPosition="below" label="Loading..." /></div>}
             {container && <MyToolBar innerDivRef={myToolBarDivRef}  ink={inkingManager} container={container} pointerSelected={isPointerSelected} exportCanvas={exportToPng}/>}
             <div id='floaters' >
                 {floaterHandles && floatersList.map(({key, value}) => {

@@ -1,6 +1,6 @@
 import { IFluidHandle } from "@fluidframework/core-interfaces";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Text, Tooltip } from "@fluentui/react-components";
+import { Tooltip } from "@fluentui/react-components";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { getTheme } from '@fluentui/react';
 import { IValueChanged, SharedMap } from "fluid-framework";
@@ -64,7 +64,7 @@ function Floater(props: FloaterProps) {
             setScreenSize(appToScreenSize(props.inkingManager, floaterRef.current.get('pos')!, floaterRef.current.get('size')!));
             setHasLoaded(true);
         });
-    }, [props.handle]);
+    }, [props.handle, props.inkingManager]);
 
     const handleDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         const newScreenPos = { left: e.clientX, top: e.clientY };
@@ -85,7 +85,7 @@ function Floater(props: FloaterProps) {
         });
         resizeObserver.observe(content);
         return () => resizeObserver.disconnect();
-    }, [hasLoaded]);
+    }, [hasLoaded, screenPos, props.inkingManager]);
 
 
     const exportModel = () => {
