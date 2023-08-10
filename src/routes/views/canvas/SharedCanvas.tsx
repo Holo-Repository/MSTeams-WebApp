@@ -16,7 +16,7 @@ import { Dismiss24Filled } from "@fluentui/react-icons";
 export interface SharedCanvasProps {
     container: string;
     containerManager: ContainerManager;
-    closeCanvas: (imgURL: string) => Promise<void>;
+    closeCanvas: () => Promise<void>;
 }
 
 /**
@@ -131,9 +131,10 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
     }
 
     async closeCanvas() {
-        const dataUrl = await this.canvasToDataUrl(.15);
-        console.log(dataUrl);
-        this.props.closeCanvas(dataUrl);
+        const imgUrl = await this.canvasToDataUrl(.25);   
+        const containerMap= {time: new Date().toISOString(), previewImage: imgUrl};
+        await this.props.containerManager.updateContainerProperty(this.props.container, containerMap);
+        this.props.closeCanvas();
     }
 
 
