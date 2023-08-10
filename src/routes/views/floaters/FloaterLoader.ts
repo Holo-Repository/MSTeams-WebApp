@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from "react";
-import { IFluidContainer, ISharedMapEvents, IValueChanged, SharedMap } from "fluid-framework";
+import { useMemo } from "react";
+import { IFluidContainer, IValueChanged, SharedMap } from "fluid-framework";
 import IFloaterObject from "./IFloaterObject";
 
 
@@ -19,7 +19,7 @@ function useFloaterLoader(options: IFloaterLoader): HookFloaterLoader {
         const f = options.container.initialObjects.floaters as SharedMap;
         if (options.valueChangedCallback) f.on("valueChanged", options.valueChangedCallback);
         return f;
-    }, [options.container]);
+    }, [options.container, options.valueChangedCallback]);
 
     const loadFloater = async (floater: IFloaterObject, id?: string) => {
         // Generate a dynamic map object

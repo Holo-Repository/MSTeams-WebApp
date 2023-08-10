@@ -1,16 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
-import html2canvas from "html2canvas";
+import { useEffect, useRef, useState } from "react";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { IFluidHandle } from "@fluidframework/core-interfaces";
+import { IFluidContainer, SharedMap } from "fluid-framework";
 import { Button, FluentProvider, Spinner, Tooltip, teamsLightTheme } from "@fluentui/react-components";
+import { Dismiss24Filled } from "@fluentui/react-icons";
+import html2canvas from "html2canvas";
 
 import MyToolBar from "./toolbar/MyToolBar";
+import Floater from "../floaters/Floater";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
-import { IFluidContainer, SharedMap } from "fluid-framework";
-import Floater from "../floaters/Floater";
-import { Dismiss24Filled } from "@fluentui/react-icons";
-import { LocalJWKSet } from "jose/dist/types/jwks/local";
 
 
 
@@ -28,7 +27,6 @@ export interface SharedCanvasProps {
 function SharedCanvas(props: SharedCanvasProps) {
     const [container, setContainer] = useState<IFluidContainer>();
     const [inkingManager, setInkingManager] = useState<InkingManager>();
-    const [myVisibleTool, setMyVisibleTool] = useState<string>();
     const [floaterHandles, setFloaterHandles] = useState<SharedMap>();
     const [floatersList, setFloatersList] = useState<{key: string, value: IFluidHandle}[]>([]);
     
@@ -87,10 +85,6 @@ function SharedCanvas(props: SharedCanvasProps) {
         floaterHandles!.delete(key);
     }
 
-    const setVisibleTool = (event: any) => {
-        setMyVisibleTool(event.currentTarget.value);
-    }
-
     const canvasToDataUrl = async (scale: number = 1) => {
         const fluentProviderElement = fluentProviderRef.current;
         let dataUrl = '';
@@ -138,7 +132,8 @@ function SharedCanvas(props: SharedCanvasProps) {
                         onClick={closeCanvas}/>
                 </Tooltip>
             </div>
-            <div id="canvas-host" ref={canvasRef} onClick={setVisibleTool} />
+            <div id="canvas-host" ref={canvasRef} />
+            {true && <div className='shared-canvas-loading'><Spinner labelPosition="below" label="Loading..." /></div>}
             {container && <MyToolBar innerDivRef={myToolBarDivRef}  ink={inkingManager} container={container} pointerSelected={isPointerSelected} exportCanvas={exportToPng}/>}
             <div id='floaters' >
                 {floaterHandles && floatersList.map(({key, value}) => {
