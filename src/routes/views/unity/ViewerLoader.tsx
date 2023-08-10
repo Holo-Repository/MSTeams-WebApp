@@ -50,7 +50,7 @@ See the code in ModelViewer.tsx for more details on the workaround used.
 ======================================================================================== */
         // If no model is loaded, load the model with the key "model"
         if (canLoad) {
-            loadFloater(model, "model"); 
+            await loadFloater(model, "model"); 
             props.setParentState("Select")
         }
     }

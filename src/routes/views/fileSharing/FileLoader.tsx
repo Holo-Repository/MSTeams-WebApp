@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import axios from "axios";
-
 import ShareFiles from './ShareFiles';
 import useFloaterLoader from '../floaters/FloaterLoader';
 import { IFluidContainer } from 'fluid-framework';
 import IFloaterObject from '../floaters/IFloaterObject';
+import { Toolbar, ToolbarButton } from '@fluentui/react-components';
+import { useState } from 'react';
+import {
+    Image24Filled as Image,
+    DocumentPdf24Filled as PDF,
+} from "@fluentui/react-icons";
+import { AcceptedFileTypes } from './AcceptedFileTypes';
 
 
 /**
@@ -17,19 +21,29 @@ function FileLoader(props: {container: IFluidContainer, setParentState: (tool: s
         container: props.container,
     });
 
+    const [fileType, setFileType] = useState(undefined as AcceptedFileTypes | undefined);
+
     async function loadFile(fileURL: string) {
         const file = {
             type: "file",
             pos: { x: 0, y: 0 },
             size: { width: 50, height: 100 },
             url: fileURL,
+            fileType: fileType,
         } as IFloaterObject;
 
         await loadFloater(file);
+        props.setParentState("Select");
     }
 
     if (!floaters) return <p>Loading...</p>;
-    else return <ShareFiles loadFile={loadFile} />;
+    if (!fileType) return (
+        <Toolbar>
+            <ToolbarButton onClick={() => setFileType('image')} icon={<Image />}/>
+            <ToolbarButton onClick={() => setFileType('pdf')} icon={<PDF />}/>
+        </Toolbar>
+    );
+    return <ShareFiles fileType={fileType} loadFile={loadFile} />;
 }
 
 export default FileLoader;

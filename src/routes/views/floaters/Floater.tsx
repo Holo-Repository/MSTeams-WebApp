@@ -19,6 +19,7 @@ import {
     screenToAppSize,
     FloaterScreenCoords,
 } from '../utils/FloaterUtils';
+import FileViewer from "../fileSharing/FileViewer";
 
 const theme = getTheme();
 const throttleTime = 100;
@@ -98,6 +99,9 @@ function Floater(props: FloaterProps) {
     switch (floaterRef.current.get('type')) {
         case "model":
             content = <ModelViewer ref={ModelViewerRef} objMap={floaterRef.current} />
+            break;
+        case "file":
+            content = <FileViewer objMap={floaterRef.current} />
             break;
         default:
             content = <p>Unknown</p>;

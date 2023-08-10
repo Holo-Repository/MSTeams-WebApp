@@ -125,10 +125,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             icon={<DocumentAdd24Regular/>}
                             onClick={this.setSelectedTool}
                         >
-                            {<div 
-                                className="tool-second-level"
-                                style={{display : this.getSelectedTool() === "ShareDocuments" && this.state.isDisplayed ? 'block' : 'none'}}
-                            >
+                            {this.getSelectedTool() === "ShareDocuments" && this.state.isDisplayed && <div className="tool-second-level">
                                 <FileLoader container={this.props.container} setParentState={this.setToolByValue} />
                             </div>
                             }
