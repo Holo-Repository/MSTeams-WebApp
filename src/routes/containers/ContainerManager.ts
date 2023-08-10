@@ -7,7 +7,6 @@ import {
 import {
     ContainerSchema, 
     SharedMap,
-    SharedString,
 } from "fluid-framework";
 import {
     AzureClientProps,
@@ -62,24 +61,17 @@ class ContainerManager {
 
     /**
      * Get the entity from the table storage that represents this location
-     * If the entity does not exist, it will be created
      * 
-     * @param attempts Max number of attempts to get the entity
+     * @param containerId The ID of the container to fetch
      * @throws Error if the entity could not be retrieved in the given number of attempts
      * @returns Promise<any> The entity
      * @private
      */
-    private getEntity(attempts: number = 3): Promise<any> {
-        return this.tableClient.getEntity(this.locationId, this.locationId)
+    private getEntity(containerId: string): Promise<any> {
+        return this.tableClient.getEntity(this.locationId, containerId)
             .then((entity) => entity)
             .catch((err) => {
-                console.log(`Failed to retrieve entity, remaining attempt: ${attempts - 1}`, err);
-                if (err.statusCode === 404) {
-                    this.initializeEntity();
-                    if (attempts > 0)
-                        return this.getEntity(attempts - 1);
-                    else throw new Error(`Could not get entity in less than ${attempts} attempts`);
-                }
+                if (err.statusCode === 404) throw new Error(`Could not get entity`);
                 throw err;
             });
     }
@@ -87,16 +79,17 @@ class ContainerManager {
     /**
      * Initialize the entity in the table storage that represents this location
      * 
+     * @param containerId The ID of the container to initialize
+     * @param container The container object to initialize the entity with
      * @returns Promise<any> The entity
      * @throws Error if the entity could not be created
      * @private
      */
-    private initializeEntity() {
-        console.log("Initializing location");
+    private initializeEntity(containerId: string, container?: ContainerMap) {
         return this.tableClient.createEntity({
             partitionKey: this.locationId,
-            rowKey: this.locationId,
-            containers: '[]'
+            rowKey: containerId,
+            container: JSON.stringify(container)
         }).catch((err) => {
             console.log(err);
             throw err;
@@ -109,7 +102,12 @@ class ContainerManager {
      * @returns Promise<Container[]> The list of containers
      */
     async listContainers() {
-        return JSON.parse((await this.getEntity()).containers as string) as ContainerMap[]
+        const entities = this.tableClient.listEntities({ queryOptions: {
+            filter: `PartitionKey eq '${this.locationId}'`
+        }})
+        const containers = [];
+        for await (const entity of entities) containers.push(JSON.parse(entity.container as string));
+        return containers;
     }
     
     /**
@@ -117,10 +115,8 @@ class ContainerManager {
      * 
      * @param container The container to append
      */
-    async appendContainerId(container: ContainerMap) {
-        const entity = await this.getEntity();
-        entity.containers = JSON.stringify([...JSON.parse(entity.containers as string), container]);
-        return this.tableClient.updateEntity(entity, 'Replace');
+    async appendContainer(container: ContainerMap) {
+        this.initializeEntity(container.id, container);
     }
 
     /**
@@ -130,20 +126,10 @@ class ContainerManager {
      * @param updatedProperty An object containing the property to update and the new value
      */
     async updateContainerProperty(id: string, updatedProperty: Partial<ContainerMap>) {
-        const entity = await this.getEntity();
-        const containers = JSON.parse(entity.containers as string) as ContainerMap[];
-        const targetIndex = containers.findIndex(container => container.id === id);
-        console.log(containers);
-
-        // If the container was found
-        if (targetIndex !== -1) {
-            // Merge the original container with the updated properties
-            containers[targetIndex] = { ...containers[targetIndex], ...updatedProperty };
-            entity.containers = JSON.stringify(containers);
-            return this.tableClient.updateEntity(entity, 'Replace');
-        } else {
-            throw new Error(`Container with id ${id} not found.`);
-        }
+        const entity = await this.getEntity(id);
+        const container = JSON.parse(entity.container as string);
+        entity.container = JSON.stringify({ ...container, ...updatedProperty });
+        return this.tableClient.updateEntity(entity, 'Replace');
     }
 
 
@@ -179,9 +165,14 @@ class ContainerManager {
         // host.setAudience(services.audience);
 
         const id = await container.attach();
-        // await this.appendContainerId({ id, name, description, locationId: this.locationId } as Container);
-        const now = new Date().toISOString();
-        await this.appendContainerId({ id, name:name, time:now, description:description, locationId: this.locationId, previewImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/epDZC0AAAAASUVORK5CYII=" } as ContainerMap);
+        await this.appendContainer({ 
+            id, 
+            name, 
+            time: new Date().toISOString(), 
+            description, 
+            locationId: this.locationId, 
+            previewImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/epDZC0AAAAASUVORK5CYII=" 
+        } as ContainerMap);
 
         // Detach container
         container.disconnect();
