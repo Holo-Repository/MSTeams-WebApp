@@ -1,10 +1,8 @@
-import {useState} from 'react';
-import axios from "axios";
-import DropZoneComponent from "./DropZoneAddFile";
-import { Button, Text, Input, Label} from '@fluentui/react-components';
-import { render } from 'react-dom';
 import React from 'react';
+import axios from "axios";
+
 import ShareFiles from './ShareFiles';
+
 
 /**
  * Interface defining the properties for Filesharing component
@@ -32,69 +30,53 @@ type FileSharingState = {
  *  and a Form to allow user to input a url a view a file.
  */
 class FileSharing extends React.Component<{}, FileSharingState> {
-
     constructor(props: {}) {
         super(props);
         this.state = {files: [], fileURLs: []};
         this.setShareFiles = this.setShareFiles.bind(this);
     }
 
-    setShareFiles(getFiles: FileSharingProps) {
-        
-        if (getFiles === null || getFiles === undefined){
-            console.log("getFiles is null/undefined");
+    setShareFiles(getFiles: FileSharingProps) {        
+        if (!getFiles) throw new Error("getFiles is null or undefined");
+
+        // getFiles.files.forEach(file => {
+        //     console.log(file.name + " is the file names from shareFiles.tsx");
+        // });
+        // getFiles.fileURLs.forEach(fileURL => {
+        //     console.log(fileURL.toString() + " is the fileURLs from shareFiles.tsx");
+        // });
+
+        if (!getFiles.fileURLs) throw new Error("fileURLs list is null or undefined");
+
+        if (getFiles.fileURLs.length > 0){
+            this.setState({fileURLs: getFiles.fileURLs});
+            console.log("URLS and urls are not empty");
             return;
         }
+        else if (getFiles.fileURLs.length === 0){
+            this.setState({fileURL: getFiles.fileURLs[0]});
+            console.log("first URL added");
+        }
         else {
+            console.log("No URL added");
+            return;
+        }
 
-            getFiles.files.forEach(file => {
-                console.log(file.name + " is the file names from shareFiles.tsx");
-            });
-            getFiles.fileURLs.forEach(fileURL => {
-                console.log(fileURL.toString() + " is the fileURLs from shareFiles.tsx");
-            });
-
-            if (getFiles.fileURLs === null || getFiles.fileURLs === undefined){
-                console.log("fileURLs list is null or undefined");
-                return;
-            }
-            else {
-                if (getFiles.fileURLs.length > 0){
-                    this.setState({fileURLs: getFiles.fileURLs});
-                    console.log("URLS and urls are not empty");
-                    return;
+        if (!getFiles.files) throw new Error("files list is null or undefined");
     
-                }
-                else if (getFiles.fileURLs.length === 0){
-                    this.setState({fileURL: getFiles.fileURLs[0]});
-                    console.log("first URL added");
-                }
-                else {
-                    console.log("No URL added");
-                    return;
-                }
-            }
-            if (getFiles.files === null || getFiles.files === undefined){
-                
-                console.log("files list is null or undefined");
-                return;
-            }
-            else {
-                if (getFiles.files.length > 0){
-                    this.setState({files: getFiles.files});
-                    console.log("files and urls are not empty");
+        if (getFiles.files.length > 0){
+            this.setState({files: getFiles.files});
+            console.log("files and urls are not empty");
 
-                }
-                else if (getFiles.files.length === 0){
-                    this.setState({file: getFiles.files[0]});
-                    console.log("first file added");
-                }
-                else {
-                    console.log("No file added");
-                    return;
-                }
-            }
-        } 
+        }
+        else if (getFiles.files.length === 0){
+            this.setState({file: getFiles.files[0]});
+            console.log("first file added");
+        }
+        else {
+            console.log("No file added");
+            return;
+        }
     }
 
     // upload file to server with axios 

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { IFluidContainer, SharedMap } from 'fluid-framework';
-import IFloaterObject from '../views/floaters/IFloaterObject';
+import IFloaterObject from '../floaters/IFloaterObject';
 
-import useFloaterLoader from '../views/floaters/FloaterLoader';
+import useFloaterLoader from '../floaters/FloaterLoader';
 
 
 function ViewerLoader(props: {container: IFluidContainer}) {

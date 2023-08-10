@@ -5,7 +5,6 @@ import { IFluidHandle } from "@fluidframework/core-interfaces";
 import MyToolBar from "./toolbar/MyToolBar";
 import ContainerManager from "../../containers/ContainerManager";
 import '../../../styles/SharedCanvas.css'; 
-import ShareFile from "./toolbar/filehandling/FileSharing";
 import { IFluidContainer, SharedMap } from "fluid-framework";
 import Floater from "../floaters/Floater";
 import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";

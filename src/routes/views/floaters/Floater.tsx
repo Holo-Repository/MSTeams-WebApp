@@ -6,7 +6,7 @@ import { getTheme } from '@fluentui/react';
 import { IValueChanged, SharedMap } from "fluid-framework";
 import { throttle } from 'lodash';
 
-import ModelViewer from "../../unity/ModelViewer";
+import ModelViewer from "../unity/ModelViewer";
 import styles from "../../../styles/Floater.module.css";
 import FloaterInteraction from "./FloaterInteraction";
 import {
