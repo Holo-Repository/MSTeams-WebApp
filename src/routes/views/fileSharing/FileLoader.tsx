@@ -12,7 +12,7 @@ import IFloaterObject from '../floaters/IFloaterObject';
  *  It renders a div named SharedFile containing a DropZoneComponent,
  *  and a Form to allow user to input a url a view a file.
  */
-function FileLoader(props: {container: IFluidContainer}) {
+function FileLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
     const { floaters, loadFloater } = useFloaterLoader({
         container: props.container,
     });

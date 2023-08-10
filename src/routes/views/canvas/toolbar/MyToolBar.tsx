@@ -1,6 +1,6 @@
 import React from "react";
 import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
-import { LocationArrow28Filled, Pen24Filled, NoteEdit24Filled, ArrowDownload24Filled  } from "@fluentui/react-icons";
+import { LocationArrow28Filled, Pen24Filled, ArrowDownload24Filled  } from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { BsBadge3DFill as ModelIcon } from "react-icons/bs";
 import { DocumentAdd24Regular } from "@fluentui/react-icons";
@@ -129,7 +129,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                                 className="tool-second-level"
                                 style={{display : this.getSelectedTool() === "ShareDocuments" && this.state.isDisplayed ? 'block' : 'none'}}
                             >
-                                <FileLoader />
+                                <FileLoader container={this.props.container} setParentState={this.setToolByValue} />
                             </div>
                             }
                         </MyToolbarButton>
