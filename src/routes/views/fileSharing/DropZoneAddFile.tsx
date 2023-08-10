@@ -1,10 +1,8 @@
-import { useCallback } from "react";
+import { FC, Dispatch, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { FC } from "react";
-import { Dispatch } from "react";
 import { Text } from '@fluentui/react-components';
 
-import "../../../../../styles/DropZone.css";
+import "../../../styles/DropZone.css";
 
 
 /**

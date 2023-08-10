@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IFluidContainer, SharedMap } from 'fluid-framework';
 import IFloaterObject from '../floaters/IFloaterObject';
 

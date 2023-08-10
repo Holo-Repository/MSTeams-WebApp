@@ -3,7 +3,7 @@ import { Button, Text, Input } from '@fluentui/react-components';
 
 import { FileSharingProps } from './FileSharing';
 import DropZoneComponent from "./DropZoneAddFile";
-import "../../../../../styles/DropZone.css";
+import "../../../styles/DropZone.css";
 
 
 /**

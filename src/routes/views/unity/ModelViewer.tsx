@@ -3,7 +3,7 @@ import React from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
 
-import styles from "../../styles/ModelViewer.module.css";
+import styles from "../../../styles/ModelViewer.module.css";
 
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
