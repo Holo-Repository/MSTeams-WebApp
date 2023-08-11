@@ -40,6 +40,7 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
             pos: { x: -200, y: -150 },
             size: { width: 400, height: 300 },
             modelRotation: { x: 0, y: 0, z: 0 },
+            modelScale: 0.003,
             modelId: modelId,
         } as IFloaterObject;
 /* ========================================================================================

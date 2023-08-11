@@ -37,10 +37,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         // Load actual model
         const modelId = props.objMap.get('modelId');
         if (modelId) unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
-            hid: modelId,
+            url: modelId,
             rotation: props.objMap.get("modelRotation"),
-            // scale: props.objMap.get("modelScale"),
-            scale: 0.3,
+            scale: props.objMap.get("modelScale"),
         }));
         
         // Register rotation sync
@@ -57,13 +56,10 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
             if (changed.key === "modelScale") {
                 unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(props.objMap.get(changed.key)));
+                console.log('syncing scale')
             }
         }
         props.objMap.on("valueChanged", handleChange);
-
-        
-
-
 
         return () => {
             props.objMap.off("valueChanged", handleChange);
