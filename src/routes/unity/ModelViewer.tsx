@@ -39,18 +39,31 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         if (modelId) unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
             hid: modelId,
             rotation: props.objMap.get("modelRotation"),
+            // scale: props.objMap.get("modelScale"),
+            scale: 0.3,
         }));
         
         // Register rotation sync
         globalThis.syncCurrentRotation = (x: number, y: number, z: number) => props.objMap.set("modelRotation", {x, y, z});
+
+        // Register scale sync
+        globalThis.syncCurrentScale = (x: number, y: number, z: number) => props.objMap.set("modelScale", {x, y, z});
 
         const handleChange = (changed: IValueChanged, local: boolean) => {
             if (local) return;
             if (changed.key === "modelRotation") {
                 unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
             }
+
+            if (changed.key === "modelScale") {
+                unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(props.objMap.get(changed.key)));
+            }
         }
         props.objMap.on("valueChanged", handleChange);
+
+        
+
+
 
         return () => {
             props.objMap.off("valueChanged", handleChange);
