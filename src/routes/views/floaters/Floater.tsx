@@ -45,6 +45,8 @@ function Floater(props: FloaterProps) {
     const [screenSize, setScreenSize] = useState<FloaterScreenSize | undefined>(undefined);
     const [hasLoaded, setHasLoaded] = useState(false);
 
+    const throttledSetScreenSize = throttle(setScreenSize, throttleTime * 2, { leading: true, trailing: true });
+
     const ModelViewerRef = useRef<ModelViewerRefType | null>(null);
 
     const floaterRef = useRef<SharedMap>();
@@ -81,6 +83,7 @@ function Floater(props: FloaterProps) {
         const resizeObserver = new ResizeObserver((entries) => {
             const rect = content.getBoundingClientRect() as DOMRect;
             const newScreenSize = { width: rect.width, height: rect.height };
+            throttledSetScreenSize(newScreenSize);
             setDMSize(floaterRef.current, screenToAppSize(props.inkingManager, screenPos!, newScreenSize));
         });
         resizeObserver.observe(content);
@@ -101,7 +104,7 @@ function Floater(props: FloaterProps) {
             content = <ModelViewer ref={ModelViewerRef} objMap={floaterRef.current} />
             break;
         case "file":
-            content = <FileViewer objMap={floaterRef.current} />
+            content = <FileViewer objMap={floaterRef.current} screenSize={screenSize} />
             break;
         default:
             content = <p>Unknown</p>;

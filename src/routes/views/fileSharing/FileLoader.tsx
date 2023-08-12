@@ -24,13 +24,18 @@ function FileLoader(props: {container: IFluidContainer, setParentState: (tool: s
     const [fileType, setFileType] = useState(undefined as AcceptedFileTypes | undefined);
 
     async function loadFile(fileURL: string) {
-        const file = {
+        let file = {
             type: "file",
             pos: { x: 0, y: 0 },
             size: { width: 50, height: 100 },
             url: fileURL,
             fileType: fileType,
-        } as IFloaterObject;
+        } as any;
+
+        if (fileType === 'pdf') {
+            file.currentPage = 1;
+            file.pageScroll = 0;
+        }
 
         loadFloater(file);
         props.setParentState("Select");
