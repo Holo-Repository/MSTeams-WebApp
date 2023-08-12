@@ -13,6 +13,7 @@ import useFloaterLoader from '../floaters/FloaterLoader';
 
 import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
 import styles from "../../../styles/ViewerLoader.module.css";
+import globalTime from '../utils/GlobalTime';
 
 
 function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
@@ -41,6 +42,7 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
             size: { width: 400, height: 300 },
             modelRotation: { x: 0, y: 0, z: 0 },
             modelId: modelId,
+            lastEditTime: (await globalTime()).ntpTimeInUTC,
         } as IFloaterObject;
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 

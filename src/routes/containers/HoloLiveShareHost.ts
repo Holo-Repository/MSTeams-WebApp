@@ -1,4 +1,5 @@
 import { AzureLiveShareHost, INtpTimeInfo } from "@microsoft/live-share";
+import globalTime from "../views/utils/GlobalTime";
 
 /**
  * This class is just a factory for creating a LiveShareHost instance
@@ -12,16 +13,7 @@ class HoloLiveShareHost {
 
         const fetchRetry = require('fetch-retry')(global.fetch, { retries, retryDelay }) as typeof global.fetch;
 
-        async function getNtpTime(): Promise<INtpTimeInfo> {
-            // Fetch the time from the worldtimeapi.org API
-            const time = await (await fetchRetry('https://worldtimeapi.org/api/timezone/Europe/London', {
-                cache: 'no-cache'
-            })).json();
-            return {
-                ntpTime: time.datetime,
-                ntpTimeInUTC: time.unixtime
-            } as INtpTimeInfo;
-        }
+        function getNtpTime(): Promise<INtpTimeInfo> { return globalTime(fetchRetry) }
 
         // Override the getNtpTime method to use the server timestamp
         lsh.getNtpTime = getNtpTime.bind(lsh);

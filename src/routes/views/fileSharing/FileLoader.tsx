@@ -9,6 +9,7 @@ import {
     DocumentPdf24Filled as PDF,
 } from "@fluentui/react-icons";
 import { AcceptedFileTypes } from './AcceptedFileTypes';
+import globalTime from '../utils/GlobalTime';
 
 
 /**
@@ -28,13 +29,14 @@ function FileLoader(props: {container: IFluidContainer, setParentState: (tool: s
             type: "file",
             pos: { x: 0, y: 0 },
             size: { width: 50, height: 100 },
+            lastEditTime: (await globalTime()).ntpTimeInUTC,
             url: fileURL,
             fileType: fileType,
-        } as any;
+        } as IFloaterObject & { fileType: AcceptedFileTypes };
 
         if (fileType === 'pdf') {
-            file.currentPage = 1;
-            file.pageScroll = 0;
+            (file as any).currentPage = 1;
+            (file as any).pageScroll = 0;
         }
 
         loadFloater(file);

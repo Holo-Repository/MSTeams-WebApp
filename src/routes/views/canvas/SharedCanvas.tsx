@@ -28,7 +28,7 @@ function SharedCanvas(props: SharedCanvasProps) {
     const [container, setContainer] = useState<IFluidContainer>();
     const [inkingManager, setInkingManager] = useState<InkingManager>();
     const [floaterHandles, setFloaterHandles] = useState<SharedMap>();
-    const [floatersList, setFloatersList] = useState<{key: string, value: IFluidHandle}[]>([]);
+    const [floatersList, setFloatersList] = useState<{key: string, value: { map: SharedMap, lastEditTime: number }}[]>([]);
     
     const canvasRef = useRef<HTMLDivElement>(null);
     const fluentProviderRef = useRef<HTMLDivElement>(null);
@@ -74,10 +74,19 @@ function SharedCanvas(props: SharedCanvasProps) {
         if (canvasRef.current) canvasRef.current.style.pointerEvents = selected ? 'none' : 'auto';
     }
 
-    const handleFloaterChange = (handles?: SharedMap) => {
+    const handleFloaterChange = async (handles?: SharedMap) => {
         if (!handles) return;
         const handleList = [];
-        for (const [key, value] of handles.entries()) handleList.push({key, value});
+        for (const [key, value] of handles.entries()) { 
+            let map = await value.get() as SharedMap;
+            handleList.push({
+                key, 
+                value: {
+                    map,
+                    lastEditTime: map.get('lastEditTime') as number
+                }
+            }) 
+        }
         setFloatersList(handleList);
     }
 
@@ -139,7 +148,7 @@ function SharedCanvas(props: SharedCanvasProps) {
                 {floaterHandles && floatersList.map(({key, value}) => {
                     return <Floater 
                         key={key} 
-                        handle={value}
+                        objMap={value.map}
                         delete={() => {deleteFloater(key)}}
                         inkingManager={inkingManager!}
                     />
