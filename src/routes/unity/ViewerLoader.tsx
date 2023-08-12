@@ -17,7 +17,7 @@ import styles from "../../styles/ViewerLoader.module.css";
 
 function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [modelId, setModelId] = useState("");
+    const [modelURL, setModelURL] = useState("");
 
     // /------/ Code related to issue described later in this file
     let [canLoad, setCanLoad] = useState(false);
@@ -41,7 +41,7 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
             size: { width: 400, height: 300 },
             modelRotation: { x: 0, y: 0, z: 0 },
             modelScale: 0.003,
-            modelId: modelId,
+            modelURL: modelURL,
         } as IFloaterObject;
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
@@ -58,18 +58,18 @@ See the code in ModelViewer.tsx for more details on the workaround used.
     
     return <div className={styles.body}>
         <Field
-            label="Model ID"
+            label="Model URL"
             validationState='none'
             validationMessage={canLoad ? undefined : <div>Close current model to open a new one</div>}
         >
             <div className={styles.fieldBody}>
                 <Input 
-                    placeholder="E.g. lung1"
+                    placeholder="E.g. https://example.com/model.glb"
                     disabled={!canLoad}
                     ref={inputRef}
-                    onChange={(e) => setModelId(e.target.value)}
+                    onChange={(e) => setModelURL(e.target.value)}
                 />
-                <Button icon={<Upload />} appearance='primary' onClick={loadModel} disabled={!canLoad || modelId === ""} />
+                <Button icon={<Upload />} appearance='primary' onClick={loadModel} disabled={!canLoad || modelURL === ""} />
             </div>
         </Field>
     </div>;
