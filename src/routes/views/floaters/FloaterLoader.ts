@@ -1,5 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { IFluidContainer, IValueChanged, SharedMap } from "fluid-framework";
+import { v4 as uuidv4 } from "uuid";
+
 import IFloaterObject from "./IFloaterObject";
 
 
@@ -32,9 +34,7 @@ function useFloaterLoader(options: IFloaterLoader): HookFloaterLoader {
         // Add the model to the map
         Object.entries(floater).forEach(([key, value]) => floaterMap.set(key, value));
         // Generate a random id if none is provided
-        let randomId = id;
-        while (!randomId || floaters.has(randomId)) 
-            randomId = Math.floor(Math.random() * 1000000).toString();
+        let randomId = id || uuidv4();
         // Add the map to the container
         floaters.set(randomId, floaterMap.handle);
     }
