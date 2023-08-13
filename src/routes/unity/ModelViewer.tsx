@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, forwardRef, useImperativeHandle } from "react";
 import { Field, ProgressBar } from "@fluentui/react-components";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
@@ -6,11 +6,10 @@ import { IValueChanged, SharedMap } from "fluid-framework";
 
 import styles from "../../styles/ModelViewer.module.css";
 
-
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
 const unityModelTarget = "Target Manager";
 
-function ModelViewer(props: {objMap: SharedMap}) {
+const ModelViewer = forwardRef((props: { objMap: { [key: string]: any } }, ref) => {
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
 This is because when React unloads it deleted the unity canvas, which causes the unity engine to crash.
@@ -22,13 +21,51 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     const [unityInstance, setUnityInstance] = React.useState(undefined as unknown as UnityInstance);
     const [canvasId, setCanvasId] = React.useState(undefined as unknown as string);
 
-    const { unityProvider, UNSAFE__unityInstance, loadingProgression, isLoaded, unload } = useUnityContext({
+    const { 
+        unityProvider, 
+        UNSAFE__unityInstance, 
+        loadingProgression, 
+        isLoaded, 
+        unload,
+        takeScreenshot,
+    } = useUnityContext({
         loaderUrl: `${buildURL}/WebGL.loader.js`,
         dataUrl: `${buildURL}/WebGL.data.gz`,
         frameworkUrl: `${buildURL}/WebGL.framework.js.gz`,
         codeUrl: `${buildURL}/WebGL.wasm.gz`,
+        webglContextAttributes: {
+            preserveDrawingBuffer: true,
+        },
     });
     
+
+    
+    function downloadBase64Image(base64Data: string, filename: string) {
+        const link = document.createElement("a");
+        link.href = base64Data;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    function handleClickTakeScreenshot() {
+        // Assuming takeScreenshot function returns the image data in 'data' variable
+        const data = takeScreenshot("image/png", 1.0);
+        
+        console.log("data", data);
+        if (data !== undefined) {
+            downloadBase64Image(data, "screenshot.png");
+        } else {
+            console.log("Screenshot data is undefined. Unable to download.");
+        }
+    }
+    
+
+    useImperativeHandle(ref, () => ({
+        handleClickTakeScreenshot,
+    }))
+
     // Register functions that unity can call
     useEffect(() => {
         if (!isLoaded || !unityInstance) return;
@@ -135,6 +172,6 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
             />
         </>
     );
-}
+});
 
 export default ModelViewer;

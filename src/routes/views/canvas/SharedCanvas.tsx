@@ -1,5 +1,5 @@
 import React from "react";
-// import html2canvas from "html2canvas";
+import html2canvas from "html2canvas";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { IFluidHandle } from "@fluidframework/core-interfaces";
 import { FluentProvider, Spinner, teamsLightTheme } from "@fluentui/react-components";
@@ -29,6 +29,8 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         floaterHandles: {} as { [key: string]: IFluidHandle },
     }
     
+    fluentProviderRef = React.createRef<HTMLDivElement>();
+    myToolBarDivRef = React.createRef<HTMLDivElement>();
     canvas = React.createRef<HTMLDivElement>();
     floaters = undefined as SharedMap | undefined;
     container = undefined as IFluidContainer | undefined
@@ -61,17 +63,6 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
             inkingManager,
             floaterHandles,
         });
-    }
-
-    async componentWillUnmount() {
-        // TODO: Save the Base64 image into Azure blob?
-        // if (this.canvas.current) {
-        //     const canvasSnapshot = await html2canvas(this.canvas.current); 
-        //     const imgData = canvasSnapshot.toDataURL();
-        // }
-        
-        // const containerMap= {time: new Date().toISOString()};
-        // await this.props.containerManager.updateContainerProperty(this.props.container, containerMap);
     }
 
     handleFloaterChange = (changed: any) => {
@@ -107,6 +98,39 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         if (this.canvas.current) this.canvas.current.style.pointerEvents = selected ? 'none' : 'auto';
     }
 
+    canvasToDataUrl = async () => {
+        const fluentProviderElement = this.fluentProviderRef.current;
+        let dataUrl = '';
+        if (fluentProviderElement) {
+            const canvas = await html2canvas(fluentProviderElement as HTMLElement, {
+                ignoreElements: (node) => {
+                    return node === this.myToolBarDivRef.current;
+                }
+            });
+            dataUrl = canvas.toDataURL('image/png');
+        }
+        return dataUrl;
+    }
+    
+    downloadDataUrlAsPng = (dataUrl: string) => {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'canvas.png';
+        a.click();
+    }
+    
+    exportToPng = async () => {
+        const dataUrl = await this.canvasToDataUrl();
+        if (dataUrl) {
+            this.downloadDataUrlAsPng(dataUrl);
+        }
+    }
+    
+    
+    
+      
+
+
     render(): React.ReactNode {
         const { 
             inkingManager,
@@ -114,24 +138,18 @@ class SharedCanvas extends React.Component<SharedCanvasProps> {
         } = this.state;
 
         return (
-            <FluentProvider id='canvas-background' theme={teamsLightTheme}>
+            <FluentProvider id='canvas-background' theme={teamsLightTheme} ref={this.fluentProviderRef}>
                 <div id="canvas-host" ref={this.canvas} onClick={this.setVisibleTool} />
-                {(!this.container 
-                    || !this.floaters 
-                    || !inkingManager
-                ) ? <Spinner labelPosition="below" label="Connecting..." className="canvas-loading-spinner" />
-                : <>
-                    <MyToolBar ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected}/>
-                    <div id='floaters' >
-                        {Object.entries(floaterHandles).map(([key, value]) => 
-                            <Floater 
-                                key={key} 
-                                handle={value} delete={() => {this.deleteFloater(key)}}
-                                inkingManager={inkingManager}
-                            />
-                        )}
-                    </div>
-                </>}
+                {this.container && <MyToolBar innerDivRef={this.myToolBarDivRef}  ink={inkingManager} container={this.container} pointerSelected={this.isPointerSelected} exportCanvas={this.exportToPng}/>}
+                <div id='floaters' >
+                    {inkingManager && Object.entries(floaterHandles).map(([key, value]) => 
+                        <Floater 
+                            key={key} 
+                            handle={value} delete={() => {this.deleteFloater(key)}}
+                            inkingManager={inkingManager}
+                        />
+                    )}
+                </div>
             </FluentProvider>
         );
     }
