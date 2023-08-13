@@ -109,7 +109,7 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
             <div>
                 {container &&
                     <div className="container">
-                        <img src={imgPath} alt='preview' />
+                        <img src={container.previewImage} alt='preview' />
                         <div className="display-area">
                             <h4>{container.name}</h4>
                             <p>{container.time}</p>

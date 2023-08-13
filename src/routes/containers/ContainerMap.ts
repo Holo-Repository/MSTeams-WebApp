@@ -8,4 +8,5 @@ export default interface ContainerMap {
     time: string;
     description: string;
     locationId: string;
+    previewImage: string;
 }

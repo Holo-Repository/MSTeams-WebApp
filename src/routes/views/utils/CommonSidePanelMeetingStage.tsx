@@ -83,7 +83,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
      * @throws Error if the container cannot be created in the current location.
      */
     async createContainer(name: string, description: string): Promise<void> {
-        const id = await this.props.containerManager.createContainer(name, description);
+        await this.props.containerManager.createContainer(name, description);
         // Signal to other clients that a new container has been created
         this.newContainerEvent?.send('received');
     }
@@ -102,8 +102,6 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
 
     async closeContainer() {
         // Save the last edit time
-        const containerMap= {time: new Date().toISOString()};
-        await this.props.containerManager.updateContainerProperty(this.state.activeContainerId as string, containerMap);
         this.openContainer(undefined as unknown as string);
         
         // Redraw the component to update edit time

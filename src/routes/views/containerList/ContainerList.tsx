@@ -60,29 +60,33 @@ class ContainerList extends React.Component<ContainerListProps> {
         return this.state.containers[index];
     }
 
+    setUnmounted = () => {
+        this.setState({mounted: false});
+    }
+
     render() {
         return (
             <div>
-                {!this.state.mounted && <div className={commonStyles.loading}>
-                    <Spinner labelPosition="below" label="Connecting..." />
+                {!this.state.mounted && <div className="flex-loading">
+                    <Spinner labelPosition="below" label="Loading..." />
                 </div>}
                 {this.state.mounted && !this.props.activeContainerId && <div>
                     <h3>Recent Collab Case</h3>
                     <div className="flex-container-list">
                         {this.state.containers.map((container) => (
                             <div className="flex-item" key={container.id}>
-                                <ContainerPreview container={container} open={this.props.openContainer}
-                                canOpen={this.props.canOpen}/>
+                                <ContainerPreview container={container} open={this.props.openContainer} canOpen={this.props.canOpen}/>
                             </div>
                         ))}
-                        {this.props.canCreate && <div className="flex-item"><ContainerPreview create={this.props.createContainer}/></div>}
+                        {this.props.canCreate && <div className="flex-item">
+                            <ContainerPreview create={(name, desc)=> {this.setUnmounted(); this.props.createContainer(name, desc)}}/>
+                            </div>}
                     </div>
                 </div>}
 
                 {this.state.mounted  && this.props.activeContainerId && 
                     <div className="flex-container-list">
-                        <ContainerPreview container={this.getActiveContainer()} close={this.props.closeContainer}
-                        canClose={true}
+                        <ContainerPreview container={this.getActiveContainer()} close={this.props.closeContainer} canClose={true}
                         ></ContainerPreview>
                     </div>
                 }
