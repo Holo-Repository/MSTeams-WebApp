@@ -27,8 +27,8 @@ function FileLoader(props: {container: IFluidContainer, setParentState: (tool: s
     async function loadFile(fileURL: string) {
         let file = {
             type: "file",
-            pos: { x: 0, y: 0 },
-            size: { width: 50, height: 100 },
+            pos: { x: -200, y: -150 },
+            size: { width: 400, height: 300 },
             lastEditTime: (await globalTime()).ntpTimeInUTC,
             url: fileURL,
             fileType: fileType,

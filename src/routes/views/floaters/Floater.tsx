@@ -1,4 +1,3 @@
-import { IFluidHandle } from "@fluidframework/core-interfaces";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Tooltip } from "@fluentui/react-components";
 import { InkingManager } from "@microsoft/live-share-canvas";
@@ -21,6 +20,8 @@ import {
 } from '../utils/FloaterUtils';
 import FileViewer from "../fileSharing/FileViewer";
 import globalTime from "../utils/GlobalTime";
+import { AcceptedFloaterType } from "./AcceptedFloaterType";
+import NotesViewer from "../notes/NotesViewer";
 
 const theme = getTheme();
 const throttleTime = 100;
@@ -101,12 +102,15 @@ function Floater(props: FloaterProps) {
     if (!screenPos || !screenSize) return <></>;
     
     let content;
-    switch (props.objMap.get('type')) {
+    switch (props.objMap.get('type') as AcceptedFloaterType) {
         case "model":
             content = <ModelViewer ref={ModelViewerRef} objMap={props.objMap} />
             break;
         case "file":
             content = <FileViewer objMap={props.objMap} screenSize={screenSize} />
+            break;
+        case "note":
+            content = <NotesViewer objMap={props.objMap} />
             break;
         default:
             content = <p>Unknown</p>;

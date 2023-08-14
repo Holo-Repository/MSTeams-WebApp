@@ -1,6 +1,11 @@
 import React from "react";
 import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
-import { LocationArrow28Filled, Pen24Filled, ArrowDownload24Filled  } from "@fluentui/react-icons";
+import { 
+    LocationArrow28Filled, 
+    Pen24Filled, 
+    ArrowDownload24Filled,
+    Note24Filled as Note,
+} from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { BsBadge3DFill as ModelIcon } from "react-icons/bs";
 import { DocumentAdd24Regular } from "@fluentui/react-icons";
@@ -10,6 +15,7 @@ import DrawingManager from "./DrawingManager";
 import MyToolbarButton from "./MyToolBarButton";
 import FileLoader from "../../fileSharing/FileLoader";
 import ViewerLoader from "../../unity/ViewerLoader";
+import NotesLoader from "../../notes/NotesLoader";
 
 
 
@@ -139,6 +145,18 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                         >
                             {this.getSelectedTool() === "Model" && this.state.isDisplayed && <div className="tool-second-level" >
                                 <ViewerLoader container={this.props.container} setParentState={this.setToolByValue} />
+                            </div>
+                            }
+                        </MyToolbarButton>
+
+                        <MyToolbarButton
+                            value="Notes"
+                            name="tools"
+                            icon={<Note />}
+                            onClick={this.setSelectedTool}
+                        >
+                            {this.getSelectedTool() === "Notes" && this.state.isDisplayed && <div className="tool-second-level" >
+                                <NotesLoader container={this.props.container} setParentState={this.setToolByValue} />
                             </div>
                             }
                         </MyToolbarButton>
