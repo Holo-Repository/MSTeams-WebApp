@@ -4,12 +4,12 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
 import { IValueChanged, SharedMap } from "fluid-framework";
 
-import styles from "../../styles/ModelViewer.module.css";
+import styles from "../../../styles/ModelViewer.module.css";
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
 const unityModelTarget = "Target Manager";
 
-const ModelViewer = forwardRef((props: { objMap: { [key: string]: any } }, ref) => {
+const ModelViewer = forwardRef((props: { objMap: SharedMap }, ref) => {
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
 This is because when React unloads it deleted the unity canvas, which causes the unity engine to crash.
@@ -98,7 +98,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
             props.objMap.off("valueChanged", handleChange);
             globalThis.syncCurrentRotation = undefined;
         }
-    }, [unityInstance, isLoaded]);
+    }, [unityInstance, isLoaded, props.objMap]);
 
 
 
@@ -156,7 +156,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
         // Set the observer ref to the observer so it's cleaned up if the effect runs again.
         return () => {observerRef.current = observer}
-    }, [unityInstance])
+    }, [unityInstance, canvasId, unload])
 
     return (
         <>

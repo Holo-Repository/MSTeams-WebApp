@@ -1,13 +1,21 @@
 import React from "react";
 import { Toolbar, ToolbarRadioGroup } from "@fluentui/react-components";
-import { LocationArrow28Filled, Pen24Filled, NoteEdit24Filled, ArrowDownload24Filled  } from "@fluentui/react-icons";
+import { 
+    LocationArrow28Filled, 
+    Pen24Filled, 
+    ArrowDownload24Filled,
+    Note24Filled as Note,
+} from "@fluentui/react-icons";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { BsBadge3DFill as ModelIcon } from "react-icons/bs";
+import { DocumentAdd24Regular } from "@fluentui/react-icons";
+import { IFluidContainer } from "fluid-framework";
 
 import DrawingManager from "./DrawingManager";
 import MyToolbarButton from "./MyToolBarButton";
-import ViewerLoader from "../../../unity/ViewerLoader";
-import { IFluidContainer } from "fluid-framework";
+import FileLoader from "../../fileSharing/FileLoader";
+import ViewerLoader from "../../unity/ViewerLoader";
+import NotesLoader from "../../notes/NotesLoader";
 
 
 
@@ -92,7 +100,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
 
     render(): React.ReactNode {
         const {ink} = this.props;
-
+        
         return(
             <div ref={this.innerDivRef}>
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
@@ -118,13 +126,13 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                         </MyToolbarButton>
 
                         <MyToolbarButton 
-                            value="Notes"
+                            value="ShareDocuments"
                             name="tools"
-                            icon={<NoteEdit24Filled />}
+                            icon={<DocumentAdd24Regular/>}
                             onClick={this.setSelectedTool}
                         >
-                            {this.getSelectedTool() === "Notes" && this.state.isDisplayed && <div className="tool-second-level" >
-                                Add new component here
+                            {this.getSelectedTool() === "ShareDocuments" && this.state.isDisplayed && <div className="tool-second-level">
+                                <FileLoader container={this.props.container} setParentState={this.setToolByValue} />
                             </div>
                             }
                         </MyToolbarButton>
@@ -142,6 +150,18 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                         </MyToolbarButton>
 
                         <MyToolbarButton
+                            value="Notes"
+                            name="tools"
+                            icon={<Note />}
+                            onClick={this.setSelectedTool}
+                        >
+                            {this.getSelectedTool() === "Notes" && this.state.isDisplayed && <div className="tool-second-level" >
+                                <NotesLoader container={this.props.container} setParentState={this.setToolByValue} />
+                            </div>
+                            }
+                        </MyToolbarButton>
+
+                        <MyToolbarButton
                             value="Export"
                             name="tools"
                             icon={<ArrowDownload24Filled />}
@@ -151,9 +171,10 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                         
                     </ToolbarRadioGroup>
                 </Toolbar>
+                
             </div>
         );
     }
 }
 
-export default MyToolBar
+export default MyToolBar;
