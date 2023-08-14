@@ -25,18 +25,20 @@ import NotesViewer from "../notes/NotesViewer";
 
 const theme = getTheme();
 const throttleTime = 100;
-const setDMPos = throttle(async (dataMap, pos: FloaterAppCoords) => {
+const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => {
     if (!dataMap) return;
-    let lastEditTime = (await globalTime()).ntpTimeInUTC;
     dataMap.set('pos', pos);
-    dataMap.set('lastEditTime', lastEditTime);
 }, throttleTime, { leading: true, trailing: true });
-const setDMSize = throttle(async (dataMap, size: FloaterAppSize) => {
+const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
+    if (!dataMap) return;
+    dataMap.set('size', size);
+}, throttleTime, { leading: true, trailing: true });
+const setDMEditTime = throttle(async (dataMap, reverse: boolean = false) => {
     if (!dataMap) return;
     let lastEditTime = (await globalTime()).ntpTimeInUTC;
-    dataMap.set('size', size);
-    dataMap.set('lastEditTime', lastEditTime);
-} , throttleTime, { leading: true, trailing: true });
+    dataMap.set('lastEditTime', lastEditTime * (reverse ? -1 : 1));
+}, throttleTime, { leading: true, trailing: true });
+
 
 export interface FloaterProps {
     objMap: SharedMap;
@@ -76,6 +78,7 @@ function Floater(props: FloaterProps) {
         if (newScreenPos.left === 0 && newScreenPos.top === 0) return; // Ignore the last event
         setScreenPos(newScreenPos); // Local update
         setDMPos(props.objMap, screenToAppPos(props.inkingManager, newScreenPos)); // Remote update
+        setDMEditTime(props.objMap);
     }
 
     const contentRef = useRef<HTMLDivElement>(null);
@@ -102,7 +105,8 @@ function Floater(props: FloaterProps) {
     if (!screenPos || !screenSize) return <></>;
     
     let content;
-    switch (props.objMap.get('type') as AcceptedFloaterType) {
+    const floaterType = props.objMap.get('type') as AcceptedFloaterType;
+    switch (floaterType) {
         case "model":
             content = <ModelViewer ref={ModelViewerRef} objMap={props.objMap} />
             break;
@@ -117,15 +121,21 @@ function Floater(props: FloaterProps) {
             break;
     }
     
-    const interaction = <FloaterInteraction delete={props.delete} drag={handleDrag} export={exportModel} />
+    const interaction = <FloaterInteraction 
+        delete={props.delete} 
+        drag={handleDrag} 
+        lastEdit={(reverse?: boolean) => {setDMEditTime(props.objMap, reverse)}} 
+        export={floaterType === 'model' ? exportModel : undefined}
+    />
     const contentStyle = { ...screenPos, ...screenSize };
     
     return (
-        <Tooltip content={interaction} relationship="label" hideDelay={50} showDelay={10} positioning='above-start' >
+        <Tooltip content={interaction} relationship="label" hideDelay={300} showDelay={200} positioning='above-start' >
             <div 
                 ref={contentRef}
                 className={styles.content} 
                 style={{...contentStyle, boxShadow: theme.effects.elevation8, zIndex: props.objMap.get('lastEditTime')}}
+                onClick={() => {setDMEditTime(props.objMap)}}
             >{content}
             </div>
         </Tooltip>
