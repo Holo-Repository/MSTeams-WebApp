@@ -91,7 +91,7 @@ function Floater(props: FloaterProps) {
         });
         resizeObserver.observe(content);
         return () => resizeObserver.disconnect();
-    }, [hasLoaded, screenPos, props.inkingManager]);
+    }, [hasLoaded, screenPos, props.inkingManager, props.objMap, throttledSetScreenSize]);
 
 
     const exportModel = () => {

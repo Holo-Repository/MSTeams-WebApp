@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
-import { IFluidHandle } from "@fluidframework/core-interfaces";
 import { IFluidContainer, SharedMap } from "fluid-framework";
 import { Button, FluentProvider, Spinner, Tooltip, teamsLightTheme } from "@fluentui/react-components";
 import { Dismiss24Filled } from "@fluentui/react-icons";
