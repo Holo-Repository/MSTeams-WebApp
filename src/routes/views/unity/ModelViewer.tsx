@@ -97,10 +97,6 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         }
 
         const handleChange = (changed: IValueChanged, local: boolean) => {           
-            
-                
-
-
             if (local) return;
             if (changed.key === "modelRotation")
                 unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
