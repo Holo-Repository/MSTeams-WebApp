@@ -85,12 +85,18 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         // Register scale sync
         globalThis.syncCurrentScale = (x: number, y: number, z: number) => props.objMap.set("modelScale", {x, y, z});
 
+        // Register texture sync
+        // globalThis.syncCurrentTexture = (texture: string) => props.objMap.set("texture", {texture});
+
         const handleChange = (changed: IValueChanged, local: boolean) => {
+            if (changed.key === "texture") console.log("texture changed", changed);
             if (local) return;
             if (changed.key === "modelRotation")
                 unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
             if (changed.key === "modelScale")
                 unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(props.objMap.get(changed.key)));
+            // if (changed.key === "texture")
+            //     unityInstance.SendMessage(unityModelTarget, "SetTextureJS", JSON.stringify(props.objMap.get(changed.key)));
         }
         props.objMap.on("valueChanged", handleChange);
 
