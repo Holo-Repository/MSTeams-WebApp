@@ -50,15 +50,19 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     }
     
     function handleClickTakeScreenshot() {
+        unityInstance.SendMessage(unityModelTarget, "ToggleUI");
+
         // Assuming takeScreenshot function returns the image data in 'data' variable
         const data = takeScreenshot("image/png", 1.0);
         
-        console.log("data", data);
+        // console.log("data", data);
         if (data !== undefined) {
             downloadBase64Image(data, "screenshot.png");
         } else {
             console.log("Screenshot data is undefined. Unable to download.");
         }
+
+        unityInstance.SendMessage(unityModelTarget, "ToggleUI");
     }
     
 
@@ -67,7 +71,8 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     }))
 
     // Register functions that unity can call
-    useEffect(() => {
+    useEffect(() => 
+        {
         if (!isLoaded || !unityInstance) return;
         const globalThis = window as any;
         
@@ -86,17 +91,28 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         globalThis.syncCurrentScale = (x: number, y: number, z: number) => props.objMap.set("modelScale", {x, y, z});
 
         // Register texture sync
-        // globalThis.syncCurrentTexture = (texture: string) => props.objMap.set("texture", {texture});
+        globalThis.syncCurrentTexture = (name: string, texture: string) => {
+            props.objMap.set("modelName", name);
+            props.objMap.set(JSON.stringify(props.objMap.get("modelName")), {texture});      
+            // console.log("modelName", JSON.stringify(props.objMap.get("modelName")));
+            // console.log("texture", props.objMap.get(JSON.stringify(props.objMap.get("modelName"))));
+        }
 
-        const handleChange = (changed: IValueChanged, local: boolean) => {
-            if (changed.key === "texture") console.log("texture changed", changed);
+        const handleChange = (changed: IValueChanged, local: boolean) => {           
+            
+                
+
+
             if (local) return;
             if (changed.key === "modelRotation")
                 unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
             if (changed.key === "modelScale")
                 unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(props.objMap.get(changed.key)));
-            // if (changed.key === "texture")
-            //     unityInstance.SendMessage(unityModelTarget, "SetTextureJS", JSON.stringify(props.objMap.get(changed.key)));
+            if (changed.key === JSON.stringify(props.objMap.get("modelName"))) 
+                unityInstance.SendMessage(
+                    JSON.stringify(props.objMap.get("modelName")).slice(1, -1),
+                    "SetTextureJS", 
+                    JSON.stringify(props.objMap.get(changed.key)));
         }
         props.objMap.on("valueChanged", handleChange);
 

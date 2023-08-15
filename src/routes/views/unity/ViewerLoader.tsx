@@ -44,6 +44,7 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
             lastEditTime: (await globalTime()).ntpTimeInUTC,
             modelScale: 0.003,
             modelURL: modelURL,
+            modelName: "",
         } as IFloaterObject;
 /* ========================================================================================
 Due to [#22](https://github.com/jeffreylanters/react-unity-webgl/issues/22) we have to restrict ourselves to max one model displayed at a time. 
