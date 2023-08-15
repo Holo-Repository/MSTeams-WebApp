@@ -6,17 +6,19 @@ export interface FloaterAppSize { width: number; height: number; }
 export interface FloaterScreenSize { width: number; height: number; }
 
 export function appToScreenPos(inkingManager: InkingManager, pos: FloaterAppCoords): FloaterScreenCoords {
-    if (!(inkingManager.referencePoint === 'center')) throw new Error('Only center reference point is supported');
-    
-    const screenCoords = inkingManager.viewportToScreen(pos);
-    return { left: screenCoords.x, top: screenCoords.y };
+    if (inkingManager.referencePoint !== 'center') throw raiseGlobalError(new Error('Only center reference point is supported'));
+    try {
+        const screenCoords = inkingManager.viewportToScreen(pos);
+        return { left: screenCoords.x, top: screenCoords.y };
+    } catch (e: any) { throw raiseGlobalError(e) };
 }
 
 export function screenToAppPos(inkingManager: InkingManager, pos: FloaterScreenCoords): FloaterAppCoords {
-    if (!(inkingManager.referencePoint === 'center')) throw new Error('Only center reference point is supported');
-    
-    const viewportCoords = inkingManager.screenToViewport({ x: pos.left, y: pos.top });
-    return { x: viewportCoords.x, y: viewportCoords.y };
+    if (inkingManager.referencePoint !== 'center') throw raiseGlobalError(new Error('Only center reference point is supported'));
+    try {
+        const viewportCoords = inkingManager.screenToViewport({ x: pos.left, y: pos.top });
+        return { x: viewportCoords.x, y: viewportCoords.y };
+    } catch (e: any) { throw raiseGlobalError(e) };
 }
 
 export function appToScreenSize(inkingManager: InkingManager, pos: FloaterAppCoords, size: FloaterAppSize): FloaterScreenSize {

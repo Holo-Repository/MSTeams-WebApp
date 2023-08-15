@@ -1,4 +1,4 @@
-import { Image } from "@fluentui/react-components";
+import { Image, Text } from "@fluentui/react-components";
 import { SharedMap } from "fluid-framework";
 import { useMemo } from "react";
 
@@ -16,6 +16,7 @@ function FileViewer(props: { objMap: SharedMap, screenSize: FloaterScreenSize })
     switch (type) {
         case 'image': return <Image src={url} fit="contain" />;
         case 'pdf': return <PDF url={url} screenSize={props.screenSize} objMap={props.objMap} />;
+        default: return <Text>Unsupported file type</Text>;
     }
 }
 

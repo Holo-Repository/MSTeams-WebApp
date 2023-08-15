@@ -16,8 +16,8 @@ function ShareFiles(props: { fileType: AcceptedFileTypes, loadFile: (fileURL: st
     const [isValidURL, setIsValidURL] = useState(false);
 
     const loadFileURL = async () => {
-        if (!inputRef.current) throw new Error("Input ref not set");
-        if (!isValidURL) throw new Error("Invalid URL");
+        if (!inputRef.current) throw raiseGlobalError(new Error("Input ref not set"));
+        if (!isValidURL) throw raiseGlobalError(new Error("Invalid URL"));
         props.loadFile(fileURL);
     }
 

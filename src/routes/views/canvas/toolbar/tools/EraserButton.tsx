@@ -25,7 +25,6 @@ export interface EraserButtonProps {
  * corresponds to the point eraser.
  */
 class EraserButton extends React.Component<EraserButtonProps> {
-    
     render(): React.ReactNode {
         return (
             <Button

@@ -41,6 +41,7 @@ class FetchJWT {
         
         // Fetch the token with retries
         response = await this.fetchRetry(url, options);
+        if (!response.ok) raiseGlobalError(new Error(`Failed to fetch JWT token: ${response.statusText}`));
         
         // If the token is valid, update the cache
         if (response.ok) cache!.put(url, response.clone());
