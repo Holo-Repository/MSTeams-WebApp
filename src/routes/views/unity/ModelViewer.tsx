@@ -94,8 +94,6 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         globalThis.syncCurrentTexture = (name: string, texture: string) => {
             props.objMap.set("modelName", name);
             props.objMap.set(JSON.stringify(props.objMap.get("modelName")), {texture});      
-            // console.log("modelName", JSON.stringify(props.objMap.get("modelName")));
-            // console.log("texture", props.objMap.get(JSON.stringify(props.objMap.get("modelName"))));
         }
 
         const handleChange = (changed: IValueChanged, local: boolean) => {           
