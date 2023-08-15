@@ -7,6 +7,7 @@ import {
 import {
     ContainerSchema, 
     SharedMap,
+    SharedString,
 } from "fluid-framework";
 import {
     AzureClientProps,
@@ -33,7 +34,10 @@ class ContainerManager {
             liveCanvas: LiveCanvas,
             floaters: SharedMap,
         },
-        dynamicObjectTypes: [ SharedMap ]
+        dynamicObjectTypes: [ 
+            SharedMap,
+            SharedString
+        ]
     } as ContainerSchema;
 
     locationId: string;

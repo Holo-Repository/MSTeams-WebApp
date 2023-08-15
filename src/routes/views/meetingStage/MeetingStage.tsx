@@ -1,8 +1,7 @@
 import CommonSidePanelMeetingStage, { CommonSidePanelMeetingStageProps } from "../utils/CommonSidePanelMeetingStage";
 import ContainerList from '../containerList/ContainerList';
 import SharedCanvas from "../canvas/SharedCanvas";
-import { Button, Spinner, Tooltip } from "@fluentui/react-components";
-import { Dismiss24Filled } from "@fluentui/react-icons";
+import { Spinner } from "@fluentui/react-components";
 
 import '../../../styles/MeetingStage.css'; 
 import commonStyles from '../../../styles/CommonSidePanelMeetingStage.module.css';

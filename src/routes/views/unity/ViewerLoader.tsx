@@ -8,11 +8,12 @@ import {
 } from '@fluentui/react-components';
 import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
 
-import IFloaterObject from '../views/floaters/IFloaterObject';
-import useFloaterLoader from '../views/floaters/FloaterLoader';
+import IFloaterObject from '../floaters/IFloaterObject';
+import useFloaterLoader from '../floaters/FloaterLoader';
 
-import commonStyles from "../../styles/CommonSidePanelMeetingStage.module.css";
-import styles from "../../styles/ViewerLoader.module.css";
+import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
+import styles from "../../../styles/ViewerLoader.module.css";
+import globalTime from '../utils/GlobalTime';
 
 
 function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
@@ -40,6 +41,7 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
             pos: { x: -200, y: -150 },
             size: { width: 400, height: 300 },
             modelRotation: { x: 0, y: 0, z: 0 },
+            lastEditTime: (await globalTime()).ntpTimeInUTC,
             modelScale: 0.003,
             modelURL: modelURL,
         } as IFloaterObject;
@@ -50,7 +52,10 @@ This is a known issue with Unity WebGL, and there is no official solution yet.
 See the code in ModelViewer.tsx for more details on the workaround used.
 ======================================================================================== */
         // If no model is loaded, load the model with the key "model"
-        if (canLoad) {loadFloater(model, "model"); props.setParentState("Select")}
+        if (canLoad) {
+            await loadFloater(model, "model"); 
+            props.setParentState("Select")
+        }
     }
 
     // Display a button to load a model

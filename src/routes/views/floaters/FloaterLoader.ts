@@ -1,5 +1,7 @@
-import { useCallback, useMemo } from "react";
-import { IFluidContainer, ISharedMapEvents, IValueChanged, SharedMap } from "fluid-framework";
+import { useEffect, useMemo } from "react";
+import { IFluidContainer, IValueChanged, SharedMap } from "fluid-framework";
+import { v4 as uuidv4 } from "uuid";
+
 import IFloaterObject from "./IFloaterObject";
 
 
@@ -14,29 +16,31 @@ export type HookFloaterLoader = {
     loadFloater: (floater: IFloaterObject, id?: string) => Promise<void>;
 };
 
-
-function useFloaterLoader(props: IFloaterLoader): HookFloaterLoader {
+function useFloaterLoader(options: IFloaterLoader): HookFloaterLoader {
     const floaters = useMemo(() => {
-        const f = props.container.initialObjects.floaters as SharedMap;
-        if (props.valueChangedCallback) f.on("valueChanged", props.valueChangedCallback);
-        return f;
-    }, [props.container]);
+        return options.container.initialObjects.floaters as SharedMap;
+    }, [options.container]);
+
+    useEffect(() => {
+        if (options.valueChangedCallback) floaters.on("valueChanged", options.valueChangedCallback);
+        return () => {
+            if (options.valueChangedCallback) floaters.off("valueChanged", options.valueChangedCallback);
+        }
+    }, [floaters, options.valueChangedCallback]);
 
     const loadFloater = async (floater: IFloaterObject, id?: string) => {
         // Generate a dynamic map object
-        const floaterMap = await props.container.create(SharedMap);
+        const floaterMap = await options.container.create(SharedMap);
         // Add the model to the map
         Object.entries(floater).forEach(([key, value]) => floaterMap.set(key, value));
         // Generate a random id if none is provided
-        let randomId = id;
-        while (!randomId || floaters.has(randomId)) 
-            randomId = Math.floor(Math.random() * 1000000).toString();
+        let randomId = id || uuidv4();
         // Add the map to the container
         floaters.set(randomId, floaterMap.handle);
     }
 
     // Never trigger a re-render in the callback
-    props.postInitCallback?.(floaters);
+    options.postInitCallback?.(floaters);
 
     return {
         floaters,

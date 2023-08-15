@@ -7,7 +7,6 @@ import { Button } from "@fluentui/react-components";
 import { CheckmarkCircle24Filled, DismissCircle24Filled } from "@fluentui/react-icons";
 import {TextField, ITextFieldStyles, getInputFocusStyle} from "@fluentui/react";
 
-const imgPath = require('../../../assets/preview.png')
 
 const textFieldStyles: Partial<ITextFieldStyles> = {
     fieldGroup: {
@@ -20,7 +19,7 @@ const textFieldStyles: Partial<ITextFieldStyles> = {
     },
     subComponentStyles: {
         label: {
-          root:{fontSize: '13px'},
+            root:{fontSize: '13px'},
         },
     },
 

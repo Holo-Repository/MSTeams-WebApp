@@ -1,26 +1,27 @@
 import { Toolbar, ToolbarButton, ToolbarDivider } from "@fluentui/react-components";
 import {
-    Pin12Regular as Pin,
-    Delete12Regular as Delete,
+    Delete24Regular as Delete,
     Drag24Regular as Drag,
     ArrowDownload24Regular as Export,
+    PaddingTop24Filled as ToFront,
+    PaddingDown24Filled as ToBottom,
 } from "@fluentui/react-icons";
 
 
 export interface FloaterInteractionProps {
     delete : () => void;
     drag : (event: any) => void;
-    export: () => void;
+    lastEdit: (reverse?: boolean) => void;
+    export?: () => void;
 }
 
 function FloaterInteraction(props: FloaterInteractionProps) {
     return (
         <Toolbar size="small" >
             <ToolbarButton icon={<Drag />} title="Drag" as="button" appearance="subtle" draggable onDrag={props.drag}/>
-            <ToolbarDivider />
-            <ToolbarButton icon={<Pin />} title="Pin" as="button" appearance="subtle"/>
-            <ToolbarDivider />
-            <ToolbarButton icon={<Export />} title="Export" as="button" appearance="subtle" onClick={props.export}/>
+            <ToolbarButton icon={<ToFront />} title="To Front" as="button" appearance="subtle" onClick={() => {props.lastEdit()}}/>
+            <ToolbarButton icon={<ToBottom />} title="To Back" as="button" appearance="subtle" onClick={() => {props.lastEdit(true)}}/>
+            {props.export && <ToolbarButton icon={<Export />} title="Export" as="button" appearance="subtle" onClick={props.export}/>}
             <ToolbarDivider />
             <ToolbarButton icon={<Delete />} title="Delete" as="button" appearance="subtle" onClick={props.delete}/>
         </Toolbar>

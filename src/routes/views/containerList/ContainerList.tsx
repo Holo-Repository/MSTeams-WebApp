@@ -6,7 +6,6 @@ import ContainerPreview from "./ContainerPreview";
 import ContainerManager from "../../containers/ContainerManager";
 
 import './ContainerList.css'
-import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
 
 
 export interface ContainerListProps {
