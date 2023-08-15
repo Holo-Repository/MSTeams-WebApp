@@ -94,8 +94,7 @@ export default function App() {
                         <DialogBody>
                             <DialogTitle>Error Occurred</DialogTitle>
                             <DialogContent>
-                                <Text>An unknown error occurred, please retry...</Text>
-                                <Text>{globalError.current?.message}</Text>
+                                <Text>An unknown error occurred, please retry...</Text><br/><br/>
                                 <Text>{globalError.current?.stack}</Text>
                             </DialogContent>
                             <DialogActions>
