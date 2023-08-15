@@ -24,15 +24,17 @@ class HoloCollab extends React.Component {
     containerManager = undefined as ContainerManager | undefined;
 
     async componentDidMount() {
-        const context = await app.getContext();
-        const view = context.page.frameContext;
-        
-        // Connect to the container manager
-        const locationID = (context.channel ?? context.chat)?.id;
-        const user = { userId: context.user?.id, userName: context.user?.userPrincipalName };
-        this.containerManager = new ContainerManager(locationID, user);
+        try {
+            const context = await app.getContext();
+            const view = context.page.frameContext;
+            
+            // Connect to the container manager
+            const locationID = (context.channel ?? context.chat)?.id;
+            const user = { userId: context.user?.id, userName: context.user?.userPrincipalName };
+            this.containerManager = new ContainerManager(locationID, user);
 
-        this.setState({ view });
+            this.setState({ view });
+        } catch (error: any) { raiseGlobalError(error) };
     }
 
     render() {

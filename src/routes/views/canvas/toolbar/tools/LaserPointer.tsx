@@ -19,10 +19,8 @@ class LaserPointer extends Tool {
     }
 
     render(): React.ReactNode {
-
         return (
-            <Tool {...this.props} icon={ <img src={imgPath} alt={this.props.icon as string} />}>
-            </Tool>
+            <Tool {...this.props} icon={ <img src={imgPath} alt={this.props.icon as string} />} />
         );
     }
 }

@@ -54,17 +54,12 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         const data = takeScreenshot("image/png", 1.0);
         
         console.log("data", data);
-        if (data !== undefined) {
-            downloadBase64Image(data, "screenshot.png");
-        } else {
-            console.log("Screenshot data is undefined. Unable to download.");
-        }
+        if (data !== undefined) downloadBase64Image(data, "screenshot.png");
+        else raiseGlobalError(new Error("Screenshot data is undefined. Unable to download."));
     }
     
 
-    useImperativeHandle(ref, () => ({
-        handleClickTakeScreenshot,
-    }))
+    useImperativeHandle(ref, () => ({ handleClickTakeScreenshot }))
 
     // Register functions that unity can call
     useEffect(() => {
@@ -97,6 +92,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         return () => {
             props.objMap.off("valueChanged", handleChange);
             globalThis.syncCurrentRotation = undefined;
+            globalThis.syncCurrentScale = undefined;
         }
     }, [unityInstance, isLoaded, props.objMap]);
 
@@ -119,43 +115,45 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     // observer doesn't clean itself up until the Unity canvas is removed, so if the removal dodges
     // this observer, it'll stay attached forever.
     React.useEffect(() => {
-        // If we've previously added an observer, disconnect it.
-        observerRef.current?.disconnect()
+        try {
+            // If we've previously added an observer, disconnect it.
+            observerRef.current?.disconnect()
 
-        // We don't need to attach an observer if we don't have a Unity instance yet.
-        if (!unityInstance) return;
+            // We don't need to attach an observer if we don't have a Unity instance yet.
+            if (!unityInstance) return;
 
-        console.log('Removing canvas', canvasId)
-        const observer = new MutationObserver((mutationsList) => {
-            for (const mutation of mutationsList) {
-                for (const removedNode of mutation.removedNodes) {
-                    // Look through subtrees of removed nodes for the Unity canvas
-                    const canvas = unityInstance.Module.canvas as HTMLCanvasElement
-                    if (removedNode.contains(canvas)) {
-                        // We found the canvas, so we're done with the observer.
-                        observer.disconnect()
+            console.log('Removing canvas', canvasId)
+            const observer = new MutationObserver((mutationsList) => {
+                for (const mutation of mutationsList) {
+                    for (const removedNode of mutation.removedNodes) {
+                        // Look through subtrees of removed nodes for the Unity canvas
+                        const canvas = unityInstance.Module.canvas as HTMLCanvasElement
+                        if (removedNode.contains(canvas)) {
+                            // We found the canvas, so we're done with the observer.
+                            observer.disconnect()
 
-                        // Next, hide the canvas and move it elsewhere. The document body will work.
-                        canvas.style.display = 'none'
-                        document.body.appendChild(canvas)
+                            // Next, hide the canvas and move it elsewhere. The document body will work.
+                            canvas.style.display = 'none'
+                            document.body.appendChild(canvas)
 
-                        // Clean up the Unity instance. Once finished, remove the canvas from the body.
-                        unload()
-                            .then(() => {
-                                document.body.removeChild(canvas)
-                            })
-                            .catch((e: any) => {console.error(e)})
+                            // Clean up the Unity instance. Once finished, remove the canvas from the body.
+                            unload()
+                                .then(() => {
+                                    document.body.removeChild(canvas)
+                                })
+                                .catch((e: any) => {console.error(e)})
+                        }
                     }
                 }
-            }
-        })
+            })
 
-        // When switching pages, the removed node will be close to the DOM root, so it's safest to observe
-        // the whole body. However, it's more performance-intensive.
-        observer.observe(document.body, { subtree: true, childList: true })
+            // When switching pages, the removed node will be close to the DOM root, so it's safest to observe
+            // the whole body. However, it's more performance-intensive.
+            observer.observe(document.body, { subtree: true, childList: true })
 
-        // Set the observer ref to the observer so it's cleaned up if the effect runs again.
-        return () => {observerRef.current = observer}
+            // Set the observer ref to the observer so it's cleaned up if the effect runs again.
+            return () => {observerRef.current = observer}
+        } catch (e: any) { raiseGlobalError(e) }
     }, [unityInstance, canvasId, unload])
 
     return (

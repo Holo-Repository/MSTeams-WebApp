@@ -5,11 +5,24 @@ import {
     teamsDarkTheme,
     teamsHighContrastTheme,
     tokens,
+    Text,
 } from "@fluentui/react-components";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { HashRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { app } from "@microsoft/teams-js";
 import { useTeamsUserCredential } from "@microsoft/teamsfx-react";
+
+import {
+    Dialog,
+    DialogSurface,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogTrigger,
+    DialogBody,
+    Button,
+    useRestoreFocusTarget,
+} from "@fluentui/react-components";
 
 import config from "./config";
 // import Privacy from "./routes/Privacy";
@@ -38,6 +51,16 @@ export default function App() {
         initiateLoginEndpoint: config.initiateLoginEndpoint!,
         clientId: config.clientId!,
     });
+
+    const globalError = useRef<Error | undefined>(undefined);
+    const [open, setOpen] = useState(false);
+    const restoreFocusTargetAttribute = useRestoreFocusTarget();
+
+    globalThis.raiseGlobalError = (error: Error) => {
+        globalError.current = error;
+        setOpen(true);
+        return error;
+    };
     
     useEffect(() => {
         loading &&
@@ -57,7 +80,7 @@ export default function App() {
             >
                 <Router>
                     {!loading && (
-                        <Routes>
+                        <Routes {...restoreFocusTargetAttribute}>
                             {/* <Route path="/privacy" element={<Privacy/>} />
                             <Route path="/termsofuse" element={<TermsOfUse/>} /> */}
                             <Route path="/holocollab" element={<HoloCollab/>}/>
@@ -66,6 +89,23 @@ export default function App() {
                         </Routes>
                     )}
                 </Router>
+                <Dialog open={open} onOpenChange={(event, data) => { setOpen(data.open) }} >
+                    <DialogSurface>
+                        <DialogBody>
+                            <DialogTitle>Error Occurred</DialogTitle>
+                            <DialogContent>
+                                <Text>An unknown error occurred, please retry...</Text>
+                                <Text>{globalError.current?.message}</Text>
+                                <Text>{globalError.current?.stack}</Text>
+                            </DialogContent>
+                            <DialogActions>
+                                <DialogTrigger disableButtonEnhancement>
+                                    <Button appearance="secondary">Close</Button>
+                                </DialogTrigger>
+                            </DialogActions>
+                        </DialogBody>
+                    </DialogSurface>
+                </Dialog>
             </FluentProvider>
         </TeamsFxContext.Provider>
     );

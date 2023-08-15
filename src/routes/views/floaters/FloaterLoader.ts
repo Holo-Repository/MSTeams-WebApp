@@ -23,24 +23,24 @@ function useFloaterLoader(options: IFloaterLoader): HookFloaterLoader {
 
     useEffect(() => {
         if (options.valueChangedCallback) floaters.on("valueChanged", options.valueChangedCallback);
-        return () => {
-            if (options.valueChangedCallback) floaters.off("valueChanged", options.valueChangedCallback);
-        }
+        return () => { if (options.valueChangedCallback) floaters.off("valueChanged", options.valueChangedCallback) };
     }, [floaters, options.valueChangedCallback]);
 
     const loadFloater = async (floater: IFloaterObject, id?: string) => {
-        // Generate a dynamic map object
-        const floaterMap = await options.container.create(SharedMap);
-        // Add the model to the map
-        Object.entries(floater).forEach(([key, value]) => floaterMap.set(key, value));
-        // Generate a random id if none is provided
-        let randomId = id || uuidv4();
-        // Add the map to the container
-        floaters.set(randomId, floaterMap.handle);
+        try {
+            // Generate a dynamic map object
+            const floaterMap = await options.container.create(SharedMap);
+            // Add the model to the map
+            Object.entries(floater).forEach(([key, value]) => floaterMap.set(key, value));
+            // Generate a random id if none is provided
+            let randomId = id || uuidv4();
+            // Add the map to the container
+            floaters.set(randomId, floaterMap.handle);
+        } catch (error: any) { raiseGlobalError(error) };
     }
 
     // Never trigger a re-render in the callback
-    options.postInitCallback?.(floaters);
+    try { options.postInitCallback?.(floaters) } catch (error: any) { raiseGlobalError(error) };
 
     return {
         floaters,
