@@ -99,7 +99,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
     }
 
     render(): React.ReactNode {
-        const {ink} = this.props;
+        const { ink } = this.props;
         
         return(
             <div ref={this.innerDivRef}>

@@ -85,24 +85,20 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
      */
     validateName = () => {
         const { newName: name } = this.state;
-        if (name.trim() === '') {
-            this.setState({ isNameValid: false });
-        } else {
-            this.setState({ isNameValid: true });
-        }
+        this.setState({ isNameValid: name.trim() !== '' });
     }
 
     handleButtonClick = () => {
         this.props.create(this.state.newName, this.state.newDesc);
         // Reset the state to default values after create is called
-        this.setState({ formDisplayed:false, newName: 'New Collab Case', newDesc: ''});
+        this.setState({ formDisplayed:false, newName: 'New Collaborative Case', newDesc: ''});
     }
 
     render() {
         const { container, create, open, close, canOpen, canClose } = this.props;
 
         if (create === undefined && container === undefined)
-            throw new Error("ContainerPreview: Either container or create must be defined.");
+            throw raiseGlobalError(new Error("ContainerPreview: Either container or create must be defined."));
 
         return (
             <div>
@@ -126,7 +122,7 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
                             icon={<Add24Filled/>}
                             onClick={() => {this.setState({formDisplayed: true})}}
                         />
-                        <h4>New Collab Case</h4>
+                        <h4>New Collaborative Case</h4>
                     </div>}
 
                     {this.state.formDisplayed && <div className="container-form">
@@ -140,7 +136,7 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
                         <TextField 
                             styles={textFieldStyles} 
                             label="Description" 
-                            placeholder="Enter the description of Collab Case"
+                            placeholder="Enter the description of collaborative case"
                             value={this.state.newDesc} 
                             maxLength={200} 
                             multiline rows={3} 

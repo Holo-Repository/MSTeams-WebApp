@@ -40,10 +40,12 @@ function PDF(props: { url: string, screenSize: FloaterScreenSize, objMap: Shared
 
     const handleScroll = (e: any) => {
         if (e.deltaY < 1) return;
-        let scrollPercent = e.target.scrollTop / (e.target.scrollHeight - e.target.clientHeight);
-        scrollPercent = Math.min(1, Math.max(0, scrollPercent));
-        setScrollPercent(scrollPercent);
-        setScroll(props.objMap, scrollPercent);
+        try {
+            let scrollPercent = e.target.scrollTop / (e.target.scrollHeight - e.target.clientHeight);
+            scrollPercent = Math.min(1, Math.max(0, scrollPercent));
+            setScrollPercent(scrollPercent);
+            setScroll(props.objMap, scrollPercent);
+        } catch (e: any) { raiseGlobalError(e) };
     }
 
     useEffect(() => {
@@ -58,8 +60,23 @@ function PDF(props: { url: string, screenSize: FloaterScreenSize, objMap: Shared
             <Text>Page {pageNumber} of {numPages}</Text>
             <Button onClick={nextPage} disabled={pageNumber === numPages}>Next</Button>
         </Toolbar>
-        <Document file={props.url} onLoadSuccess={({ numPages }) => {setNumPages(numPages)}} >
-            <Page pageNumber={pageNumber} width={props.screenSize.width} height={props.screenSize.height} />
+        <Document 
+            file={props.url} 
+            onLoadSuccess={({ numPages }) => {setNumPages(numPages)}} 
+            onLoadError={raiseGlobalError}
+            onSourceError={raiseGlobalError}
+        >
+            <Page 
+                pageNumber={pageNumber} 
+                width={props.screenSize.width} 
+                height={props.screenSize.height} 
+                onLoadError={raiseGlobalError}
+                onRenderError={raiseGlobalError}
+                onRenderTextLayerError={raiseGlobalError}
+                onGetAnnotationsError={raiseGlobalError}
+                onGetStructTreeError={raiseGlobalError}
+                onGetTextError={raiseGlobalError}
+            />
         </Document>
     </div>;
 }

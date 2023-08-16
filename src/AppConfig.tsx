@@ -27,7 +27,7 @@ function AppConfig() {
         pages.config.registerOnSaveHandler((saveEvent) => {
             const baseUrl = `https://${window.location.hostname}:${window.location.port}`;
             pages.config.setConfig({
-                suggestedDisplayName: "HoloRepo",
+                suggestedDisplayName: "HoloCollab",
                 entityId: "Test",
                 contentUrl: baseUrl + "/index.html#/holorepo",
                 websiteUrl: baseUrl + "/index.html#/holorepo"

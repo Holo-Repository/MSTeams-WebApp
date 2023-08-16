@@ -45,7 +45,7 @@ class ContainerManager {
     private client: AzureClient;
 
     constructor(locationId?: string, user?: any) {
-        if (!locationId || locationId === "") throw new Error("Location ID is required");
+        if (!locationId || locationId === "") throw raiseGlobalError(new Error("Location ID is required"));
         this.locationId = locationId;
 
         // Connect to the table storage
@@ -75,8 +75,8 @@ class ContainerManager {
         return this.tableClient.getEntity(this.locationId, containerId)
             .then((entity) => entity)
             .catch((err) => {
-                if (err.statusCode === 404) throw new Error(`Could not get entity`);
-                throw err;
+                if (err.statusCode === 404) throw raiseGlobalError(new Error(`Could not get entity`));
+                else throw raiseGlobalError(err);
             });
     }
     
@@ -93,10 +93,9 @@ class ContainerManager {
         return this.tableClient.createEntity({
             partitionKey: this.locationId,
             rowKey: containerId,
-            container: JSON.stringify(container)
+            container: JSON.stringify(container ?? {})
         }).catch((err) => {
-            console.log(err);
-            throw err;
+            throw raiseGlobalError(err);
         });
     }
 
@@ -110,7 +109,9 @@ class ContainerManager {
             filter: `PartitionKey eq '${this.locationId}'`
         }})
         const containers = [];
-        for await (const entity of entities) containers.push(JSON.parse(entity.container as string));
+        try {
+            for await (const entity of entities) containers.push(JSON.parse(entity.container as string));
+        } catch (err: any) { throw raiseGlobalError(err); }
         return containers;
     }
     
@@ -131,8 +132,10 @@ class ContainerManager {
      */
     async updateContainerProperty(id: string, updatedProperty: Partial<ContainerMap>) {
         const entity = await this.getEntity(id);
-        const container = JSON.parse(entity.container as string);
-        entity.container = JSON.stringify({ ...container, ...updatedProperty });
+        try {
+            const container = JSON.parse(entity.container as string);
+            entity.container = JSON.stringify({ ...container, ...updatedProperty });
+        } catch (err: any) { throw raiseGlobalError(err); }
         return this.tableClient.updateEntity(entity, 'Replace');
     }
 

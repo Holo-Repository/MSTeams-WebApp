@@ -38,7 +38,7 @@ function SharedCanvas(props: SharedCanvasProps) {
         // Connect to the active Fluid container
         props.containerManager.getContainer(props.container).then((containerManager) => {
             setContainer(containerManager.container);
-        });
+        }).catch((error) => { raiseGlobalError(error); });
     }, [props.containerManager, props.container]);
     
     useEffect(() => {
@@ -56,13 +56,11 @@ function SharedCanvas(props: SharedCanvasProps) {
         // Loading floaters
         const floaters = container.initialObjects.floaters as SharedMap;
 
-        const handleChange = () => handleFloaterChange(floaters);
+        const handleChange = () => { handleFloaterChange(floaters) };
         floaters.on("valueChanged", handleChange);
         setFloaterHandles(floaters);
 
-        return () => {
-            floaters!.off("valueChanged", handleChange);
-        };
+        return () => { floaters.off("valueChanged", handleChange) }; // !!
     }, [container, canvasRef]);
 
     useEffect(() => {
@@ -77,14 +75,16 @@ function SharedCanvas(props: SharedCanvasProps) {
         if (!handles) return;
         const handleList = [];
         for (const [key, value] of handles.entries()) { 
-            let map = await value.get() as SharedMap;
-            handleList.push({
-                key, 
-                value: {
-                    map,
-                    lastEditTime: map.get('lastEditTime') as number
-                }
-            }) 
+            try {
+                let map = await value.get() as SharedMap;
+                handleList.push({
+                    key, 
+                    value: {
+                        map,
+                        lastEditTime: map.get('lastEditTime') as number
+                    }
+                }) 
+            } catch (error: any) { throw raiseGlobalError(error) };
         }
         setFloatersList(handleList);
     }
@@ -121,13 +121,15 @@ function SharedCanvas(props: SharedCanvasProps) {
     }
 
     const closeCanvas = async () => {
-        let scale = 1; let imgUrl;
-        do {
-            scale /= 2;
-            imgUrl = await canvasToDataUrl(scale);
-        } while (imgUrl.length > 30720);
-        const containerMap = {time: new Date().toISOString(), previewImage: imgUrl};
-        await props.containerManager.updateContainerProperty(props.container, containerMap);
+        try {
+            let scale = 1; let imgUrl;
+            do {
+                scale /= 2;
+                imgUrl = await canvasToDataUrl(scale);
+            } while (imgUrl.length > 30720);
+            const containerMap = {time: new Date().toISOString(), previewImage: imgUrl};
+            await props.containerManager.updateContainerProperty(props.container, containerMap);
+        } catch (error: any) { raiseGlobalError(error) };
         props.closeCanvas();
     }
 

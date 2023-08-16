@@ -60,10 +60,9 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager, disp
      * @param prevProps - Previous props before the component got updated.
      */
     componentDidUpdate(prevProps: {display: string}): void {
-        if(prevProps.display !== this.props.display && this.props.display === 'none') {
+        if (prevProps.display !== this.props.display && this.props.display === 'none') {
             this.setState({doubleClicked: false});
         }
-
     }
 
     /**
@@ -106,9 +105,7 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager, disp
      */
     setTool(tool: InkingTool) {
         this.props.inkingManager.tool = tool;
-        
         let doubleClicked = this.isSelected(tool) ? !this.state.doubleClicked : false;
-        
         this.setState({ 
             selectedTool: tool, 
             doubleClicked: doubleClicked,
@@ -127,7 +124,6 @@ class DrawingManager extends React.Component<{inkingManager: InkingManager, disp
      */
     ext(callback: (inkingManager: InkingManager) => void = () => {}) {
         callback(this.props.inkingManager);
-        // this.setState({ doubleClicked: false });
     }
 
 

@@ -51,6 +51,11 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.setState({ mounting: false });
     }
 
+    componentWillUnmount() {
+        if (this.appState) this.appState.off('valueChanged', this.reactToAppStateChange);
+        if (this.newContainerEvent) this.newContainerEvent.off('received', this.reactNewContainerEvent);
+    }
+
     /**
      * Reacts to changes in the app state.
      * 

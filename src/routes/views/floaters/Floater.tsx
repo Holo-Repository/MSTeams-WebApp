@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Tooltip } from "@fluentui/react-components";
+import { Text, Tooltip } from "@fluentui/react-components";
 import { InkingManager } from "@microsoft/live-share-canvas";
 import { getTheme } from '@fluentui/react';
 import { IValueChanged, SharedMap } from "fluid-framework";
@@ -56,21 +56,20 @@ function Floater(props: FloaterProps) {
     const [hasLoaded, setHasLoaded] = useState(false);
 
     const throttledSetScreenSize = throttle(setScreenSize, throttleTime * 2, { leading: true, trailing: true });
-
     const ModelViewerRef = useRef<ModelViewerRefType | null>(null);
+
     useEffect(() => {
-        props.objMap.on("valueChanged", (changed: IValueChanged, local: boolean) => {
+        const handleChange = (changed: IValueChanged, local: boolean) => {
             if (local) return;
-            if (changed.key === 'pos') {
-                setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get('pos')!));
-            }
-            if (changed.key === 'size') {
-                setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get('pos')!, props.objMap.get('size')!));
-            }
-        });
+            if (changed.key === 'pos') setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get('pos')!));
+            if (changed.key === 'size') setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get('pos')!, props.objMap.get('size')!));
+        };
+        props.objMap.on("valueChanged", handleChange);
+
         setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get('pos')!));
         setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get('pos')!, props.objMap.get('size')!));
         setHasLoaded(true);
+        return () => { props.objMap.off("valueChanged", handleChange) };
     }, [props.objMap, props.inkingManager]);
 
     const handleDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -78,7 +77,7 @@ function Floater(props: FloaterProps) {
         if (newScreenPos.left === 0 && newScreenPos.top === 0) return; // Ignore the last event
         setScreenPos(newScreenPos); // Local update
         setDMPos(props.objMap, screenToAppPos(props.inkingManager, newScreenPos)); // Remote update
-        setDMEditTime(props.objMap);
+        setDMEditTime(props.objMap); // Bring to front
     }
 
     const contentRef = useRef<HTMLDivElement>(null);
@@ -117,7 +116,7 @@ function Floater(props: FloaterProps) {
             content = <NotesViewer objMap={props.objMap} />
             break;
         default:
-            content = <p>Unknown</p>;
+            content = <Text>Unknown display type</Text>;
             break;
     }
     
