@@ -1,13 +1,16 @@
-import React, { useEffect, forwardRef, useImperativeHandle } from "react";
+import { useEffect, forwardRef, useImperativeHandle, useState, useRef } from "react";
 import { Field, ProgressBar } from "@fluentui/react-components";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
 import { IValueChanged, SharedMap } from "fluid-framework";
+import { throttle } from 'lodash';
 
 import styles from "../../../styles/ModelViewer.module.css";
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
 const unityModelTarget = "Target Manager";
+
+const throttleTime = 100;
 
 const ModelViewer = forwardRef((props: { objMap: SharedMap }, ref) => {
 /* ========================================================================================
@@ -18,113 +21,125 @@ This is a known issue with Unity WebGL, and there is no official solution yet.
 The workaround used here is to move the canvas to a hidden div when unloading, and then move it back when loading.
 The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/22#issuecomment-1416897741
 ======================================================================================== */
-    const [unityInstance, setUnityInstance] = React.useState(undefined as unknown as UnityInstance);
-    const [canvasId, setCanvasId] = React.useState(undefined as unknown as string);
+    const [unityInstance, setUnityInstance] = useState(undefined as unknown as UnityInstance);
+    const [canvasId, setCanvasId] = useState(undefined as unknown as string);
+    const [devicePixelRatio, setDevicePixelRatio] = useState(window.devicePixelRatio);
+    const [texturesMap, setTexturesMap] = useState(undefined as unknown as SharedMap);
+    const [modelLoaded, setModelLoaded] = useState(false);
 
-    const { 
-        unityProvider, 
-        UNSAFE__unityInstance, 
-        loadingProgression, 
-        isLoaded, 
-        unload,
-        takeScreenshot,
-    } = useUnityContext({
+    const { unityProvider, UNSAFE__unityInstance, loadingProgression, isLoaded: unityLoaded, unload, takeScreenshot } = useUnityContext({
         loaderUrl: `${buildURL}/WebGL.loader.js`,
         dataUrl: `${buildURL}/WebGL.data.gz`,
         frameworkUrl: `${buildURL}/WebGL.framework.js.gz`,
         codeUrl: `${buildURL}/WebGL.wasm.gz`,
-        webglContextAttributes: {
-            preserveDrawingBuffer: true,
-        },
+        webglContextAttributes: { preserveDrawingBuffer: true },
     });
-    
 
-    
-    function downloadBase64Image(base64Data: string, filename: string) {
-        const link = document.createElement("a");
-        link.href = base64Data;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-    
-    function handleClickTakeScreenshot() {
-        unityInstance.SendMessage(unityModelTarget, "ToggleUI");
 
-        // Assuming takeScreenshot function returns the image data in 'data' variable
-        const data = takeScreenshot("image/png", 1.0);
-        
-        // console.log("data", data);
-        if (data !== undefined) {
-            downloadBase64Image(data, "screenshot.png");
-        } else {
-            console.log("Screenshot data is undefined. Unable to download.");
-        }
+    useEffect(() => {
+        props.objMap.get('modelTexturesHandle').get().then(setTexturesMap);
+    }, [props.objMap]);
 
-        unityInstance.SendMessage(unityModelTarget, "ToggleUI");
-    }
-    
-
-    useImperativeHandle(ref, () => ({
-        handleClickTakeScreenshot,
-    }))
 
     // Register functions that unity can call
-    useEffect(() => 
-        {
-        if (!isLoaded || !unityInstance) return;
-        const globalThis = window as any;
-        
-        // Load actual model
-        const modelURL = props.objMap.get('modelURL');
-        if (modelURL) unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
-            url: modelURL,
-            rotation: props.objMap.get("modelRotation"),
-            scale: props.objMap.get("modelScale"),
-        }));
-        
+    useEffect(() => {
+        if (!texturesMap) return;
         // Register rotation sync
-        globalThis.syncCurrentRotation = (x: number, y: number, z: number) => props.objMap.set("modelRotation", {x, y, z});
+        (window as any).syncCurrentRotation = throttle((x: number, y: number, z: number) => {
+            props.objMap.set("modelRotation", {x, y, z})
+        }, throttleTime, { leading: true, trailing: true });
 
         // Register scale sync
-        globalThis.syncCurrentScale = (x: number, y: number, z: number) => props.objMap.set("modelScale", {x, y, z});
+        (window as any).syncCurrentScale = throttle((x: number, y: number, z: number) => {
+            props.objMap.set("modelScale", {x, y, z});
+        }, throttleTime, { leading: true, trailing: true });
 
         // Register texture sync
-        globalThis.syncCurrentTexture = (name: string, texture: string) => {
-            props.objMap.set("modelName", name);
-            props.objMap.set(JSON.stringify(props.objMap.get("modelName")), {texture});      
-        }
+        (window as any).syncCurrentTexture = throttle((name: string, texture: string) => {
+            texturesMap.set(name, texture);
+        }, throttleTime, { leading: true, trailing: true });
 
+        // Register model loaded
+        (window as any).signalDownloadedModel = () => { 
+            console.log('model loaded')
+            setModelLoaded(true) 
+        };
+
+        return () => {
+            (window as any).syncCurrentRotation = undefined;
+            (window as any).syncCurrentScale = undefined;
+            (window as any).syncCurrentTexture = undefined;
+            (window as any).signalDownloadedModel = undefined;
+        }
+    }, [props.objMap, texturesMap]);
+
+
+
+    // Load actual model
+    useEffect(() => {
+        if (!unityInstance || !texturesMap) return;
+        const modelURL = props.objMap.get('modelURL');
+        const rotation = props.objMap.get("modelRotation");
+        const scale = props.objMap.get("modelScale").x;
+        console.log('loading model', modelURL, rotation, scale)
+        unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
+            url: modelURL,
+            rotation,
+            scale
+        }));
+    }, [unityInstance, props.objMap]);
+
+
+    useEffect(() => {
+        if (!unityInstance || !modelLoaded) return;
+        setTimeout(() => {
+            const rotation = props.objMap.get("modelRotation");
+            const scale = props.objMap.get("modelScale");
+            unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(rotation));
+            unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(scale));
+        }, 2000);
+    }, [unityInstance, props.objMap, modelLoaded]);
+
+
+    // Register Fluid event handlers
+    useEffect(() => {
+        if (!unityInstance || !texturesMap || !modelLoaded) return;
         const handleChange = (changed: IValueChanged, local: boolean) => {           
             if (local) return;
             if (changed.key === "modelRotation")
                 unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
             if (changed.key === "modelScale")
                 unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(props.objMap.get(changed.key)));
-            if (changed.key === JSON.stringify(props.objMap.get("modelName"))) 
-                unityInstance.SendMessage(
-                    JSON.stringify(props.objMap.get("modelName")).slice(1, -1),
-                    "SetTextureJS", 
-                    JSON.stringify(props.objMap.get(changed.key)));
         }
         props.objMap.on("valueChanged", handleChange);
 
+        const handleTextureChange = (changed: IValueChanged, local: boolean) => {
+            if (!local) unityInstance.SendMessage(changed.key, "SetTextureJS", JSON.stringify({texture: texturesMap.get(changed.key)}));
+        }
+        texturesMap.on("valueChanged", handleTextureChange);
+
+        
+        // Set initial texture values
+        setTimeout(() => {
+            for (const [key, value] of texturesMap.entries()) {
+                unityInstance.SendMessage(key, "SetTextureJS", JSON.stringify({texture: value}));
+            }
+        }, 2000);
+
         return () => {
             props.objMap.off("valueChanged", handleChange);
-            globalThis.syncCurrentRotation = undefined;
+            texturesMap.off("valueChanged", handleTextureChange);
         }
-    }, [unityInstance, isLoaded, props.objMap]);
+    }, [props.objMap, texturesMap, unityInstance, modelLoaded]);
 
 
 
 
 
-    const observerRef = React.useRef<MutationObserver | null>(null);
-
+    const observerRef = useRef<MutationObserver | null>(null);
     // UNSAFE__unityInstance turns null when unmounting, so we need to hold a reference to it
     // so we can call .Quit()
-    React.useEffect(() => {
+    useEffect(() => {
         if (UNSAFE__unityInstance) {
             setUnityInstance(UNSAFE__unityInstance)
             setCanvasId(UNSAFE__unityInstance.Module.canvas.id)
@@ -134,20 +149,20 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     // Attach an observer to move the canvas when it's removed. This is a bit dangerous -- the
     // observer doesn't clean itself up until the Unity canvas is removed, so if the removal dodges
     // this observer, it'll stay attached forever.
-    React.useEffect(() => {
+    useEffect(() => {
         // If we've previously added an observer, disconnect it.
         observerRef.current?.disconnect()
 
         // We don't need to attach an observer if we don't have a Unity instance yet.
         if (!unityInstance) return;
 
-        console.log('Removing canvas', canvasId)
         const observer = new MutationObserver((mutationsList) => {
             for (const mutation of mutationsList) {
                 for (const removedNode of mutation.removedNodes) {
                     // Look through subtrees of removed nodes for the Unity canvas
                     const canvas = unityInstance.Module.canvas as HTMLCanvasElement
                     if (removedNode.contains(canvas)) {
+                        console.log('Removing canvas', canvasId)
                         // We found the canvas, so we're done with the observer.
                         observer.disconnect()
 
@@ -174,16 +189,76 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         return () => {observerRef.current = observer}
     }, [unityInstance, canvasId, unload])
 
+
+    useEffect(() => {
+        // A function which will update the device pixel ratio of the Unity
+        // Application to match the device pixel ratio of the browser.
+        const updateDevicePixelRatio = function () {
+            setDevicePixelRatio(window.devicePixelRatio);
+        };
+        // A media matcher which watches for changes in the device pixel ratio.
+        const mediaMatcher = window.matchMedia(
+            `screen and (resolution: ${devicePixelRatio}dppx)`
+        );
+        // Adding an event listener to the media matcher which will update the
+        // device pixel ratio of the Unity Application when the device pixel
+        // ratio changes.
+        mediaMatcher.addEventListener("change", updateDevicePixelRatio);
+        return function () {
+            // Removing the event listener when the component unmounts.
+            mediaMatcher.removeEventListener("change", updateDevicePixelRatio);
+        };
+    }, [devicePixelRatio]);
+
+
+
+
+    function downloadBase64Image(base64Data: string, filename: string) {
+        const link = document.createElement("a");
+        link.href = base64Data;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    function handleClickTakeScreenshot() {
+        unityInstance.SendMessage(unityModelTarget, "ToggleUI");
+
+        // Assuming takeScreenshot function returns the image data in 'data' variable
+        const data = takeScreenshot("image/png", 1.0);
+        
+        // console.log("data", data);
+        if (data !== undefined) {
+            downloadBase64Image(data, "screenshot.png");
+        } else {
+            console.log("Screenshot data is undefined. Unable to download.");
+        }
+
+        unityInstance.SendMessage(unityModelTarget, "ToggleUI");
+    }
+    
+    useImperativeHandle(ref, () => ({
+        handleClickTakeScreenshot,
+    }))
+
+
+
+
+
+
+
     return (
         <>
-            {!isLoaded && <div className={styles.progressContainer}>
+            {!unityLoaded && <div className={styles.progressContainer}>
                 <Field validationMessage={'Loading Unity Viewer...'} validationState="none" className={styles.progressBar}>
                     <ProgressBar thickness="large" value={loadingProgression} />
                 </Field>
             </div>}
             <Unity
                 unityProvider={unityProvider}
-                style={{ visibility: isLoaded ? "visible" : "hidden" }}
+                devicePixelRatio={devicePixelRatio}
+                style={{ visibility: unityLoaded ? "visible" : "hidden" }}
                 className={styles.unity}
             />
         </>
