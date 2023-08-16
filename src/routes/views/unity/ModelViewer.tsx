@@ -92,12 +92,13 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
     useEffect(() => {
         if (!unityInstance || !modelLoaded) return;
-        setTimeout(() => {
+        const timeoutID = setTimeout(() => {
             const rotation = props.objMap.get("modelRotation");
             const scale = props.objMap.get("modelScale");
             unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(rotation));
             unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(scale));
         }, 2000);
+        return () => { clearTimeout(timeoutID) };
     }, [unityInstance, props.objMap, modelLoaded]);
 
 
@@ -120,7 +121,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
         
         // Set initial texture values
-        setTimeout(() => {
+        const timeoutID = setTimeout(() => {
             for (const [key, value] of texturesMap.entries()) {
                 unityInstance.SendMessage(key, "SetTextureJS", JSON.stringify({texture: value}));
             }
@@ -129,6 +130,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         return () => {
             props.objMap.off("valueChanged", handleChange);
             texturesMap.off("valueChanged", handleTextureChange);
+            clearTimeout(timeoutID);
         }
     }, [props.objMap, texturesMap, unityInstance, modelLoaded]);
 
