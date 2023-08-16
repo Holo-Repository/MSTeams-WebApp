@@ -87,7 +87,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
             rotation,
             scale
         }));
-    }, [unityInstance, props.objMap]);
+    }, [unityInstance, props.objMap, texturesMap]);
 
 
     useEffect(() => {
