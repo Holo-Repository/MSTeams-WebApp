@@ -154,8 +154,8 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
             // If we've previously added an observer, disconnect it.
             observerRef.current?.disconnect()
 
-                // We don't need to attach an observer if we don't have a Unity instance yet.
-                if (!unityInstance) return;
+            // We don't need to attach an observer if we don't have a Unity instance yet.
+            if (!unityInstance) return;
 
             const observer = new MutationObserver((mutationsList) => {
                 for (const mutation of mutationsList) {
@@ -167,20 +167,18 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
                             // We found the canvas, so we're done with the observer.
                             observer.disconnect()
 
-                                // Next, hide the canvas and move it elsewhere. The document body will work.
-                                canvas.style.display = 'none'
-                                document.body.appendChild(canvas)
+                            // Next, hide the canvas and move it elsewhere. The document body will work.
+                            canvas.style.display = 'none'
+                            document.body.appendChild(canvas)
 
-                                // Clean up the Unity instance. Once finished, remove the canvas from the body.
-                                unload()
-                                    .then(() => {
-                                        document.body.removeChild(canvas)
-                                    })
-                                    .catch((e: any) => {console.error(e)})
-                            }
+                            // Clean up the Unity instance. Once finished, remove the canvas from the body.
+                            unload()
+                                .then(() => { document.body.removeChild(canvas) })
+                                .catch((e: any) => {console.error(e)})
                         }
                     }
-                })
+                }
+            })
 
             // When switching pages, the removed node will be close to the DOM root, so it's safest to observe
             // the whole body. However, it's more performance-intensive.
