@@ -102,7 +102,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
         const { ink } = this.props;
         
         return(
-            <div ref={this.innerDivRef}>
+            <div ref={this.innerDivRef} id="toolbar-container">
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
                     checkedValues={{tools: [this.state.selectedTool]}}
                 >
