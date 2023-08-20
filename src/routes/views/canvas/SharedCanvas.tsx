@@ -135,13 +135,6 @@ function SharedCanvas(props: SharedCanvasProps) {
 
     return (
         <FluentProvider id='canvas-background' theme={teamsLightTheme} ref={fluentProviderRef}>
-            <div ref={closeButtonRef} id="close-button">
-                <Tooltip content="Close Collab Case" relationship="label">
-                    <Button
-                        icon={<Dismiss24Filled color="#424242"/>}
-                        onClick={closeCanvas}/>
-                </Tooltip>
-            </div>
             <div id="canvas-host" ref={canvasRef} />
             {!container && <div className='shared-canvas-loading'><Spinner labelPosition="below" label="Loading..." /></div>}
             {container && <MyToolBar innerDivRef={myToolBarDivRef}  ink={inkingManager} container={container} pointerSelected={isPointerSelected} exportCanvas={exportToPng}/>}
@@ -154,6 +147,13 @@ function SharedCanvas(props: SharedCanvasProps) {
                         inkingManager={inkingManager!}
                     />
                 })}
+            </div>
+            <div ref={closeButtonRef} id="close-button">
+                <Tooltip content="Close Collab Case" relationship="label">
+                    <Button
+                        icon={<Dismiss24Filled color="#424242"/>}
+                        onClick={closeCanvas}/>
+                </Tooltip>
             </div>
         </FluentProvider>
     );
