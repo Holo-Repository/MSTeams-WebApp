@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 });
 
 function NotesViewer(props: { objMap: SharedMap }) {
-    const [sharedString, setSharedString] = useState<SharedString | undefined>(undefined);
+    const [sharedStringHelper, setSharedStringHelper] = useState<SharedStringHelper>();
     const textStyles = useStyles();
 
     useEffect(() => {
@@ -22,13 +22,15 @@ function NotesViewer(props: { objMap: SharedMap }) {
         const textHandle = props.objMap.get('textHandle');
         if (!textHandle) return;
         textHandle.get().then((sharedString: SharedString) => {
-            setSharedString(sharedString);
+            const sharedStringHelper = new SharedStringHelper(sharedString);
+            setSharedStringHelper(sharedStringHelper);
         });
+        return () => { sharedStringHelper?.dispose() };
     }, [props.objMap]);
 
-    if (!sharedString) return <div>Loading...</div>;
+    if (!sharedStringHelper) return <div>Loading...</div>;
     return <div className={styles.body}>
-        <CollaborativeTextArea sharedStringHelper={new SharedStringHelper(sharedString)} className={styles.textArea} textStyle={textStyles.text} />
+        <CollaborativeTextArea sharedStringHelper={sharedStringHelper} className={styles.textArea} textStyle={textStyles.text} />
     </div>;
 }
 

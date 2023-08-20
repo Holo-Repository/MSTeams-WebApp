@@ -39,6 +39,10 @@ export class SharedStringHelper extends TypedEventEmitter<ISharedStringHelperEve
 		this._sharedString.on("sequenceDelta", this.sequenceDeltaHandler);
 	}
 
+	dispose() {
+		this._sharedString.off("sequenceDelta", this.sequenceDeltaHandler);
+	}
+
 	/**
 	 * @returns The full text stored in the SharedString as a string.
 	 */
