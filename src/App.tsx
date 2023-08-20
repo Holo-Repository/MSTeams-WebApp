@@ -30,6 +30,7 @@ import config from "./config";
 import HoloCollab from "./routes/HoloCollab";
 import AppConfig from "./AppConfig";
 import { TeamsFxContext } from "./Context";
+import IllumiRoom from "./routes/IllumiRoom";
 
 function getTheme(themeString: string) {
     switch (themeString) {
@@ -51,6 +52,11 @@ export default function App() {
         initiateLoginEndpoint: config.initiateLoginEndpoint!,
         clientId: config.clientId!,
     });
+
+    // const [inTeams, setInTeams] = useState(false);
+    // useEffect(() => {
+    //     if (!loading) setInTeams(!!teamsUserCredential);
+    // }, [loading, teamsUserCredential]);
 
     const globalError = useRef<Error | undefined>(undefined);
     const [open, setOpen] = useState(false);
@@ -83,8 +89,9 @@ export default function App() {
                         <Routes {...restoreFocusTargetAttribute}>
                             {/* <Route path="/privacy" element={<Privacy/>} />
                             <Route path="/termsofuse" element={<TermsOfUse/>} /> */}
-                            <Route path="/holocollab" element={<HoloCollab/>}/>
                             <Route path="/config" element={<AppConfig/>}/>
+                            <Route path="/holocollab" element={<HoloCollab/>}/>
+                            <Route path="/illumiroom" element={<IllumiRoom/>}/>
                             <Route path="*" element={<Navigate to={"/holocollab"}/>}></Route>
                         </Routes>
                     )}
