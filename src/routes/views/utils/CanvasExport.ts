@@ -20,16 +20,18 @@ export async function exportImageString(
     thumbnail: boolean = false
 ) {
     const image = new Jimp(inkingManager.clientWidth, inkingManager.clientHeight, 0xFFFFFFFF);
-    let scale = 1;
+    let scale = window.devicePixelRatio;
     image.scale(scale);
+    await renderFloatersOnCanvas(floatersRoot, inkingManager, floatersList, image, scale);
     
-    while (thumbnail && (await image.getBase64Async(Jimp.MIME_PNG)).length > 30720) {
+    let base64;
+    do {
+        base64 = await image.getBase64Async(Jimp.MIME_PNG);
         scale /= 2;
         image.scale(scale);
-    }
+    } while (thumbnail && base64.length > 30720)
     
-    await renderFloatersOnCanvas(floatersRoot, inkingManager, floatersList, image, scale);
-    return await image.getBase64Async(Jimp.MIME_PNG);
+    return base64;
 }
 
 
