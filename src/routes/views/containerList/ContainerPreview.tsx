@@ -107,7 +107,7 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
                         <img src={container.previewImage} alt='preview' />
                         <div className="display-area">
                             <h4>{container.name}</h4>
-                            <p>{container.time}</p>
+                            <p>{new Date(container.time).toLocaleString(undefined, {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>
                             {canOpen && <Button id="open" onClick={() => open(container.id)}>Work Together</Button>}
                             {canClose && <Button id="close" onClick={() => close(container.id)}>Close</Button>}
                         </div>
