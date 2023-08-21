@@ -27,6 +27,7 @@ function SharedCanvas(props: SharedCanvasProps) {
     const [inkingManager, setInkingManager] = useState<InkingManager>();
     const [floaterHandles, setFloaterHandles] = useState<SharedMap>();
     const [floatersList, setFloatersList] = useState<{key: string, value: { map: SharedMap, lastEditTime: number }}[]>([]);
+    const [isClosing, setIsClosing] = useState<boolean>(false);
     
     const canvasRef = useRef<HTMLDivElement>(null);
     const floaterContainerRef = useRef<HTMLDivElement>(null);
@@ -100,6 +101,8 @@ function SharedCanvas(props: SharedCanvasProps) {
     
     const closeCanvas = async () => {
         if (!inkingManager || !floatersList || !floaterContainerRef.current || !canvasRef.current) return raiseGlobalError(new Error('Canvas not ready'));
+        if (isClosing) return;
+        setIsClosing(true);
         try {
             const imgStr = await exportImageString(canvasRef.current, floaterContainerRef.current, inkingManager, floatersList, true);
             const containerMap = { time: new Date().toISOString(), previewImage: imgStr };
@@ -125,10 +128,13 @@ function SharedCanvas(props: SharedCanvasProps) {
                 })}
             </div>
             <div ref={closeButtonRef} id="close-button">
-                <Tooltip content="Close Collab Case" relationship="label">
-                    <Button
+                <Tooltip content={!isClosing ? "Close Collab Case" : "Closing"} relationship="label">
+                    {!isClosing 
+                    ? <Button
                         icon={<Dismiss24Filled color="#424242"/>}
-                        onClick={closeCanvas}/>
+                        onClick={closeCanvas}
+                    />
+                    : <Spinner />}
                 </Tooltip>
             </div>
         </FluentProvider>
