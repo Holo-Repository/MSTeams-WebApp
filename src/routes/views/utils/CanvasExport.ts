@@ -14,6 +14,7 @@ const { Jimp } = window as any;
 
 
 export async function exportImageString(
+    canvasRoot: HTMLElement, 
     floatersRoot: HTMLElement, 
     inkingManager: InkingManager, 
     floatersList: {key: string, value: { map: SharedMap, lastEditTime: number }}[], 
@@ -22,7 +23,12 @@ export async function exportImageString(
     const image = new Jimp(inkingManager.clientWidth, inkingManager.clientHeight, 0xFFFFFFFF);
     let scale = window.devicePixelRatio;
     image.scale(scale);
-    await renderFloatersOnCanvas(floatersRoot, inkingManager, floatersList, image, scale);
+    await renderFloatersOnCanvas(floatersRoot, inkingManager, floatersList, image);
+    
+    const canvasImage = await renderDOM(canvasRoot);
+    if (canvasImage) {
+        image.blit(canvasImage, 0, 0);
+    }
     
     let base64;
     do {
@@ -39,8 +45,7 @@ async function renderFloatersOnCanvas(
     floatersRoot: HTMLElement, 
     inkingManager: InkingManager, 
     floatersList: {key: string, value: { map: SharedMap, lastEditTime: number }}[], 
-    rootImage: typeof Jimp, 
-    scale: number = 1
+    rootImage: typeof Jimp,
 ) {
     const floatersMap = Object.fromEntries(floatersList.map((map) => [map.key, map.value.map]));
     const DOMFloaterObjects = Array.from(floatersRoot.children)
@@ -61,7 +66,7 @@ async function renderFloatersOnCanvas(
     console.log(DOMImages);
 
     DOMImages.forEach((floater) => {
-        placeImageOnImage(inkingManager, floater.map, floater.image, rootImage, scale);
+        placeImageOnImage(inkingManager, floater.map, floater.image, rootImage);
     });
 }
 
@@ -78,7 +83,7 @@ async function renderFloater(map: SharedMap, dom: HTMLElement) {
 }
 
 async function renderDOM(dom: HTMLElement) {
-    const canvas = await html2canvas(dom)
+    const canvas = await html2canvas(dom, { scale: window.devicePixelRatio, backgroundColor: 'transparent' });
     const strippedCanvas = canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
     return await Jimp.read(Buffer.from(strippedCanvas, 'base64')).catch(console.error);
 }
@@ -88,19 +93,19 @@ async function renderFile(map: SharedMap) {
     return await Jimp.read(imgURL).catch(console.error);
 }
 
-function placeImageOnImage(inkingManager: InkingManager, map: SharedMap, image: typeof Jimp, rootImage: typeof Jimp, scale: number) {
+function placeImageOnImage(inkingManager: InkingManager, map: SharedMap, image: typeof Jimp, rootImage: typeof Jimp) {
     const appPos = map.get('pos') as FloaterAppCoords;
     const appSize = map.get('size') as FloaterAppSize;
     const pos = appToScreenPos(inkingManager, appPos);
     const size = appToScreenSize(inkingManager, appPos, appSize);
-    const floaterWidth = Math.floor(size.width * scale);
-    const floaterHheight = Math.floor(size.height * scale);
+    const floaterWidth = size.width * window.devicePixelRatio;
+    const floaterHheight = size.height * window.devicePixelRatio;
     image.scaleToFit(floaterWidth, floaterHheight);
     
     const widthDiff = floaterWidth - image.bitmap.width;
     const heightDiff = floaterHheight - image.bitmap.height;
-    const x = Math.floor(pos.left * scale + widthDiff / 2);
-    const y = Math.floor(pos.top * scale + heightDiff / 2);
+    const x = Math.floor(pos.left * window.devicePixelRatio + widthDiff / 2);
+    const y = Math.floor(pos.top * window.devicePixelRatio + heightDiff / 2);
     
     rootImage.blit(image, x, y);
 }

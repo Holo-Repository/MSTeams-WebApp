@@ -88,9 +88,9 @@ function SharedCanvas(props: SharedCanvasProps) {
     }
     
     const downloadPNG = async () => {
-        if (!inkingManager || !floatersList || !floaterContainerRef.current) return raiseGlobalError(new Error('Canvas not ready'));
+        if (!inkingManager || !floatersList || !floaterContainerRef.current || !canvasRef.current) return raiseGlobalError(new Error('Canvas not ready'));
         try {
-            let imgStr = await exportImageString(floaterContainerRef.current, inkingManager, floatersList);
+            let imgStr = await exportImageString(canvasRef.current, floaterContainerRef.current, inkingManager, floatersList);
             const a = document.createElement('a');
             a.href = imgStr;
             a.download = 'canvas.png';
@@ -99,9 +99,9 @@ function SharedCanvas(props: SharedCanvasProps) {
     }
     
     const closeCanvas = async () => {
-        if (!inkingManager || !floatersList || !floaterContainerRef.current) return raiseGlobalError(new Error('Canvas not ready'));
+        if (!inkingManager || !floatersList || !floaterContainerRef.current || !canvasRef.current) return raiseGlobalError(new Error('Canvas not ready'));
         try {
-            const imgStr = await exportImageString(floaterContainerRef.current, inkingManager, floatersList, true);
+            const imgStr = await exportImageString(canvasRef.current, floaterContainerRef.current, inkingManager, floatersList, true);
             const containerMap = { time: new Date().toISOString(), previewImage: imgStr };
             await props.containerManager.updateContainerProperty(props.container, containerMap);
         } catch (error: any) { raiseGlobalError(error) };
