@@ -77,7 +77,7 @@ async function renderFloater(map: SharedMap, dom: HTMLElement) {
         case 'note':
         case 'model':
             return await renderDOM(dom);
-        case 'file': return await renderFile(map);
+        case 'file': return await renderFile(map, dom);
         default: return;
     }
 }
@@ -88,9 +88,14 @@ async function renderDOM(dom: HTMLElement) {
     return await Jimp.read(Buffer.from(strippedCanvas, 'base64')).catch(console.error);
 }
 
-async function renderFile(map: SharedMap) {
-    const imgURL = map.get('url') as string;
-    return await Jimp.read(imgURL).catch(console.error);
+async function renderFile(map: SharedMap, dom: HTMLElement) {
+    const fileType = map.get('fileType') as AcceptedFileTypes;
+    if (fileType === 'image') {
+        const imgURL = map.get('url') as string;
+        return await Jimp.read(imgURL).catch(console.error);
+    } else if (fileType === 'pdf') {
+        return await renderDOM(dom);
+    }
 }
 
 function placeImageOnImage(inkingManager: InkingManager, map: SharedMap, image: typeof Jimp, rootImage: typeof Jimp) {
