@@ -44,6 +44,7 @@ export interface FloaterProps {
     objMap: SharedMap;
     delete: () => void;
     inkingManager: InkingManager;
+    id?: string;
 }
 
 interface ModelViewerRefType {
@@ -131,6 +132,7 @@ function Floater(props: FloaterProps) {
     return (
         <Tooltip content={interaction} relationship="label" hideDelay={300} showDelay={200} positioning='above-start' >
             <div 
+                id={props.id}
                 ref={contentRef}
                 className={styles.content} 
                 style={{...contentStyle, boxShadow: theme.effects.elevation8, zIndex: props.objMap.get('lastEditTime')}}

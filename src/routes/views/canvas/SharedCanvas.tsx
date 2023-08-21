@@ -3,13 +3,12 @@ import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { IFluidContainer, SharedMap } from "fluid-framework";
 import { Button, FluentProvider, Spinner, Tooltip, teamsLightTheme } from "@fluentui/react-components";
 import { Dismiss24Filled } from "@fluentui/react-icons";
-import html2canvas from "html2canvas";
 
 import MyToolBar from "./toolbar/MyToolBar";
 import Floater from "../floaters/Floater";
 import ContainerManager from "../../containers/ContainerManager";
-import '../../../styles/SharedCanvas.css'; 
-
+import { exportImageString } from "../utils/CanvasExport";
+import '../../../styles/SharedCanvas.css';
 
 
 export interface SharedCanvasProps {
@@ -30,6 +29,7 @@ function SharedCanvas(props: SharedCanvasProps) {
     const [floatersList, setFloatersList] = useState<{key: string, value: { map: SharedMap, lastEditTime: number }}[]>([]);
     
     const canvasRef = useRef<HTMLDivElement>(null);
+    const floaterContainerRef = useRef<HTMLDivElement>(null);
     const fluentProviderRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLDivElement>(null);
     const myToolBarDivRef = useRef<HTMLDivElement>(null);
@@ -77,13 +77,7 @@ function SharedCanvas(props: SharedCanvasProps) {
         for (const [key, value] of handles.entries()) { 
             try {
                 let map = await value.get() as SharedMap;
-                handleList.push({
-                    key, 
-                    value: {
-                        map,
-                        lastEditTime: map.get('lastEditTime') as number
-                    }
-                }) 
+                handleList.push({ key, value: { map, lastEditTime: map.get('lastEditTime') as number } }) 
             } catch (error: any) { throw raiseGlobalError(error) };
         }
         setFloatersList(handleList);
@@ -92,42 +86,23 @@ function SharedCanvas(props: SharedCanvasProps) {
     const deleteFloater = (key: string) => {
         floaterHandles!.delete(key);
     }
-
-    const canvasToDataUrl = async (scale: number = 1) => {
-        const fluentProviderElement = fluentProviderRef.current;
-        let dataUrl = '';
-        if (fluentProviderElement) {
-            const ignoredNodes = [myToolBarDivRef.current, closeButtonRef.current];
-            const canvas = await html2canvas(fluentProviderElement as HTMLElement, {
-                ignoreElements: (node) => {
-                    return ignoredNodes.includes(node as HTMLDivElement);
-                }, scale: window.devicePixelRatio * scale
-            });
-            dataUrl = canvas.toDataURL('image/png');
-        }
-        return dataUrl;
-    }
     
-    const downloadDataUrlAsPng = (dataUrl: string) => {
-        const a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = 'canvas.png';
-        a.click();
-    }
-    
-    const exportToPng = async () => {
-        const dataUrl = await canvasToDataUrl();
-        if (dataUrl) downloadDataUrlAsPng(dataUrl);
-    }
-
-    const closeCanvas = async () => {
+    const downloadPNG = async () => {
+        if (!inkingManager || !floatersList || !floaterContainerRef.current) return raiseGlobalError(new Error('Canvas not ready'));
         try {
-            let scale = 1; let imgUrl;
-            do {
-                scale /= 2;
-                imgUrl = await canvasToDataUrl(scale);
-            } while (imgUrl.length > 30720);
-            const containerMap = {time: new Date().toISOString(), previewImage: imgUrl};
+            let imgStr = await exportImageString(floaterContainerRef.current, inkingManager, floatersList);
+            const a = document.createElement('a');
+            a.href = imgStr;
+            a.download = 'canvas.png';
+            a.click();
+        } catch (error: any) { raiseGlobalError(error) };
+    }
+    
+    const closeCanvas = async () => {
+        if (!inkingManager || !floatersList || !floaterContainerRef.current) return raiseGlobalError(new Error('Canvas not ready'));
+        try {
+            const imgStr = await exportImageString(floaterContainerRef.current, inkingManager, floatersList, true);
+            const containerMap = { time: new Date().toISOString(), previewImage: imgStr };
             await props.containerManager.updateContainerProperty(props.container, containerMap);
         } catch (error: any) { raiseGlobalError(error) };
         props.closeCanvas();
@@ -137,10 +112,11 @@ function SharedCanvas(props: SharedCanvasProps) {
         <FluentProvider id='canvas-background' theme={teamsLightTheme} ref={fluentProviderRef}>
             <div id="canvas-host" ref={canvasRef} />
             {!container && <div className='shared-canvas-loading'><Spinner labelPosition="below" label="Loading..." /></div>}
-            {container && <MyToolBar innerDivRef={myToolBarDivRef}  ink={inkingManager} container={container} pointerSelected={isPointerSelected} exportCanvas={exportToPng}/>}
-            <div id='floaters' >
+            {container && <MyToolBar innerDivRef={myToolBarDivRef}  ink={inkingManager} container={container} pointerSelected={isPointerSelected} exportCanvas={downloadPNG}/>}
+            <div id='floaters' ref={floaterContainerRef} >
                 {floaterHandles && floatersList.map(({key, value}) => {
                     return <Floater 
+                        id={`floater-${key}`}
                         key={key} 
                         objMap={value.map}
                         delete={() => {deleteFloater(key)}}
