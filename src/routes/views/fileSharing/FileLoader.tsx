@@ -12,11 +12,7 @@ import { AcceptedFileTypes } from './AcceptedFileTypes';
 import globalTime from '../utils/GlobalTime';
 
 
-/**
- * The ShareFile class contains functions to handle file rendering for lists of Files and URLs.
- *  It renders a div named SharedFile containing a DropZoneComponent,
- *  and a Form to allow user to input a url a view a file.
- */
+
 function FileLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
     const { floaters, loadFloater } = useFloaterLoader({
         container: props.container,

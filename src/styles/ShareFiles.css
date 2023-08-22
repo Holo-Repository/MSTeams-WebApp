@@ -1,0 +1,55 @@
+
+.dropzone {
+  border: 2px dashed #fe0000;
+  height: '60px';
+  width: '100px';
+  border-radius: 5px;
+  padding: 25px;
+  text-align: center;
+  margin: 25px;
+  font-size: 1.5em;
+  color: #000000;
+  cursor: pointer;
+  &:hover {
+    border-color: #0a0000;
+  }
+}
+
+
+.sharefile-components {
+  position: absolute;
+  margin: 0px 0px;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2vh);
+  padding: 1px 0px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px 1px rgba(181, 181, 181, 0.669);
+  z-index: 200000000000000;
+  color: black;
+} 
+
+.sharefile-components-level2{
+  display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+#UploadBTN[disabled]::after{
+  cursor: not-allowed;
+  content: "Invalid URL";
+  color: red;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#UploadBTN[disabled]:hover::after {
+  opacity: 1;
+}
+
+

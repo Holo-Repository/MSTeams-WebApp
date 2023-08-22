@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Button, Input, Field } from '@fluentui/react-components';
 import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
 
-import "../../../styles/DropZone.css";
+import "../../../styles/ShareFiles.css";
 import { AcceptedFileTypes } from "./AcceptedFileTypes";
 
 
@@ -27,14 +27,14 @@ function ShareFiles(props: { fileType: AcceptedFileTypes, loadFile: (fileURL: st
     }
 
     return (
-        <div>
+        <div className="sharefile-components">
             {/* <DropZone handleFile={setfile} /> */}
             <Field
                 label="File URL"
                 validationState={isValidURL ? 'success' : 'error'}
                 validationMessageIcon={isValidURL ? 'success' : 'error'}
             >
-                <div>
+                <div className="sharefile-components-level2">
                     <Input 
                         placeholder="Enter a file URL"
                         ref={inputRef}
@@ -44,7 +44,7 @@ function ShareFiles(props: { fileType: AcceptedFileTypes, loadFile: (fileURL: st
                             setIsValidURL(validateURL(url));
                         }}
                     />
-                    <Button icon={<Upload />} appearance='primary' onClick={loadFileURL} disabled={!isValidURL} />
+                    <Button id="UploadBTN" icon={<Upload />} appearance='primary' onClick={loadFileURL} disabled={!isValidURL}/>
                 </div>
             </Field>
         </div>
