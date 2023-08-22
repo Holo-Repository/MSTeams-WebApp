@@ -13,22 +13,29 @@ import styles from "../../../styles/NotesLoader.module.css";
 import globalTime from '../utils/GlobalTime';
 
 
+/**
+ * Display a button to load a collaborative note.
+ */
 function NotesLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
     const { floaters, loadFloater } = useFloaterLoader({
         container: props.container,
     });
     
+    /**
+     * Load a new note in the remote container.
+     */
     async function loadNote() {
         const note = {
             type: "note",
             pos: { x: -100, y: -75 },
             size: { width: 200, height: 150 },
             lastEditTime: (await globalTime()).ntpTimeInUTC,
+            // Create a new SharedString for the note and only store its handle in the remote container
             textHandle: (await props.container.create(SharedString)).handle,
         } as IFloaterObject;
         
         await loadFloater(note); 
-        props.setParentState("Select");
+        props.setParentState("Select"); // Deselect the note loader
     }
 
     if (!floaters) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;

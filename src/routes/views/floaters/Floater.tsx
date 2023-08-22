@@ -25,14 +25,32 @@ import NotesViewer from "../notes/NotesViewer";
 
 const theme = getTheme();
 const throttleTime = 100;
+/**
+ * Update the remote position state.
+ * The function is throttled because UI interactions fire way too many events.
+ * @param dataMap - The remote data map.
+ * @param pos - The new position.
+ */
 const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => {
     if (!dataMap) return;
     dataMap.set('pos', pos);
 }, throttleTime, { leading: true, trailing: true });
+/**
+ * Update the remote size state.
+ * The function is throttled because UI interactions fire way too many events.
+ * @param dataMap - The remote data map.
+ * @param pos - The new position.
+ */
 const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
     if (!dataMap) return;
     dataMap.set('size', size);
 }, throttleTime, { leading: true, trailing: true });
+/**
+ * Update the remote editTime state.
+ * The function is throttled because UI interactions fire way too many events.
+ * @param dataMap - The remote data map.
+ * @param pos - The new position.
+ */
 const setDMEditTime = throttle(async (dataMap, reverse: boolean = false) => {
     if (!dataMap) return;
     let lastEditTime = (await globalTime()).ntpTimeInUTC;
@@ -51,14 +69,26 @@ interface ModelViewerRefType {
     handleClickTakeScreenshot: () => string;
 }
 
+/**
+ * Generic container for resources.
+ * It displays a window that can be moved, resized and deleted, where the actual content is rendered.
+ * It handles all the remote synchronization for the window state.
+ * Synchronization of the contained resource is handled by the resource itself.
+ * 
+ * NOTE: it is called "Floater" because it floats on the canvas (no reference to any other meaning...)
+ */
 function Floater(props: FloaterProps) {
     const [screenPos, setScreenPos] = useState<FloaterScreenCoords | undefined>(undefined);
     const [screenSize, setScreenSize] = useState<FloaterScreenSize | undefined>(undefined);
     const [hasLoaded, setHasLoaded] = useState(false);
 
     const throttledSetScreenSize = throttle(setScreenSize, throttleTime * 2, { leading: true, trailing: true });
+    const contentRef = useRef<HTMLDivElement>(null);
     const ModelViewerRef = useRef<ModelViewerRefType | null>(null);
 
+    /**
+     * Register the event handler to receive remote floater state updates.
+     */
     useEffect(() => {
         const handleChange = (changed: IValueChanged, local: boolean) => {
             if (local) return;
@@ -73,6 +103,11 @@ function Floater(props: FloaterProps) {
         return () => { props.objMap.off("valueChanged", handleChange) };
     }, [props.objMap, props.inkingManager]);
 
+    /**
+     * Receive the local UI event of window drag and update the local and remote state.
+     * Dragging a window also brings it to the front.
+     * @param e - The mouse event.
+     */
     const handleDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         const newScreenPos = { left: e.clientX, top: e.clientY };
         if (newScreenPos.left === 0 && newScreenPos.top === 0) return; // Ignore the last event
@@ -81,8 +116,15 @@ function Floater(props: FloaterProps) {
         setDMEditTime(props.objMap); // Bring to front
     }
 
-    const contentRef = useRef<HTMLDivElement>(null);
+    /**
+     * Register the resize observer to listen for changes in the content size.
+     */
     useLayoutEffect(() => {
+        /**
+         * Handle resize events by updating the local and remote state.
+         * Contrary to dragging, resizing does not bring the window to the front
+         * because resizing is handled weirdly by the browser and it would enter infinite event loops.
+         */
         if (!contentRef.current) return;
         const content = contentRef.current;
         // Attach resize observer
@@ -96,7 +138,9 @@ function Floater(props: FloaterProps) {
         return () => resizeObserver.disconnect();
     }, [hasLoaded, screenPos, props.inkingManager, props.objMap, throttledSetScreenSize]);
 
-
+    /**
+     * Export the model as a screenshot.
+     */
     const exportModel = () => {
         ModelViewerRef.current?.handleClickTakeScreenshot();
     }

@@ -7,8 +7,9 @@ import { AcceptedFileTypes } from "./AcceptedFileTypes";
 
 
 /**
- * The shareFiles functional component renders a div with a form to input URLs and a DropZone to input files.
- *  It records the input Files and URLs as arrays and dispatches them to the FileLoader component.
+ * Display a file sharing component.
+ * It displays a field for the user to provide a URL to a file to load and validates the URL.
+ * NOTE: validation is still very basic and should be improved.
  */
 function ShareFiles(props: { fileType: AcceptedFileTypes, loadFile: (fileURL: string) => Promise<void> }) {
     const inputRef = useRef<HTMLInputElement>(null);

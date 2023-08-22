@@ -7,16 +7,21 @@ import { SharedStringHelper } from "./textEditor/SharedStringHelper";
 import styles from "../../../styles/NotesViewer.module.css";
 import { makeStyles, tokens } from '@fluentui/react-components';
 
-const useStyles = makeStyles({
-    text: {
-        fontFamily: tokens.fontFamilyBase,
-    },
-});
 
+const useStyles = makeStyles({ text: { fontFamily: tokens.fontFamilyBase } });
+
+
+/**
+ * Display a collaborative note.
+ */
 function NotesViewer(props: { objMap: SharedMap }) {
     const [sharedStringHelper, setSharedStringHelper] = useState<SharedStringHelper>();
     const textStyles = useStyles();
 
+    /**
+     * Load the SharedStringHelper when the SharedMap is available.
+     * Dispose of the SharedStringHelper when the component unloads.
+     */
     useEffect(() => {
         if (!props.objMap) return;
         const textHandle = props.objMap.get('textHandle');

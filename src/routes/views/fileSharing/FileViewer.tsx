@@ -7,6 +7,10 @@ import { FloaterScreenSize } from "../utils/FloaterUtils";
 import PDF from "./fileHandlers/PDF";
 
 
+/**
+ * Display a file.
+ * This is a generic component that will draw the appropriate file viewer based on the file type.
+ */
 function FileViewer(props: { objMap: SharedMap, screenSize: FloaterScreenSize }) {
     const { type, url } = useMemo(() => { return {
         type: props.objMap.get('fileType') as AcceptedFileTypes,

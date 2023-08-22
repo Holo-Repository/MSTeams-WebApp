@@ -35,13 +35,16 @@ function SharedCanvas(props: SharedCanvasProps) {
     const closeButtonRef = useRef<HTMLDivElement>(null);
     const myToolBarDivRef = useRef<HTMLDivElement>(null);
 
+    // Connect to the active Fluid container
     useEffect(() => {
-        // Connect to the active Fluid container
         props.containerManager.getContainer(props.container).then((containerManager) => {
             setContainer(containerManager.container);
         }).catch((error) => { raiseGlobalError(error); });
     }, [props.containerManager, props.container]);
     
+
+    // Initialize the inking manager and the live canvas
+    // Also initialize the floaters and their function handlers
     useEffect(() => {
         if (!container || !canvasRef.current) return;
         
@@ -55,23 +58,39 @@ function SharedCanvas(props: SharedCanvasProps) {
         isPointerSelected(true);
         
         // Loading floaters
+        /**
+         * Due to restriction on nested DDS, we cannot store the floaters in the container directly.
+         * Instead, we store their handlers and use them to retrieve the actual floater data.
+         * Additionally, we store the handlers in a shared map since Fluid has no native support for distributed arrays.
+        */
         const floaters = container.initialObjects.floaters as SharedMap;
 
         const handleChange = () => { handleFloaterChange(floaters) };
         floaters.on("valueChanged", handleChange);
         setFloaterHandles(floaters);
 
-        return () => { floaters.off("valueChanged", handleChange) }; // !!
+        return () => { floaters.off("valueChanged", handleChange) };
     }, [container, canvasRef]);
 
+    // Update the floaters list when the floaters handles change
     useEffect(() => {
         handleFloaterChange(floaterHandles);
     }, [floaterHandles]);
 
+    /**
+     * Disable pointer events on the canvas when the pointer is selected.
+     * Disabling pointer events for the canvas allows the user to interact with the floaters instead.
+     * This is done through the use of the pointer-events CSS property.
+    */
     const isPointerSelected = (selected: boolean) => {
         if (canvasRef.current) canvasRef.current.style.pointerEvents = selected ? 'none' : 'auto';
     }
 
+    /**
+     * Load the floaters from the floaters handles.
+     * Whenever there is a change in the map containing the floaters handles, this function will be called
+     * and all the handles will be reloaded into the floaters list.
+     */
     const handleFloaterChange = async (handles?: SharedMap) => {
         if (!handles) return;
         const handleList = [];
@@ -84,10 +103,19 @@ function SharedCanvas(props: SharedCanvasProps) {
         setFloatersList(handleList);
     }
 
+    /**
+     * Delete a floater from the floaters list.
+     * @param key The key of the floater to delete.
+     * This function is passed to the floater component and is called when the user deletes a floater.
+     */
     const deleteFloater = (key: string) => {
         floaterHandles!.delete(key);
     }
     
+    /**
+     * Download the canvas as a PNG image.
+     * This function is passed to the toolbar component and is called when the user clicks the download button.
+     */
     const downloadPNG = async () => {
         if (!inkingManager || !floatersList || !floaterContainerRef.current || !canvasRef.current) return raiseGlobalError(new Error('Canvas not ready'));
         try {
@@ -99,6 +127,10 @@ function SharedCanvas(props: SharedCanvasProps) {
         } catch (error: any) { raiseGlobalError(error) };
     }
     
+    /**
+     * Close the canvas.
+     * Before closing render a PNG of the canvas, scale it down to a thumbnail and upload it to the container.
+     */
     const closeCanvas = async () => {
         if (!inkingManager || !floatersList || !floaterContainerRef.current || !canvasRef.current) return raiseGlobalError(new Error('Canvas not ready'));
         if (isClosing) return;

@@ -13,9 +13,8 @@ import globalTime from '../utils/GlobalTime';
 
 
 /**
- * The ShareFile class contains functions to handle file rendering for lists of Files and URLs.
- *  It renders a div named SharedFile containing a DropZoneComponent,
- *  and a Form to allow user to input a url a view a file.
+ * A file loader component.
+ * Allows to load a file by providing a direct link to the resource.
  */
 function FileLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
     const { floaters, loadFloater } = useFloaterLoader({
@@ -24,6 +23,11 @@ function FileLoader(props: {container: IFluidContainer, setParentState: (tool: s
 
     const [fileType, setFileType] = useState(undefined as AcceptedFileTypes | undefined);
 
+    /**
+     * Load a file into the container.
+     * Handles populating the appropriate floater object and loading it into the container.
+     * @param fileURL - The URL of the file to load.
+     */
     async function loadFile(fileURL: string) {
         let file = {
             type: "file",
@@ -40,7 +44,7 @@ function FileLoader(props: {container: IFluidContainer, setParentState: (tool: s
         }
 
         loadFloater(file);
-        props.setParentState("Select");
+        props.setParentState("Select"); // Deselect the file loader tool
     }
 
     if (!floaters) return <p>Loading...</p>;

@@ -33,6 +33,9 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
     // /------/ End of code related to issue
     });
     
+    /**
+     * Load a new model in the remote container.
+     */
     async function loadModel() {
         if (!inputRef.current) throw new Error("Input ref not set");
 
@@ -54,7 +57,7 @@ See the code in ModelViewer.tsx for more details on the workaround used.
 ======================================================================================== */
         // If no model is loaded, load the model with the key "model"
         if (canLoad) {
-            await loadFloater(model, "model"); 
+            await loadFloater(model, "model"); // Key is fixed so that we can check if a model is loaded
             props.setParentState("Select")
         }
     }

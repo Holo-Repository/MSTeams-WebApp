@@ -1,3 +1,9 @@
+/**
+ * Interface for a floater object.
+ * It lists the minimum properties that a floater object should have.
+ * This is intended to be used with the FloaterLoader hook
+ * and be customized to fit the data needs of the floater resource being loaded.
+ */
 export default interface IFloaterObject {
     type: string;
     pos: { x: number, y: number };

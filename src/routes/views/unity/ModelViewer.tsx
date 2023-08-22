@@ -35,13 +35,19 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         webglContextAttributes: { preserveDrawingBuffer: true },
     });
 
-
+    /**
+     * Load the SharedMap containing the textures.
+     * It is a mapping from volume name to base64 encoded texture.
+     * This could probably be improved by storing the strokes instead of the image.
+     */
     useEffect(() => {
         props.objMap.get('modelTexturesHandle').get().then(setTexturesMap);
     }, [props.objMap]);
 
 
-    // Register functions that unity can call
+    /**
+     * Register functions that unity can call
+     */
     useEffect(() => {
         if (!texturesMap) return;
         // Register rotation sync
@@ -75,7 +81,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
 
 
-    // Load actual model
+    /**
+     * Signal Unity to download the 3D model from the direct URL.
+     */
     useEffect(() => {
         if (!unityInstance || !texturesMap) return;
         const modelURL = props.objMap.get('modelURL');
@@ -90,6 +98,12 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     }, [unityInstance, props.objMap, texturesMap]);
 
 
+    /**
+     * Once the model has loaded update the rotation and scale.
+     * There is a 2 sec delay to allow the loaded model to be mounted properly.
+     * During testing we could not find a reliable way to detect when the model has been mounted in the Unity scene
+     * and 2 seconds of delay seemed to be a good compromise that works.
+     */
     useEffect(() => {
         if (!unityInstance || !modelLoaded) return;
         const timeoutID = setTimeout(() => {
@@ -102,7 +116,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     }, [unityInstance, props.objMap, modelLoaded]);
 
 
-    // Register Fluid event handlers
+    /**
+     * Register Fluid event handlers to sync model rotation, scale, etc...
+     */
     useEffect(() => {
         if (!unityInstance || !texturesMap || !modelLoaded) return;
         const handleChange = (changed: IValueChanged, local: boolean) => {           
@@ -120,7 +136,10 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         texturesMap.on("valueChanged", handleTextureChange);
 
         
-        // Set initial texture values
+        /**
+         * Set initial texture values
+         * There is a 2 sec delay to allow the loaded model to be mounted properly.
+         */
         const timeoutID = setTimeout(() => {
             for (const [key, value] of texturesMap.entries()) {
                 unityInstance.SendMessage(key, "SetTextureJS", JSON.stringify({texture: value}));
@@ -215,6 +234,12 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
 
 
+
+    /**
+     * Download a screenshot of the Unity scene.
+     * @param base64Data - The base64 encoded image data.
+     * @param filename - The name of the file that will be downloaded.
+     */
     function downloadBase64Image(base64Data: string, filename: string) {
         const link = document.createElement("a");
         link.href = base64Data;
@@ -224,6 +249,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         document.body.removeChild(link);
     }
     
+    /**
+     * Take a screenshot of the Unity scene and download it.
+     */
     function handleClickTakeScreenshot() {
         unityInstance.SendMessage(unityModelTarget, "ToggleUI");
 
