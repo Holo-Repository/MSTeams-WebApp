@@ -10,7 +10,6 @@ import useFloaterLoader from '../floaters/FloaterLoader';
 
 import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
 import styles from "../../../styles/NotesLoader.module.css";
-import globalTime from '../utils/GlobalTime';
 
 
 /**
@@ -29,7 +28,6 @@ function NotesLoader(props: {container: IFluidContainer, setParentState: (tool: 
             type: "note",
             pos: { x: -100, y: -75 },
             size: { width: 200, height: 150 },
-            lastEditTime: (await globalTime()).ntpTimeInUTC,
             // Create a new SharedString for the note and only store its handle in the remote container
             textHandle: (await props.container.create(SharedString)).handle,
         } as IFloaterObject;

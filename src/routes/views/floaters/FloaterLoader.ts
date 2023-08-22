@@ -3,6 +3,7 @@ import { IFluidContainer, IValueChanged, SharedMap } from "fluid-framework";
 import { v4 as uuidv4 } from "uuid";
 
 import IFloaterObject from "./IFloaterObject";
+import globalTime from "../utils/GlobalTime";
 
 
 /**
@@ -56,6 +57,7 @@ function useFloaterLoader(options: IFloaterLoader): HookFloaterLoader {
             const floaterMap = await options.container.create(SharedMap);
             // Add the model to the map
             Object.entries(floater).forEach(([key, value]) => floaterMap.set(key, value));
+            floaterMap.set('lastEditTime', (await globalTime()).ntpTimeInUTC);
             // Generate a random id if none is provided
             let randomId = id || uuidv4();
             // Add the map to the container

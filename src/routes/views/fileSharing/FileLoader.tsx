@@ -4,12 +4,11 @@ import { IFluidContainer } from 'fluid-framework';
 import IFloaterObject from '../floaters/IFloaterObject';
 import { Toolbar, ToolbarButton } from '@fluentui/react-components';
 import { useState } from 'react';
+import { AcceptedFileTypes } from './AcceptedFileTypes';
 import {
     Image24Filled as Image,
     DocumentPdf24Filled as PDF,
 } from "@fluentui/react-icons";
-import { AcceptedFileTypes } from './AcceptedFileTypes';
-import globalTime from '../utils/GlobalTime';
 
 
 /**
@@ -33,7 +32,6 @@ function FileLoader(props: {container: IFluidContainer, setParentState: (tool: s
             type: "file",
             pos: { x: -200, y: -150 },
             size: { width: 400, height: 300 },
-            lastEditTime: (await globalTime()).ntpTimeInUTC,
             url: fileURL,
             fileType: fileType,
         } as IFloaterObject & { fileType: AcceptedFileTypes };

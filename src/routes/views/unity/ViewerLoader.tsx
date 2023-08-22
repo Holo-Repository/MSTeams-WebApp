@@ -13,7 +13,6 @@ import useFloaterLoader from '../floaters/FloaterLoader';
 
 import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
 import styles from "../../../styles/ViewerLoader.module.css";
-import globalTime from '../utils/GlobalTime';
 
 
 function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
@@ -44,7 +43,6 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
             pos: { x: -200, y: -150 },
             size: { width: 400, height: 300 },
             modelRotation: { x: 0, y: 0, z: 0 },
-            lastEditTime: (await globalTime()).ntpTimeInUTC,
             modelScale: { x: 0.003, y: 0.003, z: 0.003 },
             modelURL: modelURL,
             modelTexturesHandle: (await props.container.create(SharedMap)).handle,
