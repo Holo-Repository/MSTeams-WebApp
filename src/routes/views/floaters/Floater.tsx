@@ -20,23 +20,43 @@ import {
 } from '../utils/FloaterUtils';
 import FileViewer from "../fileSharing/FileViewer";
 import globalTime from "../utils/GlobalTime";
-import { AcceptedFloaterType } from "./AcceptedFloaterType";
+import { AcceptedFloaterType } from "./IFloater";
 import NotesViewer from "../notes/NotesViewer";
+import { FloaterKeys } from "./IFloater";
+
 
 const theme = getTheme();
 const throttleTime = 100;
+/**
+ * Update the remote position state.
+ * The function is throttled because UI interactions fire way too many events.
+ * @param dataMap - The remote data map.
+ * @param pos - The new position.
+ */
 const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => {
     if (!dataMap) return;
-    dataMap.set('pos', pos);
+    dataMap.set(FloaterKeys.pos, pos);
 }, throttleTime, { leading: true, trailing: true });
+/**
+ * Update the remote size state.
+ * The function is throttled because UI interactions fire way too many events.
+ * @param dataMap - The remote data map.
+ * @param pos - The new position.
+ */
 const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
     if (!dataMap) return;
-    dataMap.set('size', size);
+    dataMap.set(FloaterKeys.size, size);
 }, throttleTime, { leading: true, trailing: true });
+/**
+ * Update the remote editTime state.
+ * The function is throttled because UI interactions fire way too many events.
+ * @param dataMap - The remote data map.
+ * @param pos - The new position.
+ */
 const setDMEditTime = throttle(async (dataMap, reverse: boolean = false) => {
     if (!dataMap) return;
     let lastEditTime = (await globalTime()).ntpTimeInUTC;
-    dataMap.set('lastEditTime', lastEditTime * (reverse ? -1 : 1));
+    dataMap.set(FloaterKeys.lastEditTime, lastEditTime * (reverse ? -1 : 1));
 }, throttleTime, { leading: true, trailing: true });
 
 
@@ -51,28 +71,47 @@ interface ModelViewerRefType {
     handleClickTakeScreenshot: () => string;
 }
 
+/**
+ * Generic container for resources.
+ * It displays a window that can be moved, resized and deleted, where the actual content is rendered.
+ * It handles all the remote synchronization for the window state.
+ * Synchronization of the contained resource is handled by the resource itself.
+ * 
+ * NOTE: it is called "Floater" because it floats on the canvas (no reference to any other meaning...)
+ */
 function Floater(props: FloaterProps) {
     const [screenPos, setScreenPos] = useState<FloaterScreenCoords | undefined>(undefined);
     const [screenSize, setScreenSize] = useState<FloaterScreenSize | undefined>(undefined);
     const [hasLoaded, setHasLoaded] = useState(false);
 
     const throttledSetScreenSize = throttle(setScreenSize, throttleTime * 2, { leading: true, trailing: true });
+    const contentRef = useRef<HTMLDivElement>(null);
     const ModelViewerRef = useRef<ModelViewerRefType | null>(null);
 
+    /**
+     * Register the event handler to receive remote floater state updates.
+     */
     useEffect(() => {
         const handleChange = (changed: IValueChanged, local: boolean) => {
             if (local) return;
-            if (changed.key === 'pos') setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get('pos')!));
-            if (changed.key === 'size') setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get('pos')!, props.objMap.get('size')!));
+            if (changed.key === FloaterKeys.pos) 
+                setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get(FloaterKeys.pos)!));
+            if (changed.key === FloaterKeys.size) 
+                setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get(FloaterKeys.pos)!, props.objMap.get(FloaterKeys.size)!));
         };
         props.objMap.on("valueChanged", handleChange);
 
-        setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get('pos')!));
-        setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get('pos')!, props.objMap.get('size')!));
+        setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get(FloaterKeys.pos)!));
+        setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get(FloaterKeys.pos)!, props.objMap.get(FloaterKeys.size)!));
         setHasLoaded(true);
         return () => { props.objMap.off("valueChanged", handleChange) };
     }, [props.objMap, props.inkingManager]);
 
+    /**
+     * Receive the local UI event of window drag and update the local and remote state.
+     * Dragging a window also brings it to the front.
+     * @param e - The mouse event.
+     */
     const handleDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         const newScreenPos = { left: e.clientX, top: e.clientY };
         if (newScreenPos.left === 0 && newScreenPos.top === 0) return; // Ignore the last event
@@ -81,13 +120,20 @@ function Floater(props: FloaterProps) {
         setDMEditTime(props.objMap); // Bring to front
     }
 
-    const contentRef = useRef<HTMLDivElement>(null);
+    /**
+     * Register the resize observer to listen for changes in the content size.
+     */
     useLayoutEffect(() => {
+        /**
+         * Handle resize events by updating the local and remote state.
+         * Contrary to dragging, resizing does not bring the window to the front
+         * because resizing is handled weirdly by the browser and it would enter infinite event loops.
+         */
         if (!contentRef.current) return;
         const content = contentRef.current;
         // Attach resize observer
         const resizeObserver = new ResizeObserver((entries) => {
-            const rect = content.getBoundingClientRect() as DOMRect;
+            const rect = content.getBoundingClientRect();
             const newScreenSize = { width: rect.width, height: rect.height };
             throttledSetScreenSize(newScreenSize);
             setDMSize(props.objMap, screenToAppSize(props.inkingManager, screenPos!, newScreenSize));
@@ -96,7 +142,9 @@ function Floater(props: FloaterProps) {
         return () => resizeObserver.disconnect();
     }, [hasLoaded, screenPos, props.inkingManager, props.objMap, throttledSetScreenSize]);
 
-
+    /**
+     * Export the model as a screenshot.
+     */
     const exportModel = () => {
         ModelViewerRef.current?.handleClickTakeScreenshot();
     }
@@ -105,7 +153,7 @@ function Floater(props: FloaterProps) {
     if (!screenPos || !screenSize) return <></>;
     
     let content;
-    const floaterType = props.objMap.get('type') as AcceptedFloaterType;
+    const floaterType = props.objMap.get(FloaterKeys.type) as AcceptedFloaterType;
     switch (floaterType) {
         case "model":
             content = <ModelViewer ref={ModelViewerRef} objMap={props.objMap} />
@@ -135,7 +183,7 @@ function Floater(props: FloaterProps) {
                 id={props.id}
                 ref={contentRef}
                 className={styles.content} 
-                style={{...contentStyle, boxShadow: theme.effects.elevation8, zIndex: props.objMap.get('lastEditTime')}}
+                style={{...contentStyle, boxShadow: theme.effects.elevation8, zIndex: props.objMap.get(FloaterKeys.lastEditTime)}}
                 onClick={() => {setDMEditTime(props.objMap)}}
             >{content}
             </div>

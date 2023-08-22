@@ -8,6 +8,8 @@ import "../../../styles/DropZone.css";
 /**
  * The DropZoneComponent allows file drag and drop into the dropzone div.
  * The input file is then returned as a File object.
+ * 
+ * NOTE: This component is not currently used in the application.
  */
 function DropZone(props: { handleFile: Dispatch<File> }) {
     const dropZoneRef = useRef<HTMLDivElement>(null);

@@ -105,6 +105,10 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.appState.set('activeContainerId', containerId);
     }
 
+    /**
+     * Triggers the closing of the current container.
+     * Propagates the change to all other clients connected to the app Fluid container.
+     */
     async closeContainer() {
         // Save the last edit time
         this.openContainer(undefined as unknown as string);

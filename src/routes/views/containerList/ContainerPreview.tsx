@@ -71,8 +71,8 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
     }
 
     /**
-     * Event handler for changes in the description input field. Updates 'newDesc' state with the new value.
-     * 
+     * Event handler for changes in the description input field.
+     * Updates 'newDesc' state with the new value.
      * @param event - The event object from the change in the description input field.
      * @param newValue - The new value of the description input field.
      */
@@ -81,7 +81,9 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
     }
 
     /**
-     * Validates the 'newName' state. If 'newName' is an empty string, sets 'isNameValid' to false. Otherwise, sets 'isNameValid' to true.
+     * Validates the 'newName' state.
+     * If 'newName' is an empty string, sets 'isNameValid' to false.
+     * Otherwise, sets 'isNameValid' to true.
      */
     validateName = () => {
         const { newName: name } = this.state;
