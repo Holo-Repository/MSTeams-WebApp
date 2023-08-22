@@ -29,7 +29,7 @@ describe('Tool Component', () => {
                 ext={mockExt}
             />
         );
-        expect(screen.getByText("✏️")).toBeInTheDocument();
+       expect(screen.getByText("✏️")).toBeInTheDocument();
     });
 });
 

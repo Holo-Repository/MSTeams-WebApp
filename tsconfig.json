@@ -16,7 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
-    "types": ["jest", "node", "jsdom"]
+    "types": ["jest", "node", "jsdom", "@testing-library/jest-dom"]
   },
   "include": [
     "src",
