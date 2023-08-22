@@ -5,7 +5,7 @@ import {
 } from '@fluentui/react-components';
 import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
 
-import IFloaterObject from '../floaters/IFloaterObject';
+import IFloaterObject from '../floaters/IFloater';
 import useFloaterLoader from '../floaters/FloaterLoader';
 
 import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";

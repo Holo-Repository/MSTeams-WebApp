@@ -6,6 +6,7 @@ import { Document, pdfjs, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
+import { PDFKeys } from '../IFile';
 import { FloaterScreenSize } from "../../utils/FloaterUtils";
 import styles from "../../../../styles/PDF.module.css";
 
@@ -21,7 +22,7 @@ const throttleTime = 100;
  * @param scrollPercent - The scroll percentage.
  */
 const setScroll = throttle((dataMap, scrollPercent: number) => {
-    if (dataMap) dataMap.set('pageScroll', scrollPercent);
+    if (dataMap) dataMap.set(PDFKeys.pageScroll, scrollPercent);
 }, throttleTime, { leading: true, trailing: true });
 
 
@@ -35,16 +36,16 @@ function PDF(props: { url: string, screenSize: FloaterScreenSize, objMap: Shared
     
     const bodyRef = useRef<HTMLDivElement>(null);
 
-    const nextPage = () => { if (pageNumber < numPages!) props.objMap.set('currentPage', pageNumber + 1) }
-    const prevPage = () => { if (pageNumber > 1) props.objMap.set('currentPage', pageNumber - 1) }
+    const nextPage = () => { if (pageNumber < numPages!) props.objMap.set(PDFKeys.currentPage, pageNumber + 1) }
+    const prevPage = () => { if (pageNumber > 1) props.objMap.set(PDFKeys.currentPage, pageNumber - 1) }
 
     /**
      * Register the event handler to receive remote PDF state updates.
      */
     useEffect(() => {
         const handler = (changed: IValueChanged) => {
-            if (changed.key === 'currentPage') { setPageNumber(props.objMap.get('currentPage')!) }
-            if (changed.key === 'pageScroll') { setScrollPercent(props.objMap.get('pageScroll')!) }
+            if (changed.key === PDFKeys.currentPage) { setPageNumber(props.objMap.get(PDFKeys.currentPage)!) }
+            if (changed.key === PDFKeys.pageScroll) { setScrollPercent(props.objMap.get(PDFKeys.pageScroll)!) }
         }
         props.objMap.on('valueChanged', handler);
         return () => { props.objMap.off('valueChanged', handler) }

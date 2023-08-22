@@ -1,14 +1,15 @@
-import ShareFiles from './ShareFiles';
-import useFloaterLoader from '../floaters/FloaterLoader';
-import { IFluidContainer } from 'fluid-framework';
-import IFloaterObject from '../floaters/IFloaterObject';
-import { Toolbar, ToolbarButton } from '@fluentui/react-components';
 import { useState } from 'react';
-import { AcceptedFileTypes } from './AcceptedFileTypes';
 import {
     Image24Filled as Image,
     DocumentPdf24Filled as PDF,
 } from "@fluentui/react-icons";
+
+import { Toolbar, ToolbarButton } from '@fluentui/react-components';
+import ShareFiles from './ShareFiles';
+import useFloaterLoader from '../floaters/FloaterLoader';
+import { IFluidContainer } from 'fluid-framework';
+import IFloaterObject from '../floaters/IFloater';
+import { AcceptedFileTypes } from './IFile';
 
 
 /**

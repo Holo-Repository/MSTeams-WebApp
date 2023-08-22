@@ -6,6 +6,7 @@ import { Dismiss24Filled } from "@fluentui/react-icons";
 
 import MyToolBar from "./toolbar/MyToolBar";
 import Floater from "../floaters/Floater";
+import { FloaterKeys } from "../floaters/IFloater";
 import ContainerManager from "../../containers/ContainerManager";
 import { exportImageString } from "../utils/CanvasExport";
 import '../../../styles/SharedCanvas.css';
@@ -97,7 +98,7 @@ function SharedCanvas(props: SharedCanvasProps) {
         for (const [key, value] of handles.entries()) { 
             try {
                 let map = await value.get() as SharedMap;
-                handleList.push({ key, value: { map, lastEditTime: map.get('lastEditTime') as number } }) 
+                handleList.push({ key, value: { map, lastEditTime: map.get(FloaterKeys.lastEditTime) as number } }) 
             } catch (error: any) { throw raiseGlobalError(error) };
         }
         setFloatersList(handleList);
@@ -160,7 +161,7 @@ function SharedCanvas(props: SharedCanvasProps) {
                 })}
             </div>
             <div ref={closeButtonRef} id="close-button">
-                <Tooltip content={!isClosing ? "Close Collab Case" : "Closing"} relationship="label">
+                <Tooltip content={!isClosing ? "Close Collaboration Case" : "Closing"} relationship="label">
                     {!isClosing 
                     ? <Button
                         icon={<Dismiss24Filled color="#424242"/>}

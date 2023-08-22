@@ -3,8 +3,9 @@ import { FloaterAppCoords, FloaterAppSize, appToScreenPos, appToScreenSize } fro
 import { SharedMap } from "fluid-framework";
 import html2canvas from "html2canvas";
 
-import { AcceptedFloaterType } from "../floaters/AcceptedFloaterType";
-import { AcceptedFileTypes } from "../fileSharing/AcceptedFileTypes";
+import { FloaterKeys } from "../floaters/IFloater";
+import { AcceptedFloaterType } from "../floaters/IFloater";
+import { AcceptedFileTypes, FileKeys } from "../fileSharing/IFile";
 
 /* ======================= 
     Known issue with [Jimp import](https://github.com/jimp-dev/jimp/issues/1194#issuecomment-1449287374)
@@ -76,7 +77,7 @@ async function renderFloatersOnCanvas(
             const floater = floatersMap[floaterID];
             return {
                 map: floater,
-                lastEditTime: floater.get('lastEditTime'),
+                lastEditTime: floater.get(FloaterKeys.lastEditTime),
                 dom: child as HTMLElement,
             };
         }).sort((a, b) => a.lastEditTime - b.lastEditTime); // Sort by last edit time
@@ -102,7 +103,7 @@ async function renderFloatersOnCanvas(
  * @returns - A Jimp image of the floater
  */
 async function renderFloater(map: SharedMap, dom: HTMLElement) {
-    const floaterType = map.get('type') as AcceptedFloaterType;
+    const floaterType = map.get(FloaterKeys.type) as AcceptedFloaterType;
     switch (floaterType) {
         case 'note':
         case 'model':
@@ -135,9 +136,9 @@ async function renderDOM(dom: HTMLElement) {
  * @returns - A Jimp image of the floater
  */
 async function renderFile(map: SharedMap, dom: HTMLElement) {
-    const fileType = map.get('fileType') as AcceptedFileTypes;
+    const fileType = map.get(FileKeys.fileType) as AcceptedFileTypes;
     if (fileType === 'image') {
-        const imgURL = map.get('url') as string;
+        const imgURL = map.get(FileKeys.url) as string;
         return await Jimp.read(imgURL).catch(console.error);
     } else if (fileType === 'pdf') {
         return await renderDOM(dom);
@@ -156,17 +157,17 @@ async function renderFile(map: SharedMap, dom: HTMLElement) {
  * @param rootImage - The Jimp image to place the image on
  */
 function placeImageOnImage(inkingManager: InkingManager, map: SharedMap, image: typeof Jimp, rootImage: typeof Jimp) {
-    const appPos = map.get('pos') as FloaterAppCoords;
-    const appSize = map.get('size') as FloaterAppSize;
+    const appPos = map.get(FloaterKeys.pos) as FloaterAppCoords;
+    const appSize = map.get(FloaterKeys.size) as FloaterAppSize;
     const pos = appToScreenPos(inkingManager, appPos);
     const size = appToScreenSize(inkingManager, appPos, appSize);
     const floaterWidth = size.width * window.devicePixelRatio;
-    const floaterHheight = size.height * window.devicePixelRatio;
-    image.scaleToFit(floaterWidth, floaterHheight);
+    const floaterHeight = size.height * window.devicePixelRatio;
+    image.scaleToFit(floaterWidth, floaterHeight);
     
     // Center the image on the floater because the size from the map refers to the container, not the content
     const widthDiff = floaterWidth - image.bitmap.width;
-    const heightDiff = floaterHheight - image.bitmap.height;
+    const heightDiff = floaterHeight - image.bitmap.height;
     const x = Math.floor(pos.left * window.devicePixelRatio + widthDiff / 2);
     const y = Math.floor(pos.top * window.devicePixelRatio + heightDiff / 2);
     

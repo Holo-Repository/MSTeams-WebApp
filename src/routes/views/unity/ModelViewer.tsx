@@ -5,12 +5,14 @@ import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
 import { IValueChanged, SharedMap } from "fluid-framework";
 import { throttle } from 'lodash';
 
+import { ModelKeys } from "./IModel";
 import styles from "../../../styles/ModelViewer.module.css";
+
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
 const unityModelTarget = "Target Manager";
-
 const throttleTime = 100;
+
 
 const ModelViewer = forwardRef((props: { objMap: SharedMap }, ref) => {
 /* ========================================================================================
@@ -41,7 +43,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
      * This could probably be improved by storing the strokes instead of the image.
      */
     useEffect(() => {
-        props.objMap.get('modelTexturesHandle').get().then(setTexturesMap);
+        props.objMap.get(ModelKeys.modelTexturesHandle).get().then(setTexturesMap);
     }, [props.objMap]);
 
 
@@ -52,12 +54,12 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         if (!texturesMap) return;
         // Register rotation sync
         (window as any).syncCurrentRotation = throttle((x: number, y: number, z: number) => {
-            props.objMap.set("modelRotation", {x, y, z})
+            props.objMap.set(ModelKeys.modelRotation, {x, y, z})
         }, throttleTime, { leading: true, trailing: true });
 
         // Register scale sync
         (window as any).syncCurrentScale = throttle((x: number, y: number, z: number) => {
-            props.objMap.set("modelScale", {x, y, z});
+            props.objMap.set(ModelKeys.modelScale, {x, y, z});
         }, throttleTime, { leading: true, trailing: true });
 
         // Register texture sync
@@ -86,9 +88,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
      */
     useEffect(() => {
         if (!unityInstance || !texturesMap) return;
-        const modelURL = props.objMap.get('modelURL');
-        const rotation = props.objMap.get("modelRotation");
-        const scale = props.objMap.get("modelScale").x;
+        const modelURL = props.objMap.get(ModelKeys.modelURL);
+        const rotation = props.objMap.get(ModelKeys.modelRotation);
+        const scale = props.objMap.get(ModelKeys.modelScale).x;
         console.log('loading model', modelURL, rotation, scale)
         unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
             url: modelURL,
@@ -107,8 +109,8 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     useEffect(() => {
         if (!unityInstance || !modelLoaded) return;
         const timeoutID = setTimeout(() => {
-            const rotation = props.objMap.get("modelRotation");
-            const scale = props.objMap.get("modelScale");
+            const rotation = props.objMap.get(ModelKeys.modelRotation);
+            const scale = props.objMap.get(ModelKeys.modelScale);
             unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(rotation));
             unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(scale));
         }, 2000);
@@ -123,9 +125,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         if (!unityInstance || !texturesMap || !modelLoaded) return;
         const handleChange = (changed: IValueChanged, local: boolean) => {           
             if (local) return;
-            if (changed.key === "modelRotation")
+            if (changed.key === ModelKeys.modelRotation)
                 unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
-            if (changed.key === "modelScale")
+            if (changed.key === ModelKeys.modelScale)
                 unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(props.objMap.get(changed.key)));
         }
         props.objMap.on("valueChanged", handleChange);

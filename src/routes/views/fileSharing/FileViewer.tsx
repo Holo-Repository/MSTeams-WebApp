@@ -2,7 +2,7 @@ import { Image, Text } from "@fluentui/react-components";
 import { SharedMap } from "fluid-framework";
 import { useMemo } from "react";
 
-import { AcceptedFileTypes } from "./AcceptedFileTypes";
+import { AcceptedFileTypes, FileKeys } from "./IFile";
 import { FloaterScreenSize } from "../utils/FloaterUtils";
 import PDF from "./fileHandlers/PDF";
 
@@ -13,8 +13,8 @@ import PDF from "./fileHandlers/PDF";
  */
 function FileViewer(props: { objMap: SharedMap, screenSize: FloaterScreenSize }) {
     const { type, url } = useMemo(() => { return {
-        type: props.objMap.get('fileType') as AcceptedFileTypes,
-        url: props.objMap.get('url') as string,
+        type: props.objMap.get(FileKeys.fileType) as AcceptedFileTypes,
+        url: props.objMap.get(FileKeys.url) as string,
     }}, [props.objMap]);
     
     switch (type) {

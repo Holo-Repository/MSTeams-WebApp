@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import { Button, Input, Field } from '@fluentui/react-components';
 import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
 
+import { AcceptedFileTypes } from "./IFile";
 import "../../../styles/DropZone.css";
-import { AcceptedFileTypes } from "./AcceptedFileTypes";
 
 
 /**

@@ -8,14 +8,14 @@ import {
 } from '@fluentui/react-components';
 import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
 
-import IFloaterObject from '../floaters/IFloaterObject';
+import IFloaterObject from '../floaters/IFloater';
 import useFloaterLoader from '../floaters/FloaterLoader';
 
 import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
-import styles from "../../../styles/ViewerLoader.module.css";
+import styles from "../../../styles/ModelLoader.module.css";
 
 
-function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
+function ModelLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [modelURL, setModelURL] = useState("");
 
@@ -56,7 +56,7 @@ See the code in ModelViewer.tsx for more details on the workaround used.
         // If no model is loaded, load the model with the key "model"
         if (canLoad) {
             await loadFloater(model, "model"); // Key is fixed so that we can check if a model is loaded
-            props.setParentState("Select")
+            props.setParentState("Select"); // Deselect the model loader tool
         }
     }
 
@@ -82,4 +82,4 @@ See the code in ModelViewer.tsx for more details on the workaround used.
     </div>;
 }
 
-export default ViewerLoader;
+export default ModelLoader;

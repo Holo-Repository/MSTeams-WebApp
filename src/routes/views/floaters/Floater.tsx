@@ -20,8 +20,10 @@ import {
 } from '../utils/FloaterUtils';
 import FileViewer from "../fileSharing/FileViewer";
 import globalTime from "../utils/GlobalTime";
-import { AcceptedFloaterType } from "./AcceptedFloaterType";
+import { AcceptedFloaterType } from "./IFloater";
 import NotesViewer from "../notes/NotesViewer";
+import { FloaterKeys } from "./IFloater";
+
 
 const theme = getTheme();
 const throttleTime = 100;
@@ -33,7 +35,7 @@ const throttleTime = 100;
  */
 const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => {
     if (!dataMap) return;
-    dataMap.set('pos', pos);
+    dataMap.set(FloaterKeys.pos, pos);
 }, throttleTime, { leading: true, trailing: true });
 /**
  * Update the remote size state.
@@ -43,7 +45,7 @@ const setDMPos = throttle((dataMap, pos: FloaterAppCoords) => {
  */
 const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
     if (!dataMap) return;
-    dataMap.set('size', size);
+    dataMap.set(FloaterKeys.size, size);
 }, throttleTime, { leading: true, trailing: true });
 /**
  * Update the remote editTime state.
@@ -54,7 +56,7 @@ const setDMSize = throttle((dataMap, size: FloaterAppSize) => {
 const setDMEditTime = throttle(async (dataMap, reverse: boolean = false) => {
     if (!dataMap) return;
     let lastEditTime = (await globalTime()).ntpTimeInUTC;
-    dataMap.set('lastEditTime', lastEditTime * (reverse ? -1 : 1));
+    dataMap.set(FloaterKeys.lastEditTime, lastEditTime * (reverse ? -1 : 1));
 }, throttleTime, { leading: true, trailing: true });
 
 
@@ -92,13 +94,15 @@ function Floater(props: FloaterProps) {
     useEffect(() => {
         const handleChange = (changed: IValueChanged, local: boolean) => {
             if (local) return;
-            if (changed.key === 'pos') setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get('pos')!));
-            if (changed.key === 'size') setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get('pos')!, props.objMap.get('size')!));
+            if (changed.key === FloaterKeys.pos) 
+                setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get(FloaterKeys.pos)!));
+            if (changed.key === FloaterKeys.size) 
+                setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get(FloaterKeys.pos)!, props.objMap.get(FloaterKeys.size)!));
         };
         props.objMap.on("valueChanged", handleChange);
 
-        setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get('pos')!));
-        setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get('pos')!, props.objMap.get('size')!));
+        setScreenPos(appToScreenPos(props.inkingManager, props.objMap.get(FloaterKeys.pos)!));
+        setScreenSize(appToScreenSize(props.inkingManager, props.objMap.get(FloaterKeys.pos)!, props.objMap.get(FloaterKeys.size)!));
         setHasLoaded(true);
         return () => { props.objMap.off("valueChanged", handleChange) };
     }, [props.objMap, props.inkingManager]);
@@ -129,7 +133,7 @@ function Floater(props: FloaterProps) {
         const content = contentRef.current;
         // Attach resize observer
         const resizeObserver = new ResizeObserver((entries) => {
-            const rect = content.getBoundingClientRect() as DOMRect;
+            const rect = content.getBoundingClientRect();
             const newScreenSize = { width: rect.width, height: rect.height };
             throttledSetScreenSize(newScreenSize);
             setDMSize(props.objMap, screenToAppSize(props.inkingManager, screenPos!, newScreenSize));
@@ -149,7 +153,7 @@ function Floater(props: FloaterProps) {
     if (!screenPos || !screenSize) return <></>;
     
     let content;
-    const floaterType = props.objMap.get('type') as AcceptedFloaterType;
+    const floaterType = props.objMap.get(FloaterKeys.type) as AcceptedFloaterType;
     switch (floaterType) {
         case "model":
             content = <ModelViewer ref={ModelViewerRef} objMap={props.objMap} />
@@ -179,7 +183,7 @@ function Floater(props: FloaterProps) {
                 id={props.id}
                 ref={contentRef}
                 className={styles.content} 
-                style={{...contentStyle, boxShadow: theme.effects.elevation8, zIndex: props.objMap.get('lastEditTime')}}
+                style={{...contentStyle, boxShadow: theme.effects.elevation8, zIndex: props.objMap.get(FloaterKeys.lastEditTime)}}
                 onClick={() => {setDMEditTime(props.objMap)}}
             >{content}
             </div>
