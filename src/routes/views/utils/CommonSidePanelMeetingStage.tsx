@@ -5,11 +5,14 @@ import ContainerManager from '../../containers/ContainerManager';
 import AppContainer from '../../containers/AppContainer';
 import { IValueChanged, SharedMap } from 'fluid-framework';
 import { LiveEvent } from '@microsoft/live-share';
+import Fuse from './Fuse';
 
 
 export interface CommonSidePanelMeetingStageProps {
     containerManager: ContainerManager,
     children?: React.ReactNode,
+    containerFuse?: Fuse<string>,
+
 }
 
 /**
@@ -48,7 +51,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.newContainerEvent.on('received', this.reactNewContainerEvent);
         await this.newContainerEvent.initialize();
 
-        this.setState({ mounting: false });
+        this.setState({ mounting: false, activeContainerId: this.props.containerFuse?.value });
     }
 
     componentWillUnmount() {
@@ -92,19 +95,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         // Signal to other clients that a new container has been created
         this.newContainerEvent?.send('received');
     }
-
-    /**
-     * Triggers the opening of a container in the current view.
-     * Propagates the change to all other clients connected to the app Fluid container.
-     * 
-     * @param container The container to open.
-     * @throws Error if the container cannot be opened in the current view.
-     */
-    openContainer(containerId: string): void {
-        if (!this.appState) return console.error('appState is undefined');
-        this.appState.set('activeContainerId', containerId);
-    }
-
+    
     /**
      * Triggers the closing of the current container.
      * Propagates the change to all other clients connected to the app Fluid container.
@@ -112,11 +103,19 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
     async closeContainer() {
         // Save the last edit time
         this.openContainer(undefined as unknown as string);
-        
         // Redraw the component to update edit time
         this.contentRef.current?.componentDidMount();
     }
-
+    
+        /**
+         * Triggers the opening of a container in the current view.
+         * Propagates the change to all other clients connected to the app Fluid container.
+         * 
+         * @param container The container to open.
+         * @throws Error if the container cannot be opened in the current view.
+         */
+        abstract openContainer(containerId: string): void;
+    
     abstract render(): React.ReactNode;
 }
 

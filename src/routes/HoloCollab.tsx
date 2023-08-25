@@ -6,6 +6,7 @@ import SidePanel from "./views/sidePanel/SidePanel";
 import MeetingStage from "./views/meetingStage/MeetingStage";
 import ContainerManager from "./containers/ContainerManager";
 import commonStyles from "../styles/CommonSidePanelMeetingStage.module.css";
+import Fuse from "./views/utils/Fuse";
 
 /**
  * The HoloCollab component.
@@ -13,7 +14,7 @@ import commonStyles from "../styles/CommonSidePanelMeetingStage.module.css";
  * 
  * The view is determined by the context.page.frameContext value served by the Teams SDK.
  */
-class HoloCollab extends React.Component {
+class HoloCollab extends React.Component<{ containerFuse?: Fuse<string> }> {
     state = {
         // Expected values: "default", "content", "sidePanel", "meetingStage"
         // Represents the current view where the app is running.
@@ -39,14 +40,14 @@ class HoloCollab extends React.Component {
 
     render() {
         const { view } = this.state;
+        const { containerFuse } = this.props;
 
         if (!this.containerManager) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
-
-        return (
+        else return (
             <>
                 {view === 'content' && 'Content'}
-                {view === 'sidePanel' && <SidePanel containerManager={this.containerManager}/>}
-                {view === 'meetingStage' && <MeetingStage containerManager={this.containerManager}/>}
+                {view === 'sidePanel' && <SidePanel containerManager={this.containerManager} containerFuse={containerFuse} />}
+                {view === 'meetingStage' && <MeetingStage containerManager={this.containerManager} containerFuse={containerFuse} />}
             </>
         )
     }

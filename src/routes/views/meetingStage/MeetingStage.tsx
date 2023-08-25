@@ -2,6 +2,7 @@ import CommonSidePanelMeetingStage, { CommonSidePanelMeetingStageProps } from ".
 import ContainerList from '../containerList/ContainerList';
 import SharedCanvas from "../canvas/SharedCanvas";
 import { Spinner } from "@fluentui/react-components";
+import { meeting } from '@microsoft/teams-js';
 
 import '../../../styles/MeetingStage.css'; 
 import commonStyles from '../../../styles/CommonSidePanelMeetingStage.module.css';
@@ -13,6 +14,11 @@ export type MeetingStageProps = CommonSidePanelMeetingStageProps;
  * The meeting stage view.
  */
 class MeetingStage extends CommonSidePanelMeetingStage {
+    openContainer(containerId: string): void {
+        if (!this.appState) throw raiseGlobalError(new Error('App state not initialized'));
+        this.appState.set('activeContainerId', containerId);
+    }
+
     render() {
         if (this.state.mounting) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
 
@@ -21,9 +27,9 @@ class MeetingStage extends CommonSidePanelMeetingStage {
                 <div id="stage-container-list">
                     <ContainerList ref={this.contentRef}
                         containerManager={this.props.containerManager}
-                        canOpen={true} 
-                        canCreate={true} 
-                        openContainer={this.openContainer} 
+                        canOpen={true}
+                        canCreate={true}
+                        openContainer={this.openContainer}
                         createContainer={this.createContainer}
                     />
                 </div>
