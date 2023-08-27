@@ -166,6 +166,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         if (UNSAFE__unityInstance) {
             setUnityInstance(UNSAFE__unityInstance)
             setCanvasId(UNSAFE__unityInstance.Module.canvas.id)
+            UNSAFE__unityInstance.SendMessage('Canvas', 'FocusCanvas', '0');
         }
     }, [UNSAFE__unityInstance])
 
@@ -189,6 +190,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
                             console.log('Removing canvas', canvasId)
                             // We found the canvas, so we're done with the observer.
                             observer.disconnect()
+
+                            unityInstance.Module.canvas.removeEventListener('focus', enableInputs);
+                            unityInstance.Module.canvas.removeEventListener('blur', disableInputs);
 
                             // Next, hide the canvas and move it elsewhere. The document body will work.
                             canvas.style.display = 'none'
@@ -272,6 +276,25 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
 
 
+    const enableInputs = () => {
+        if (!unityInstance) return;
+        unityInstance.SendMessage('Canvas', 'FocusCanvas', '1');
+    }
+
+    const disableInputs = () => {
+        if (!unityInstance) return;
+        unityInstance.SendMessage('Canvas', 'FocusCanvas', '0');
+    }
+
+    useEffect(() => {
+        if (!unityInstance) return;
+        unityInstance.Module.canvas.addEventListener('focus', enableInputs);
+        unityInstance.Module.canvas.addEventListener('blur', disableInputs);
+        return () => {
+            unityInstance?.Module.canvas.removeEventListener('focus', enableInputs);
+            unityInstance?.Module.canvas.removeEventListener('blur', disableInputs);
+        }
+    }, [unityInstance]);
 
 
 
@@ -288,6 +311,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
                 devicePixelRatio={devicePixelRatio}
                 style={{ visibility: unityLoaded ? "visible" : "hidden" }}
                 className={styles.unity}
+                tabIndex={1}
             />
         </>
     );
