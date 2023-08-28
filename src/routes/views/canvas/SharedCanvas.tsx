@@ -3,6 +3,7 @@ import { InkingManager, LiveCanvas } from "@microsoft/live-share-canvas";
 import { IFluidContainer, SharedMap } from "fluid-framework";
 import { Button, FluentProvider, Spinner, Tooltip, teamsLightTheme } from "@fluentui/react-components";
 import { Dismiss24Filled } from "@fluentui/react-icons";
+import { throttle } from 'lodash';
 
 import MyToolBar from "./toolbar/MyToolBar";
 import Floater from "../floaters/Floater";
@@ -116,8 +117,9 @@ function SharedCanvas(props: SharedCanvasProps) {
     /**
      * Download the canvas as a PNG image.
      * This function is passed to the toolbar component and is called when the user clicks the download button.
+     * The function is throttled to prevent the user from spamming the download button with a delay of 2 seconds.
      */
-    const downloadPNG = async () => {
+    const downloadPNG = throttle(async () => {
         if (!inkingManager || !floatersList || !floaterContainerRef.current || !canvasRef.current) return raiseGlobalError(new Error('Canvas not ready'));
         try {
             let imgStr = await exportImageString(canvasRef.current, floaterContainerRef.current, inkingManager, floatersList);
@@ -126,7 +128,7 @@ function SharedCanvas(props: SharedCanvasProps) {
             a.download = 'canvas.png';
             a.click();
         } catch (error: any) { raiseGlobalError(error) };
-    }
+    }, 2000, { leading: true, trailing: false });
     
     /**
      * Close the canvas.
