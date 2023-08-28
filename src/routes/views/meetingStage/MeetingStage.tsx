@@ -2,7 +2,6 @@ import CommonSidePanelMeetingStage, { CommonSidePanelMeetingStageProps } from ".
 import ContainerList from '../containerList/ContainerList';
 import SharedCanvas from "../canvas/SharedCanvas";
 import { Spinner } from "@fluentui/react-components";
-import { meeting } from '@microsoft/teams-js';
 
 import '../../../styles/MeetingStage.css'; 
 import commonStyles from '../../../styles/CommonSidePanelMeetingStage.module.css';
@@ -31,6 +30,7 @@ class MeetingStage extends CommonSidePanelMeetingStage {
                         canCreate={true}
                         openContainer={this.openContainer}
                         createContainer={this.createContainer}
+                        deleteContainer={this.deleteContainer}
                     />
                 </div>
             );

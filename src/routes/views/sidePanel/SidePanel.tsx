@@ -34,6 +34,7 @@ class SidePanel extends CommonSidePanelMeetingStage {
             openContainer={this.openContainer} 
             closeContainer={this.closeContainer}
             createContainer={this.createContainer}
+            deleteContainer={this.deleteContainer}
         />;
 }
 }

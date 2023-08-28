@@ -38,6 +38,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.reactNewContainerEvent = this.reactNewContainerEvent.bind(this);
         this.createContainer = this.createContainer.bind(this);
         this.closeContainer = this.closeContainer.bind(this);
+        this.deleteContainer = this.deleteContainer.bind(this);
     }
 
     async componentDidMount() {
@@ -95,6 +96,19 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         // Signal to other clients that a new container has been created
         this.newContainerEvent?.send('received');
     }
+
+    /**
+     * Triggers the deletion of a container.
+     * Propagates the change to all other clients connected to the app Fluid container.
+     * 
+     * @param containerId The id of the container to delete.
+     * @throws Error if the container cannot be deleted.
+     */
+    async deleteContainer(containerId: string): Promise<void> {
+        await this.props.containerManager.deleteContainer(containerId);
+        // Signal to other clients that a container has been deleted
+        this.newContainerEvent?.send('received');
+    }
     
     /**
      * Triggers the closing of the current container.
@@ -107,14 +121,14 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.contentRef.current?.componentDidMount();
     }
     
-        /**
-         * Triggers the opening of a container in the current view.
-         * Propagates the change to all other clients connected to the app Fluid container.
-         * 
-         * @param container The container to open.
-         * @throws Error if the container cannot be opened in the current view.
-         */
-        abstract openContainer(containerId: string): void;
+    /**
+     * Triggers the opening of a container in the current view.
+     * Propagates the change to all other clients connected to the app Fluid container.
+     * 
+     * @param container The container to open.
+     * @throws Error if the container cannot be opened in the current view.
+     */
+    abstract openContainer(containerId: string): void;
     
     abstract render(): React.ReactNode;
 }

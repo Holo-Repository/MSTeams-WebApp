@@ -16,6 +16,7 @@ export interface ContainerListProps {
     openContainer: (containerId: string) => void;
     closeContainer: (containerId: string) => void;
     createContainer: (name: string, desc: string) => Promise<void>;
+    deleteContainer: (containerId: string) => void;
 }
 
 /**
@@ -74,7 +75,11 @@ class ContainerList extends React.Component<ContainerListProps> {
                     <div className="flex-container-list">
                         {this.state.containers.map((container) => (
                             <div className="flex-item" key={container.id}>
-                                <ContainerPreview container={container} open={this.props.openContainer} canOpen={this.props.canOpen}/>
+                                <ContainerPreview 
+                                    container={container} 
+                                    open={this.props.canOpen ? this.props.openContainer : undefined}  
+                                    delete={this.props.deleteContainer}
+                                />
                             </div>
                         ))}
                         {this.props.canCreate && <div className="flex-item">
@@ -85,8 +90,7 @@ class ContainerList extends React.Component<ContainerListProps> {
 
                 {this.state.mounted  && this.props.activeContainerId && 
                     <div className="flex-container-list">
-                        <ContainerPreview container={this.getActiveContainer()} close={this.props.closeContainer} canClose={true}
-                        ></ContainerPreview>
+                        <ContainerPreview container={this.getActiveContainer()} close={this.props.closeContainer}/>
                     </div>
                 }
 

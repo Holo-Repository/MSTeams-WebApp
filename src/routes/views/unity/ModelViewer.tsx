@@ -1,4 +1,4 @@
-import { useEffect, forwardRef, useImperativeHandle, useState, useRef } from "react";
+import { useEffect, forwardRef, useImperativeHandle, useState, useRef, useCallback } from "react";
 import { Field, ProgressBar } from "@fluentui/react-components";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
@@ -156,6 +156,27 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     }, [props.objMap, texturesMap, unityInstance, modelLoaded]);
 
 
+    const enableInputs = useCallback(() => {
+        if (!unityInstance) return;
+        unityInstance.SendMessage('Canvas', 'FocusCanvas', '1');
+    }, [unityInstance])
+
+    const disableInputs = useCallback(() => {
+        if (!unityInstance) return;
+        unityInstance.SendMessage('Canvas', 'FocusCanvas', '0');
+    }, [unityInstance])
+
+    useEffect(() => {
+        if (!unityInstance) return;
+        unityInstance.Module.canvas.addEventListener('focus', enableInputs);
+        unityInstance.Module.canvas.addEventListener('blur', disableInputs);
+        return () => {
+            unityInstance?.Module.canvas.removeEventListener('focus', enableInputs);
+            unityInstance?.Module.canvas.removeEventListener('blur', disableInputs);
+        }
+    }, [unityInstance, enableInputs, disableInputs]);
+
+
 
 
 
@@ -214,7 +235,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
             // Set the observer ref to the observer so it's cleaned up if the effect runs again.
             return () => {observerRef.current = observer}
         } catch (e: any) { raiseGlobalError(e) }
-    }, [unityInstance, canvasId, unload])
+    }, [unityInstance, canvasId, unload, enableInputs, disableInputs])
 
 
     useEffect(() => {
@@ -273,28 +294,6 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
     useImperativeHandle(ref, () => ({
         handleClickTakeScreenshot,
     }))
-
-
-
-    const enableInputs = () => {
-        if (!unityInstance) return;
-        unityInstance.SendMessage('Canvas', 'FocusCanvas', '1');
-    }
-
-    const disableInputs = () => {
-        if (!unityInstance) return;
-        unityInstance.SendMessage('Canvas', 'FocusCanvas', '0');
-    }
-
-    useEffect(() => {
-        if (!unityInstance) return;
-        unityInstance.Module.canvas.addEventListener('focus', enableInputs);
-        unityInstance.Module.canvas.addEventListener('blur', disableInputs);
-        return () => {
-            unityInstance?.Module.canvas.removeEventListener('focus', enableInputs);
-            unityInstance?.Module.canvas.removeEventListener('blur', disableInputs);
-        }
-    }, [unityInstance]);
 
 
 

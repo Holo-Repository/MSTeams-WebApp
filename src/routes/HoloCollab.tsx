@@ -20,9 +20,9 @@ class HoloCollab extends React.Component<{ containerFuse?: Fuse<string> }> {
         // Represents the current view where the app is running.
         // Don't forget that multiple views can be running at the same time.
         view: "default",
+        containerManager: undefined as ContainerManager | undefined,
     };
 
-    containerManager = undefined as ContainerManager | undefined;
 
     async componentDidMount() {
         try {
@@ -32,22 +32,22 @@ class HoloCollab extends React.Component<{ containerFuse?: Fuse<string> }> {
             // Connect to the container manager
             const locationID = (context.channel ?? context.chat)?.id;
             const user = { userId: context.user?.id, userName: context.user?.userPrincipalName };
-            this.containerManager = new ContainerManager(locationID, user);
+            const containerManager = new ContainerManager(locationID, user);
 
-            this.setState({ view });
+            this.setState({ view, containerManager });
         } catch (error: any) { raiseGlobalError(error) };
     }
 
     render() {
-        const { view } = this.state;
+        const { view, containerManager } = this.state;
         const { containerFuse } = this.props;
 
-        if (!this.containerManager) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
+        if (!containerManager) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
         else return (
             <>
                 {view === 'content' && 'Content'}
-                {view === 'sidePanel' && <SidePanel containerManager={this.containerManager} containerFuse={containerFuse} />}
-                {view === 'meetingStage' && <MeetingStage containerManager={this.containerManager} containerFuse={containerFuse} />}
+                {view === 'sidePanel' && <SidePanel containerManager={containerManager} containerFuse={containerFuse} />}
+                {view === 'meetingStage' && <MeetingStage containerManager={containerManager} containerFuse={containerFuse} />}
             </>
         )
     }

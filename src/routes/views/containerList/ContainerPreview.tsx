@@ -1,11 +1,11 @@
 import React from "react";
 import { Add24Filled } from '@fluentui/react-icons';
+import { Button, FluentProvider, teamsLightTheme } from "@fluentui/react-components";
+import { CheckmarkCircle24Filled, DismissCircle24Filled, Delete24Filled } from "@fluentui/react-icons";
+import { TextField, ITextFieldStyles, getInputFocusStyle } from "@fluentui/react";
 
 import ContainerMap from "../../containers/ContainerMap";
 import './ContainerList.css'
-import { Button } from "@fluentui/react-components";
-import { CheckmarkCircle24Filled, DismissCircle24Filled } from "@fluentui/react-icons";
-import {TextField, ITextFieldStyles, getInputFocusStyle} from "@fluentui/react";
 
 
 const textFieldStyles: Partial<ITextFieldStyles> = {
@@ -32,11 +32,10 @@ const textFieldStyles: Partial<ITextFieldStyles> = {
 
 export interface ContainerPreviewProps {
     container: ContainerMap | undefined;
-    canOpen: boolean;
-    canClose: boolean;
-    open: (containerId: string) => void;
-    close: (containerId: string) => void;
-    create: (name: string, desc: string) => void;
+    open?: (containerId: string) => void;
+    close?: (containerId: string) => void;
+    create?: (name: string, desc: string) => void;
+    delete?: (containerId: string) => void;
 }
 
 /**
@@ -45,11 +44,6 @@ export interface ContainerPreviewProps {
 class ContainerPreview extends React.Component<ContainerPreviewProps> {
     static defaultProps = {
         container: undefined,
-        create: undefined,
-        open: () => {},
-        close: () => {},
-        canOpen: false,
-        canClose: false,
     };
 
     state = {
@@ -58,6 +52,8 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
         newDesc: '',
         isNameValid: true,
     };
+
+    deleteRef = React.createRef<HTMLButtonElement>();
     
     /**
      * Updates the 'newName' state when the name input field changes, and validates the new name.
@@ -91,13 +87,13 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
     }
 
     handleButtonClick = () => {
-        this.props.create(this.state.newName, this.state.newDesc);
+        this.props.create && this.props.create(this.state.newName, this.state.newDesc);
         // Reset the state to default values after create is called
         this.setState({ formDisplayed:false, newName: 'New Collaborative Case', newDesc: ''});
     }
 
     render() {
-        const { container, create, open, close, canOpen, canClose } = this.props;
+        const { container, create, open, close } = this.props;
 
         if (create === undefined && container === undefined)
             throw raiseGlobalError(new Error("ContainerPreview: Either container or create must be defined."));
@@ -105,14 +101,27 @@ class ContainerPreview extends React.Component<ContainerPreviewProps> {
         return (
             <div>
                 {container &&
-                    <div className="container">
+                    <div className="container" 
+                        onMouseOver={() => {if (this.deleteRef.current) this.deleteRef.current.style.display = 'block'}}
+                        onMouseOut={() => {if (this.deleteRef.current) this.deleteRef.current.style.display = 'none'}}
+                    >
                         <img src={container.previewImage} alt='preview' />
                         <div className="display-area">
                             <h4>{container.name}</h4>
                             <p>{new Date(container.time).toLocaleString(undefined, {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>
-                            {canOpen && <Button id="open" onClick={() => open(container.id)}>Work Together</Button>}
-                            {canClose && <Button id="close" onClick={() => close(container.id)}>Close</Button>}
+                            {open && <Button id="open" onClick={() => open(container.id)}>Work Together</Button>}
+                            {close && <Button id="close" onClick={() => close(container.id)}>Close</Button>}
                         </div>
+                        <FluentProvider theme={teamsLightTheme}>
+                            {this.props.delete && <Button 
+                                className="containerListDeleteContainerButton" 
+                                onClick={() => { this.props.delete!(container.id) }}
+                                appearance="subtle"
+                                ref={this.deleteRef}
+                                icon={<Delete24Filled/>}
+                                style={{display: 'none'}}
+                            />}
+                        </FluentProvider>
                     </div>
                 }
 
