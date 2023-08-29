@@ -135,6 +135,7 @@ function SharedCanvas(props: SharedCanvasProps) {
      * Before closing render a PNG of the canvas, scale it down to a thumbnail and upload it to the container.
      */
     const closeCanvas = async () => {
+        if (!container) return props.closeCanvas();
         if (!inkingManager || !floatersList || !floaterContainerRef.current || !canvasRef.current) return raiseGlobalError(new Error('Canvas not ready'));
         if (isClosing) return;
         setIsClosing(true);

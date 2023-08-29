@@ -116,7 +116,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
      */
     async closeContainer() {
         // Save the last edit time
-        this.openContainer(undefined as unknown as string);
+        this.openContainer(undefined as unknown as string, false);
         // Redraw the component to update edit time
         this.contentRef.current?.componentDidMount();
     }
@@ -126,9 +126,10 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
      * Propagates the change to all other clients connected to the app Fluid container.
      * 
      * @param container The container to open.
+     * @param shareToMeetingStage Whether to share the container to the meeting stage.
      * @throws Error if the container cannot be opened in the current view.
      */
-    abstract openContainer(containerId: string): void;
+    abstract openContainer(containerId: string, shareToMeetingStage: boolean): void;
     
     abstract render(): React.ReactNode;
 }

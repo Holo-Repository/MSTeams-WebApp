@@ -13,7 +13,7 @@ export type MeetingStageProps = CommonSidePanelMeetingStageProps;
  * The meeting stage view.
  */
 class MeetingStage extends CommonSidePanelMeetingStage {
-    openContainer(containerId: string): void {
+    openContainer(containerId: string, shareToMeetingStage: boolean = true): void {
         if (!this.appState) throw raiseGlobalError(new Error('App state not initialized'));
         this.appState.set('activeContainerId', containerId);
     }

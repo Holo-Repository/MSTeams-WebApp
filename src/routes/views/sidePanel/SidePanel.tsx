@@ -13,11 +13,12 @@ export type SidePanelProps = CommonSidePanelMeetingStageProps;
  * The side panel view.
  */
 class SidePanel extends CommonSidePanelMeetingStage {
-    openContainer(containerId: string): void {
+    openContainer(containerId: string, shareToMeetingStage: boolean = true): void {
         if (!this.appState) throw raiseGlobalError(new Error('App state not initialized'));
 
         const containerLink = `${window.location.origin}?containerID=${containerId}`;
-        meeting.shareAppContentToStage((error, result) => {
+        if (!shareToMeetingStage) this.appState!.set('activeContainerId', containerId);
+        else meeting.shareAppContentToStage((error, result) => {
             if (error) raiseGlobalError(new Error(`Error opening container ${containerId}: ${error}`));
             if (result) this.appState!.set('activeContainerId', containerId);
         }, containerLink);
