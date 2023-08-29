@@ -63,6 +63,7 @@ export default function App() {
     const restoreFocusTargetAttribute = useRestoreFocusTarget();
 
     globalThis.raiseGlobalError = (error: Error) => {
+        console.error(error);
         globalError.current = error;
         setOpen(true);
         return error;
