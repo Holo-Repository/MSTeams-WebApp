@@ -92,8 +92,8 @@ function PDF(props: { url: string, screenSize: FloaterScreenSize, objMap: Shared
                 width={props.screenSize.width} 
                 height={props.screenSize.height} 
                 onLoadError={raiseGlobalError}
-                onRenderError={raiseGlobalError}
-                onRenderTextLayerError={raiseGlobalError}
+                // onRenderError={raiseGlobalError}
+                // onRenderTextLayerError={raiseGlobalError}
                 onGetAnnotationsError={raiseGlobalError}
                 onGetStructTreeError={raiseGlobalError}
                 onGetTextError={raiseGlobalError}
