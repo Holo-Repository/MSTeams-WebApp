@@ -15,6 +15,9 @@ export interface FloaterInteractionProps {
     export?: () => void;
 }
 
+/**
+ * Display a toolbar for interacting with a floater.
+ */
 function FloaterInteraction(props: FloaterInteractionProps) {
     return (
         <Toolbar size="small" >

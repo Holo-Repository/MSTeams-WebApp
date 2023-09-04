@@ -188,6 +188,16 @@ class ContainerManager {
     }
 
     /**
+     *  Delete a Fluid container
+     * @param containerId The ID of the container to delete
+     */
+    async deleteContainer(containerId: string) {
+        try {
+            this.tableClient.deleteEntity(this.locationId, containerId);
+        } catch (err: any) { throw raiseGlobalError(err) }
+    }
+
+    /**
      * Get a Fluid container
      * Sets the AzureAudience into the AzureLiveShareHost returned
      * 

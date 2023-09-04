@@ -103,3 +103,9 @@
     width: 20px;
     height: 20px;
 }
+
+.containerListDeleteContainerButton {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}

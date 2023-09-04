@@ -25,4 +25,5 @@
 #close-button button {
     background-color: transparent;
     border: none;
+    pointer-events: all !important;
 }

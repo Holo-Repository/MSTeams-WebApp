@@ -5,11 +5,14 @@ import ContainerManager from '../../containers/ContainerManager';
 import AppContainer from '../../containers/AppContainer';
 import { IValueChanged, SharedMap } from 'fluid-framework';
 import { LiveEvent } from '@microsoft/live-share';
+import Fuse from './Fuse';
 
 
 export interface CommonSidePanelMeetingStageProps {
     containerManager: ContainerManager,
     children?: React.ReactNode,
+    containerFuse?: Fuse<string>,
+
 }
 
 /**
@@ -35,6 +38,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.reactNewContainerEvent = this.reactNewContainerEvent.bind(this);
         this.createContainer = this.createContainer.bind(this);
         this.closeContainer = this.closeContainer.bind(this);
+        this.deleteContainer = this.deleteContainer.bind(this);
     }
 
     async componentDidMount() {
@@ -48,7 +52,7 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
         this.newContainerEvent.on('received', this.reactNewContainerEvent);
         await this.newContainerEvent.initialize();
 
-        this.setState({ mounting: false });
+        this.setState({ mounting: false, activeContainerId: this.props.containerFuse?.value });
     }
 
     componentWillUnmount() {
@@ -94,25 +98,39 @@ abstract class CommonSidePanelMeetingStage extends React.Component<CommonSidePan
     }
 
     /**
+     * Triggers the deletion of a container.
+     * Propagates the change to all other clients connected to the app Fluid container.
+     * 
+     * @param containerId The id of the container to delete.
+     * @throws Error if the container cannot be deleted.
+     */
+    async deleteContainer(containerId: string): Promise<void> {
+        await this.props.containerManager.deleteContainer(containerId);
+        // Signal to other clients that a container has been deleted
+        this.newContainerEvent?.send('received');
+    }
+    
+    /**
+     * Triggers the closing of the current container.
+     * Propagates the change to all other clients connected to the app Fluid container.
+     */
+    async closeContainer() {
+        // Save the last edit time
+        this.openContainer(undefined as unknown as string, false);
+        // Redraw the component to update edit time
+        this.contentRef.current?.componentDidMount();
+    }
+    
+    /**
      * Triggers the opening of a container in the current view.
      * Propagates the change to all other clients connected to the app Fluid container.
      * 
      * @param container The container to open.
+     * @param shareToMeetingStage Whether to share the container to the meeting stage.
      * @throws Error if the container cannot be opened in the current view.
      */
-    openContainer(containerId: string): void {
-        if (!this.appState) return console.error('appState is undefined');
-        this.appState.set('activeContainerId', containerId);
-    }
-
-    async closeContainer() {
-        // Save the last edit time
-        this.openContainer(undefined as unknown as string);
-        
-        // Redraw the component to update edit time
-        this.contentRef.current?.componentDidMount();
-    }
-
+    abstract openContainer(containerId: string, shareToMeetingStage: boolean): void;
+    
     abstract render(): React.ReactNode;
 }
 

@@ -30,6 +30,7 @@ import config from "./config";
 import HoloCollab from "./routes/HoloCollab";
 import AppConfig from "./AppConfig";
 import { TeamsFxContext } from "./Context";
+import Fuse from "./routes/views/utils/Fuse";
 
 function getTheme(themeString: string) {
     switch (themeString) {
@@ -52,11 +53,17 @@ export default function App() {
         clientId: config.clientId!,
     });
 
+    const queryParams = new URLSearchParams(window.location.search);
+    const containerID = queryParams.get("containerID");
+    const containerFuse = useMemo(() => { return containerID ? new Fuse(containerID) : undefined }, [containerID]);
+
+
     const globalError = useRef<Error | undefined>(undefined);
     const [open, setOpen] = useState(false);
     const restoreFocusTargetAttribute = useRestoreFocusTarget();
 
     globalThis.raiseGlobalError = (error: Error) => {
+        console.error(error);
         globalError.current = error;
         setOpen(true);
         return error;
@@ -83,7 +90,7 @@ export default function App() {
                         <Routes {...restoreFocusTargetAttribute}>
                             {/* <Route path="/privacy" element={<Privacy/>} />
                             <Route path="/termsofuse" element={<TermsOfUse/>} /> */}
-                            <Route path="/holocollab" element={<HoloCollab/>}/>
+                            <Route path="/holocollab" element={<HoloCollab containerFuse={containerFuse} />}/>
                             <Route path="/config" element={<AppConfig/>}/>
                             <Route path="*" element={<Navigate to={"/holocollab"}/>}></Route>
                         </Routes>

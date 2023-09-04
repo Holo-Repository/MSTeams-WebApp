@@ -1,16 +1,18 @@
-import { useEffect, forwardRef, useImperativeHandle, useState, useRef } from "react";
+import { useEffect, forwardRef, useImperativeHandle, useState, useRef, useCallback } from "react";
 import { Field, ProgressBar } from "@fluentui/react-components";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { UnityInstance } from "react-unity-webgl/declarations/unity-instance";
 import { IValueChanged, SharedMap } from "fluid-framework";
 import { throttle } from 'lodash';
 
+import { ModelKeys } from "./IModel";
 import styles from "../../../styles/ModelViewer.module.css";
+
 
 const buildURL = "https://unityviewerbuild.blob.core.windows.net/model-viewer-build/WebGL/WebGL/Build";
 const unityModelTarget = "Target Manager";
-
 const throttleTime = 100;
+
 
 const ModelViewer = forwardRef((props: { objMap: SharedMap }, ref) => {
 /* ========================================================================================
@@ -35,23 +37,29 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         webglContextAttributes: { preserveDrawingBuffer: true },
     });
 
-
+    /**
+     * Load the SharedMap containing the textures.
+     * It is a mapping from volume name to base64 encoded texture.
+     * This could probably be improved by storing the strokes instead of the image.
+     */
     useEffect(() => {
-        props.objMap.get('modelTexturesHandle').get().then(setTexturesMap);
+        props.objMap.get(ModelKeys.modelTexturesHandle).get().then(setTexturesMap);
     }, [props.objMap]);
 
 
-    // Register functions that unity can call
+    /**
+     * Register functions that unity can call
+     */
     useEffect(() => {
         if (!texturesMap) return;
         // Register rotation sync
         (window as any).syncCurrentRotation = throttle((x: number, y: number, z: number) => {
-            props.objMap.set("modelRotation", {x, y, z})
+            props.objMap.set(ModelKeys.modelRotation, {x, y, z})
         }, throttleTime, { leading: true, trailing: true });
 
         // Register scale sync
         (window as any).syncCurrentScale = throttle((x: number, y: number, z: number) => {
-            props.objMap.set("modelScale", {x, y, z});
+            props.objMap.set(ModelKeys.modelScale, {x, y, z});
         }, throttleTime, { leading: true, trailing: true });
 
         // Register texture sync
@@ -75,40 +83,51 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
 
 
-    // Load actual model
+    /**
+     * Signal Unity to download the 3D model from the direct URL.
+     */
     useEffect(() => {
         if (!unityInstance || !texturesMap) return;
-        const modelURL = props.objMap.get('modelURL');
-        const rotation = props.objMap.get("modelRotation");
-        const scale = props.objMap.get("modelScale").x;
+        const modelURL = props.objMap.get(ModelKeys.modelURL);
+        const rotation = props.objMap.get(ModelKeys.modelRotation);
+        const scale = props.objMap.get(ModelKeys.modelScale).x;
         console.log('loading model', modelURL, rotation, scale)
         unityInstance.SendMessage(unityModelTarget, "Download3DModel", JSON.stringify({
             url: modelURL,
             rotation,
             scale
         }));
-    }, [unityInstance, props.objMap]);
+    }, [unityInstance, props.objMap, texturesMap]);
 
 
+    /**
+     * Once the model has loaded update the rotation and scale.
+     * There is a 2 sec delay to allow the loaded model to be mounted properly.
+     * During testing we could not find a reliable way to detect when the model has been mounted in the Unity scene
+     * and 2 seconds of delay seemed to be a good compromise that works.
+     */
     useEffect(() => {
         if (!unityInstance || !modelLoaded) return;
-        setTimeout(() => {
-            const rotation = props.objMap.get("modelRotation");
-            const scale = props.objMap.get("modelScale");
+        const timeoutID = setTimeout(() => {
+            const rotation = props.objMap.get(ModelKeys.modelRotation);
+            const scale = props.objMap.get(ModelKeys.modelScale);
             unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(rotation));
             unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(scale));
         }, 2000);
+        return () => { clearTimeout(timeoutID) };
     }, [unityInstance, props.objMap, modelLoaded]);
 
 
-    // Register Fluid event handlers
+    /**
+     * Register Fluid event handlers to sync model rotation, scale, etc...
+     */
     useEffect(() => {
         if (!unityInstance || !texturesMap || !modelLoaded) return;
         const handleChange = (changed: IValueChanged, local: boolean) => {           
             if (local) return;
-            if (changed.key === "modelRotation")
+            if (changed.key === ModelKeys.modelRotation)
                 unityInstance.SendMessage(unityModelTarget, "SetRotationJS", JSON.stringify(props.objMap.get(changed.key)));
-            if (changed.key === "modelScale")
+            if (changed.key === ModelKeys.modelScale)
                 unityInstance.SendMessage(unityModelTarget, "SetScaleJS", JSON.stringify(props.objMap.get(changed.key)));
         }
         props.objMap.on("valueChanged", handleChange);
@@ -119,8 +138,11 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         texturesMap.on("valueChanged", handleTextureChange);
 
         
-        // Set initial texture values
-        setTimeout(() => {
+        /**
+         * Set initial texture values
+         * There is a 2 sec delay to allow the loaded model to be mounted properly.
+         */
+        const timeoutID = setTimeout(() => {
             for (const [key, value] of texturesMap.entries()) {
                 unityInstance.SendMessage(key, "SetTextureJS", JSON.stringify({texture: value}));
             }
@@ -129,8 +151,30 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         return () => {
             props.objMap.off("valueChanged", handleChange);
             texturesMap.off("valueChanged", handleTextureChange);
+            clearTimeout(timeoutID);
         }
     }, [props.objMap, texturesMap, unityInstance, modelLoaded]);
+
+
+    const enableInputs = useCallback(() => {
+        if (!unityInstance) return;
+        unityInstance.SendMessage('Canvas', 'FocusCanvas', '1');
+    }, [unityInstance])
+
+    const disableInputs = useCallback(() => {
+        if (!unityInstance) return;
+        unityInstance.SendMessage('Canvas', 'FocusCanvas', '0');
+    }, [unityInstance])
+
+    useEffect(() => {
+        if (!unityInstance) return;
+        unityInstance.Module.canvas.addEventListener('focus', enableInputs);
+        unityInstance.Module.canvas.addEventListener('blur', disableInputs);
+        return () => {
+            unityInstance?.Module.canvas.removeEventListener('focus', enableInputs);
+            unityInstance?.Module.canvas.removeEventListener('blur', disableInputs);
+        }
+    }, [unityInstance, enableInputs, disableInputs]);
 
 
 
@@ -143,6 +187,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         if (UNSAFE__unityInstance) {
             setUnityInstance(UNSAFE__unityInstance)
             setCanvasId(UNSAFE__unityInstance.Module.canvas.id)
+            UNSAFE__unityInstance.SendMessage('Canvas', 'FocusCanvas', '0');
         }
     }, [UNSAFE__unityInstance])
 
@@ -167,6 +212,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
                             // We found the canvas, so we're done with the observer.
                             observer.disconnect()
 
+                            unityInstance.Module.canvas.removeEventListener('focus', enableInputs);
+                            unityInstance.Module.canvas.removeEventListener('blur', disableInputs);
+
                             // Next, hide the canvas and move it elsewhere. The document body will work.
                             canvas.style.display = 'none'
                             document.body.appendChild(canvas)
@@ -187,7 +235,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
             // Set the observer ref to the observer so it's cleaned up if the effect runs again.
             return () => {observerRef.current = observer}
         } catch (e: any) { raiseGlobalError(e) }
-    }, [unityInstance, canvasId, unload])
+    }, [unityInstance, canvasId, unload, enableInputs, disableInputs])
 
 
     useEffect(() => {
@@ -213,6 +261,12 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
 
 
+
+    /**
+     * Download a screenshot of the Unity scene.
+     * @param base64Data - The base64 encoded image data.
+     * @param filename - The name of the file that will be downloaded.
+     */
     function downloadBase64Image(base64Data: string, filename: string) {
         const link = document.createElement("a");
         link.href = base64Data;
@@ -222,6 +276,9 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
         document.body.removeChild(link);
     }
     
+    /**
+     * Take a screenshot of the Unity scene and download it.
+     */
     function handleClickTakeScreenshot() {
         unityInstance.SendMessage(unityModelTarget, "ToggleUI");
 
@@ -241,9 +298,6 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
 
 
 
-
-
-
     return (
         <>
             {!unityLoaded && <div className={styles.progressContainer}>
@@ -256,6 +310,7 @@ The code comes from https://github.com/jeffreylanters/react-unity-webgl/issues/2
                 devicePixelRatio={devicePixelRatio}
                 style={{ visibility: unityLoaded ? "visible" : "hidden" }}
                 className={styles.unity}
+                tabIndex={1}
             />
         </>
     );

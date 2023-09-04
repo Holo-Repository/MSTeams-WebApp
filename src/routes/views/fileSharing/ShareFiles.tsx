@@ -2,13 +2,14 @@ import { useRef, useState } from "react";
 import { Button, Input, Field } from '@fluentui/react-components';
 import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
 
-import "../../../styles/DropZone.css";
-import { AcceptedFileTypes } from "./AcceptedFileTypes";
+import "../../../styles/ShareFiles.css";
+import { AcceptedFileTypes } from "./IFile";
 
 
 /**
- * The shareFiles functional component renders a div with a form to input URLs and a DropZone to input files.
- *  It records the input Files and URLs as arrays and dispatches them to the FileLoader component.
+ * Display a file sharing component.
+ * It displays a field for the user to provide a URL to a file to load and validates the URL.
+ * NOTE: validation is still very basic and should be improved.
  */
 function ShareFiles(props: { fileType: AcceptedFileTypes, loadFile: (fileURL: string) => Promise<void> }) {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -27,14 +28,14 @@ function ShareFiles(props: { fileType: AcceptedFileTypes, loadFile: (fileURL: st
     }
 
     return (
-        <div>
+        <div className="sharefile-components">
             {/* <DropZone handleFile={setfile} /> */}
             <Field
                 label="File URL"
                 validationState={isValidURL ? 'success' : 'error'}
                 validationMessageIcon={isValidURL ? 'success' : 'error'}
             >
-                <div>
+                <div className="sharefile-components-level2">
                     <Input 
                         placeholder="Enter a file URL"
                         ref={inputRef}
@@ -44,7 +45,7 @@ function ShareFiles(props: { fileType: AcceptedFileTypes, loadFile: (fileURL: st
                             setIsValidURL(validateURL(url));
                         }}
                     />
-                    <Button icon={<Upload />} appearance='primary' onClick={loadFileURL} disabled={!isValidURL} />
+                    <Button id="UploadBTN" icon={<Upload />} appearance='primary' onClick={loadFileURL} disabled={!isValidURL}/>
                 </div>
             </Field>
         </div>

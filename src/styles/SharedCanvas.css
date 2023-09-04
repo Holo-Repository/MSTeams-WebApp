@@ -4,6 +4,7 @@
   width: 100vw;
   height: 100vh;
   z-index: 0;
+  overflow: hidden;
 }
 
 #canvas-host {
@@ -12,13 +13,20 @@
   height: 100%;
   border: 0;
   z-Index: 100000000000000;
-  }
+}
+
+#toolbar-container {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
 
 #tool-first-level {
   position: absolute;
   display: inline-flex;
-  top: 87%;
-  left: 50%;
+  top: 90%;
   z-index: 200000000000000;
   padding: 3px;
   background-color: rgb(255, 255, 255);

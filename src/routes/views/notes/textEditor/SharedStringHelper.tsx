@@ -40,6 +40,14 @@ export class SharedStringHelper extends TypedEventEmitter<ISharedStringHelperEve
 	}
 
 	/**
+	 * Remove the registered event listener on the shared string.
+	 * This should be called whenever the object unloads.
+	 */
+	dispose() {
+		this._sharedString.off("sequenceDelta", this.sequenceDeltaHandler);
+	}
+
+	/**
 	 * @returns The full text stored in the SharedString as a string.
 	 */
 	public getText(): string {

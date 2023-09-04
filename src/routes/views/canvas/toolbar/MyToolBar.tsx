@@ -14,7 +14,7 @@ import { IFluidContainer } from "fluid-framework";
 import DrawingManager from "./DrawingManager";
 import MyToolbarButton from "./MyToolBarButton";
 import FileLoader from "../../fileSharing/FileLoader";
-import ViewerLoader from "../../unity/ViewerLoader";
+import ModelLoader from "../../unity/ModelLoader";
 import NotesLoader from "../../notes/NotesLoader";
 
 
@@ -59,7 +59,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
      * Function that sets the state's selectedTool value based on the event received, and
      * set the display status based on the current state. It also activates or deactivates
      *  the InkingManager depending on the selected tool.
-     * @param event The click event which can be used to retrive the value of the current target
+     * @param event The click event which can be used to retrieve the value of the current target
      */
     setSelectedTool = (event: any) => {
         const tool = event.currentTarget.value;
@@ -102,7 +102,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
         const { ink } = this.props;
         
         return(
-            <div ref={this.innerDivRef}>
+            <div ref={this.innerDivRef} id="toolbar-container">
                 <Toolbar id="tool-first-level" aria-label="with-Tools"
                     checkedValues={{tools: [this.state.selectedTool]}}
                 >
@@ -144,7 +144,7 @@ class MyToolBar extends React.Component<MyToolbarProps>{
                             onClick={this.setSelectedTool}
                         >
                             {this.getSelectedTool() === "Model" && this.state.isDisplayed && <div className="tool-second-level" >
-                                <ViewerLoader container={this.props.container} setParentState={this.setToolByValue} />
+                                <ModelLoader container={this.props.container} setParentState={this.setToolByValue} />
                             </div>
                             }
                         </MyToolbarButton>

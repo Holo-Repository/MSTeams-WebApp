@@ -8,15 +8,14 @@ import {
 } from '@fluentui/react-components';
 import { ArrowUpload16Regular as Upload } from "@fluentui/react-icons";
 
-import IFloaterObject from '../floaters/IFloaterObject';
+import IFloaterObject from '../floaters/IFloater';
 import useFloaterLoader from '../floaters/FloaterLoader';
 
 import commonStyles from "../../../styles/CommonSidePanelMeetingStage.module.css";
-import styles from "../../../styles/ViewerLoader.module.css";
-import globalTime from '../utils/GlobalTime';
+import styles from "../../../styles/ModelLoader.module.css";
 
 
-function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
+function ModelLoader(props: {container: IFluidContainer, setParentState: (tool: string) => void}) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [modelURL, setModelURL] = useState("");
 
@@ -33,6 +32,9 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
     // /------/ End of code related to issue
     });
     
+    /**
+     * Load a new model in the remote container.
+     */
     async function loadModel() {
         if (!inputRef.current) throw new Error("Input ref not set");
 
@@ -41,7 +43,6 @@ function ViewerLoader(props: {container: IFluidContainer, setParentState: (tool:
             pos: { x: -200, y: -150 },
             size: { width: 400, height: 300 },
             modelRotation: { x: 0, y: 0, z: 0 },
-            lastEditTime: (await globalTime()).ntpTimeInUTC,
             modelScale: { x: 0.003, y: 0.003, z: 0.003 },
             modelURL: modelURL,
             modelTexturesHandle: (await props.container.create(SharedMap)).handle,
@@ -54,8 +55,8 @@ See the code in ModelViewer.tsx for more details on the workaround used.
 ======================================================================================== */
         // If no model is loaded, load the model with the key "model"
         if (canLoad) {
-            await loadFloater(model, "model"); 
-            props.setParentState("Select")
+            await loadFloater(model, "model"); // Key is fixed so that we can check if a model is loaded
+            props.setParentState("Select"); // Deselect the model loader tool
         }
     }
 
@@ -81,4 +82,4 @@ See the code in ModelViewer.tsx for more details on the workaround used.
     </div>;
 }
 
-export default ViewerLoader;
+export default ModelLoader;

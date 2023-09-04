@@ -6,6 +6,7 @@ import SidePanel from "./views/sidePanel/SidePanel";
 import MeetingStage from "./views/meetingStage/MeetingStage";
 import ContainerManager from "./containers/ContainerManager";
 import commonStyles from "../styles/CommonSidePanelMeetingStage.module.css";
+import Fuse from "./views/utils/Fuse";
 
 /**
  * The HoloCollab component.
@@ -13,15 +14,15 @@ import commonStyles from "../styles/CommonSidePanelMeetingStage.module.css";
  * 
  * The view is determined by the context.page.frameContext value served by the Teams SDK.
  */
-class HoloCollab extends React.Component {
+class HoloCollab extends React.Component<{ containerFuse?: Fuse<string> }> {
     state = {
         // Expected values: "default", "content", "sidePanel", "meetingStage"
         // Represents the current view where the app is running.
         // Don't forget that multiple views can be running at the same time.
         view: "default",
+        containerManager: undefined as ContainerManager | undefined,
     };
 
-    containerManager = undefined as ContainerManager | undefined;
 
     async componentDidMount() {
         try {
@@ -31,22 +32,22 @@ class HoloCollab extends React.Component {
             // Connect to the container manager
             const locationID = (context.channel ?? context.chat)?.id;
             const user = { userId: context.user?.id, userName: context.user?.userPrincipalName };
-            this.containerManager = new ContainerManager(locationID, user);
+            const containerManager = new ContainerManager(locationID, user);
 
-            this.setState({ view });
+            this.setState({ view, containerManager });
         } catch (error: any) { raiseGlobalError(error) };
     }
 
     render() {
-        const { view } = this.state;
+        const { view, containerManager } = this.state;
+        const { containerFuse } = this.props;
 
-        if (!this.containerManager) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
-
-        return (
+        if (!containerManager) return <div className={commonStyles.loading}><Spinner labelPosition="below" label="Connecting..." /></div>;
+        else return (
             <>
                 {view === 'content' && 'Content'}
-                {view === 'sidePanel' && <SidePanel containerManager={this.containerManager}/>}
-                {view === 'meetingStage' && <MeetingStage containerManager={this.containerManager}/>}
+                {view === 'sidePanel' && <SidePanel containerManager={containerManager} containerFuse={containerFuse} />}
+                {view === 'meetingStage' && <MeetingStage containerManager={containerManager} containerFuse={containerFuse} />}
             </>
         )
     }
