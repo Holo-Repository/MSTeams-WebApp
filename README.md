@@ -84,7 +84,15 @@ The Organ Segmentation Model is powered by MONAI and is deployed as part of a Fl
 
 # Maintenance
 
-# Contacts
+# Team Members
+| Name                  | Email                                |
+|-----------------------|--------------------------------------|
+|Shalini Sethuraman     | shalini.sethuraman.22@ucl.ac.uk      |
+|Hao-Hsuan Teng         | hao-hsuan.teng.22@ucl.ac.uk          |
+|Huanran Sa             | huanran.sa.22@ucl.ac.uk              |
+|Michelangelo Valsecchi | michelangelo.valsecchi.22@ucl.ac.uk  |
+|Tao Huang              | tao.huang.22@ucl.ac.uk               |
+|Thiago Bourscheid      | thiago.bourscheid.22@ucl.ac.uk       |
 
 # References
 
