@@ -1,33 +1,46 @@
-# Personal tab across Microsoft 365
+# Introduction
+HoloCollab is a software aimed at professionals with the primary goals of facilitating remote collaboration and enabling advanced insights through the use of interactive 2D and 3D resources.
+The primary use cases focus on supporting multidisciplinary teams (MDT), merging the functionalities of multiple apps into a single cohesive environment.
+Concretely, this resulted in a Microsoft Teams app that provides multiple whiteboards where meeting participants can collaboratively annotate and place additional resources like images, PDFs, text notes, and 3D models.
+All interactions are synchronized across clients using Azure Fluid containers and the LiveShare SDK, and each member is served with the same shared app state rendered using React and Fluent UI elements.
+Additionally, leveraging previous UCL projects under the HoloRepository umbrella, as well as state-of-the-art machine learning models from MONAI, we provided an avenue tailored to the needs of medical professionals to produce organ-segment 3D models from raw DICOM scans.
+The models can then be imported into the collaborative environment, which provides a globally synchronized view of the 3D volumes handling rotation, scaling, and drawing on the model’s texture.
 
-Personal tabs provide a great way to enhance the Microsoft Teams experience. Using personal tabs, you can provide a user access to their application right within Teams, without the user having to leave the experience or sign in again. Now, personal tabs can light up within other Microsoft 365 applications. You can build and run your personal tabs in Teams, both Outlook desktop and web experiences, and also the Microsoft 365 app on the web.
+# Showcase 
+Demonstration videos and a list of features
 
-![Personal tab demo](https://user-images.githubusercontent.com/11220663/167839153-0aef6adc-450e-4b8c-a28f-7d27005d1093.png)
+# Architecture
 
-## Prerequisites
 
-- [Node.js](https://nodejs.org/), supported versions: 16, 18
-- An M365 account. If you do not have M365 account, apply one from [M365 developer program](https://developer.microsoft.com/microsoft-365/dev-program)
-- [Set up your dev environment for extending Teams apps across Microsoft 365](https://aka.ms/teamsfx-m365-apps-prerequisites)
-> Please note that after you enrolled your developer tenant in Office 365 Target Release, it may take couple days for the enrollment to take effect.
-- [Teams Toolkit Visual Studio Code Extension](https://aka.ms/teams-toolkit) version 5.0.0 and higher or [TeamsFx CLI](https://aka.ms/teamsfx-cli)
+# Installation
 
-## Getting Started
 
-Follow below instructions to get started with this application template for local debugging.
+## Requirements
 
-### Test your application with Visual Studio Code
 
-1. Press `F5` or use the `Run and Debug Activity Panel` in Visual Studio Code.
-1. Select a target Microsoft 365 application where the personal tabs can run: `Debug in Teams`, `Debug in Outlook` or `Debug in the Microsoft 365 app` and click the `Run and Debug` green arrow button.
+## Unity
 
-### Test your application with TeamsFx CLI
 
-1. Executing the command `teamsfx provision --env local` in your project directory.
-1. Executing the command `teamsfx deploy --env local` in your project directory.
-1. Executing the command `teamsfx preview --env local --m365-host <m365-host>` in your project directory, where options for `m365-host` are `teams`, `outlook` or `office`.
+## HoloRepository
 
-## References
+### Provisioning
+
+### Deployment
+
+
+## HoloCollab
+
+### Provisioning
+
+### Deployment
+
+### Publishing
+
+# Maintenance
+
+# Contacts
+
+# References
 
 * [Extend a Teams personal tabs across Microsoft 365](https://docs.microsoft.com/microsoftteams/platform/m365-apps/extend-m365-teams-personal-tab?tabs=manifest-teams-toolkit)
 * [Teams Toolkit Documentations](https://docs.microsoft.com/microsoftteams/platform/toolkit/teams-toolkit-fundamentals)
