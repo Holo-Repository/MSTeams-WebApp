@@ -65,23 +65,28 @@ The Organ Segmentation Model is powered by MONAI and is deployed as part of a Fl
 
 ## HoloRepository
 ### Provisioning
-HoloRepository2023 requires the following Azure resources:
-- OrganSegmentation-Model, OrganSegmentation-Pipeline, and OrganSegmentation-StorageAccessor each requires 1 App Service
-- 1	Container registry
-- 1 Health Data Services workspace and 1 FHIR service (These are currently not in use as our project doesn't require FHIR, however it is still remain to keep the build stable, future iteration should remove all FHIR related from HoloRepository unless needed)
+HoloRepository2023 requires the following Azure resources to be manually provisioned:
 - 1 Storage account
+- 1	Container registry
+- 1 App Service each for OrganSegmentation-Model, OrganSegmentation-Pipeline, and OrganSegmentation-StorageAccessor
+- 1 Health Data Services workspace and 1 FHIR service (the functionality implemented by HoloCollab does not require FHIR; however it is still kept for compatibility reasons, and future iteration should remove all FHIR related functionality from HoloRepository unless needed)
+
+The `.env` file in [OrganSegmentation-StorageAccessor](https://github.com/Holo-Repository/OrganSegmentation-StorageAccessor) and `config.py` in [OrganSegmentation-Pipeline](https://github.com/Holo-Repository/OrganSegmentation-Pipeline) need to be updated to include the specific details of the provisioned resources.
 
 ### Deployment
-- The .env file in [OrganSegmentation-StorageAccessor](https://github.com/Holo-Repository/OrganSegmentation-StorageAccessor) and config.py in [OrganSegmentation-Pipeline](https://github.com/Holo-Repository/OrganSegmentation-Pipeline) will need to be updated according to the created Azure resources
 
-Manual Deployment: Build the docker images in your local machine, and follow the [microsoft guide](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli?tabs=azure-cli) to upload to image to the created Container registry, then in App Services select the uploaded Docker image
+#### Manual Deployment (Not Recommended)
+Build the docker images of all components on your local machine, and follow the [microsoft guide](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli?tabs=azure-cli) to upload the images to the created Container registry, then the in App Services select the uploaded Docker images.
 
-Azure DevOps Deployment (Recommended): 
-- Connect [OrganSegmentation-Pipeline](https://github.com/Holo-Repository/OrganSegmentation-Pipeline), [OrganSegmentation-Model](https://github.com/Holo-Repository/OrganSegmentation-Model), and [OrganSegmentation-StorageAccessor](https://github.com/Holo-Repository/OrganSegmentation-StorageAccessor) to [Azure DevOps](https://azure.microsoft.com/en-gb/products/devops) using you or your organization's GitHub account, start a new pipeline and select the repository. 
-- Select "Build and push an image to Azure Container Registry" then select the Azure subscription and the Container registry created. 
-- Next, you can either remove the existing "azure-pipelines.yml" and let DevOps generate a new one or select the existing version and modify it.
-- Run the pipeline if everything is set
-- After finished building, go to the created App Services and select the uploaded Docker image
+#### Automated Deployment (Recommended):
+The automated deployment relies on an Azure DevOps pipeline to build and upload the docker images to the container registry.
+To set up the pipeline repeat the following instructions for each of the three components ([OrganSegmentation-Pipeline](https://github.com/Holo-Repository/OrganSegmentation-Pipeline), [OrganSegmentation-Model](https://github.com/Holo-Repository/OrganSegmentation-Model), and [OrganSegmentation-StorageAccessor](https://github.com/Holo-Repository/OrganSegmentation-StorageAccessor)):
+- Connect to [Azure DevOps](https://azure.microsoft.com/en-gb/products/devops) through GitHub
+- On DevOps create a new empty pipeline and select the repository of the component
+- Press `Build and push an image to Azure Container Registry` and in the prompt select the Azure subscription and Container registry created previously
+- Either remove the existing `azure-pipelines.yml` and let DevOps generate a new one or select the existing version and modify it according to your configuration
+- Run the pipeline and wait for it to finish
+- After it finishes building, go to the App Services of the component and under `Deployment Center` setup the `Registry` and `Image` fields to point to the container registry and image created by the pipeline
 
 
 ## HoloCollab
