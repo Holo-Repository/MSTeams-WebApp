@@ -68,10 +68,24 @@ The Organ Segmentation Model is powered by MONAI and is deployed as part of a Fl
 
 
 ## HoloRepository
-
 ### Provisioning
+HoloRepository2023 requires the following Azure resources:
+- OrganSegmentation-Model, OrganSegmentation-Pipeline, and OrganSegmentation-StorageAccessor each requires 1 App Service
+- 1	Container registry
+- 1 Health Data Services workspace and 1 FHIR service (These are currently not in use as our project doesn't require FHIR, however it is still remain to keep the build stable, future iteration should remove all FHIR related from HoloRepository unless needed)
+- 1 Storage account
 
 ### Deployment
+- The .env file in [OrganSegmentation-StorageAccessor](https://github.com/Holo-Repository/OrganSegmentation-StorageAccessor) and config.py in [OrganSegmentation-Pipeline](https://github.com/Holo-Repository/OrganSegmentation-Pipeline) will need to be updated according to the created Azure resources
+
+Manual Deployment: Build the docker images in your local machine, and follow the [microsoft guide](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli?tabs=azure-cli) to upload to image to the created Container registry, then in App Services select the uploaded Docker image
+
+Azure DevOps Deployment (Recommended): 
+- Connect [OrganSegmentation-Pipeline](https://github.com/Holo-Repository/OrganSegmentation-Pipeline), [OrganSegmentation-Model](https://github.com/Holo-Repository/OrganSegmentation-Model), and [OrganSegmentation-StorageAccessor](https://github.com/Holo-Repository/OrganSegmentation-StorageAccessor) to [Azure DevOps](https://azure.microsoft.com/en-gb/products/devops) using you or your organization's GitHub account, start a new pipeline and select the repository. 
+- Select "Build and push an image to Azure Container Registry" then select the Azure subscription and the Container registry created. 
+- Next, you can either remove the existing "azure-pipelines.yml" and let DevOps generate a new one or select the existing version and modify it.
+- Run the pipeline if everything is set
+- After finished building, go to the created App Services and select the uploaded Docker image
 
 
 ## HoloCollab
