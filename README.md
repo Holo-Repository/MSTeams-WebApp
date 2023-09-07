@@ -7,7 +7,7 @@ Additionally, leveraging previous UCL projects under the HoloRepository umbrella
 The models can then be imported into the collaborative environment, which provides a globally synchronized view of the 3D volumes handling rotation, scaling, and drawing on the model’s texture.
 
 # Showcase 
-Demonstration videos and a list of features
+Demonstration videos
 
 These are the functionalities provided with HoloCollab:
 * Shared canvas creation
@@ -23,10 +23,10 @@ These are the functionalities provided with HoloCollab:
 * Export the canvas in its entirety as an image, png file 
 * Text notes for comments, can be edited collaboratively  
 * Mark up tools for annotation
-  * Pen (varying colours and thickness options)
+  * Pen, varying colours and thickness
   * Point eraser, used to remove parts of a continuous markup
   * Solid eraser, used to remove continuous mark ups
-  * Highlighter (varying colours and thickness options)
+  * Highlighter, varying colours and thickness
   * Laser pointer
 * Object manipulation
   * Pinning of canvas objects in place, through a Pin button
