@@ -58,7 +58,9 @@ The Organ Segmentation Model is powered by MONAI and is deployed as part of a Fl
 
 
 ## Requirements
-
+- [Azure subscription](https://azure.microsoft.com/en-gb/free/search/?ef_id=_k_CjwKCAjw6eWnBhAKEiwADpnw9qYnFEMvOrDxSyZF5UnHZIVys4HMk3WQT-LbHYKpa1cHsZJnjn0rQRoCEGAQAvD_BwE_k_&OCID=AIDcmmiouhop3i_SEM__k_CjwKCAjw6eWnBhAKEiwADpnw9qYnFEMvOrDxSyZF5UnHZIVys4HMk3WQT-LbHYKpa1cHsZJnjn0rQRoCEGAQAvD_BwE_k_&gad=1&gclid=CjwKCAjw6eWnBhAKEiwADpnw9qYnFEMvOrDxSyZF5UnHZIVys4HMk3WQT-LbHYKpa1cHsZJnjn0rQRoCEGAQAvD_BwE)
+- [Teams organization](https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/deploy-and-publish/apps-upload)
+- [Unity license]([https://github.com/Holo-Repository/Unity3D-ModelViewer/blob/main/.github/workflows/unity-activation.yml](https://docs.unity3d.com/Manual/ManualActivationGuide.html))
 
 ## Unity
 Detailed installation instructions for the Unity ModelViewer can be found [here](https://github.com/Holo-Repository/Unity3D-ModelViewer#readme). 
