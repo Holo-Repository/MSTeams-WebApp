@@ -61,7 +61,7 @@ The Organ Segmentation Model is powered by MONAI and is deployed as part of a Fl
 
 
 ## Unity
-
+Detailed installation instructions for the Unity ModelViewer can be found [here](https://github.com/Holo-Repository/Unity3D-ModelViewer#readme). 
 
 ## HoloRepository
 ### Provisioning
