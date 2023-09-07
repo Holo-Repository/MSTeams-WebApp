@@ -65,11 +65,13 @@ The Organ Segmentation Model is powered by MONAI and is deployed as part of a Fl
 
 ## HoloRepository
 ### Provisioning
-HoloRepository2023 requires the following Azure resources to be manually provisioned:
+HoloRepository2023 requires the following Azure resources:
 - 1 Storage account
 - 1	Container registry
 - 1 App Service each for OrganSegmentation-Model, OrganSegmentation-Pipeline, and OrganSegmentation-StorageAccessor
-- 1 Health Data Services workspace and 1 FHIR service (the functionality implemented by HoloCollab does not require FHIR; however it is still kept for compatibility reasons, and future iteration should remove all FHIR related functionality from HoloRepository unless needed)
+- 1 Health Data Services workspace and 1 FHIR service 
+
+The functionality implemented by HoloCollab does not require FHIR; however it is still kept for compatibility reasons, and future iteration should remove all FHIR related functionality from HoloRepository unless needed.
 
 The `.env` file in [OrganSegmentation-StorageAccessor](https://github.com/Holo-Repository/OrganSegmentation-StorageAccessor) and `config.py` in [OrganSegmentation-Pipeline](https://github.com/Holo-Repository/OrganSegmentation-Pipeline) need to be updated to include the specific details of the provisioned resources.
 
@@ -81,23 +83,49 @@ Build the docker images of all components on your local machine, and follow the 
 #### Automated Deployment (Recommended):
 The automated deployment relies on an Azure DevOps pipeline to build and upload the docker images to the container registry.
 To set up the pipeline repeat the following instructions for each of the three components ([OrganSegmentation-Pipeline](https://github.com/Holo-Repository/OrganSegmentation-Pipeline), [OrganSegmentation-Model](https://github.com/Holo-Repository/OrganSegmentation-Model), and [OrganSegmentation-StorageAccessor](https://github.com/Holo-Repository/OrganSegmentation-StorageAccessor)):
-- Connect to [Azure DevOps](https://azure.microsoft.com/en-gb/products/devops) through GitHub
-- On DevOps create a new empty pipeline and select the repository of the component
-- Press `Build and push an image to Azure Container Registry` and in the prompt select the Azure subscription and Container registry created previously
-- Either remove the existing `azure-pipelines.yml` and let DevOps generate a new one or select the existing version and modify it according to your configuration
-- Run the pipeline and wait for it to finish
-- After it finishes building, go to the App Services of the component and under `Deployment Center` setup the `Registry` and `Image` fields to point to the container registry and image created by the pipeline
+- Connect to [Azure DevOps](https://azure.microsoft.com/en-gb/products/devops) through GitHub.
+- On DevOps create a new empty pipeline and select the repository of the component.
+- Press `Build and push an image to Azure Container Registry` and in the prompt select the Azure subscription and Container registry created previously.
+- Either remove the existing `azure-pipelines.yml` and let DevOps generate a new one or select the existing version and modify it according to your configuration.
+- Run the pipeline and wait for it to finish.
+- After it finishes building, go to the App Services of the component and under `Deployment Center` setup the `Registry` and `Image` fields to point to the container registry and image created by the pipeline.
 
 
 ## HoloCollab
+Most of the installation of HoloCollab is handled by the [Teams Toolkit](https://learn.microsoft.com/en-us/microsoftteams/platform/toolkit/teams-toolkit-fundamentals?pivots=visual-studio-code-v5).
+It consists 3 main steps: provisioning, deployment, and publishing.
+Provisioning and deployment initialize and load the app onto Azure, while publishing makes it available to users.
 
 ### Provisioning
+All the Azure resources needed by HoloCollab can be provisioned by pressing the `Provision` button in the `Teams Toolkit` tab of Visual Studio Code.
+This will create the following resources:
+- 1 Storage Account
+- 1 Fluid Relay service
+- 1 Function App
+- 1 App Service
+
+The resources are provisioned according to the configuration in the [BICEP file](./infra/azure.bicep).
+
+Most of the settings are automatically configured by `Teams Toolkit`, however, final steps need to be completed manually:
+- CORS should be enabled for the table service of the storage account. For testing purposes we recommend allowing all origins, however, for production, it is recommended to restrict the origins to the domain of the app, which can be found in the `.env` file.
+- A shared access signature (SAS) token needs to be generated for the storage account and added to the `.env` file.
 
 ### Deployment
+Once provisioned, the app can be deployed by pressing the `Deploy` button in the `Teams Toolkit` tab of Visual Studio Code and selecting the appropriate subscription and resource group.
+
+However, the FluidJWTProvider needs to be deployed manually following the instructions in the [FluidJWTProvider repository](https://github.com/Holo-Repository/Azure-Token-Services).
 
 ### Publishing
+Finally, the app can be published by pressing the `Publish` button in the `Teams Toolkit` tab of Visual Studio Code.
+The app will be published in the organization used to login in the Teams Toolkit and will be available for review in the [Teams Admin Center](https://admin.teams.microsoft.com/policies/manage-apps).
 
 # Maintenance
+As part of routine maintenance, the following tasks should be performed:
+- Regenerate the access keys of the Fluid Relay and update the `FluidRelayKey` variable in the configuration of the Function App.
+- Regenerate the SAS token of the HoloCollab storage account, update it in the `.env` file, and redeploy the app. Note that if not manually updated, the SAS will expire after a set period of time.
+- Remove unused Fluid containers following the official [documentation](https://learn.microsoft.com/en-us/azure/azure-fluid-relay/how-tos/container-deletion).
+
+
 
 # Team Members
 | Name                  | Email                                |
