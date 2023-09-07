@@ -9,6 +9,31 @@ The models can then be imported into the collaborative environment, which provid
 # Showcase 
 Demonstration videos and a list of features
 
+These are the functionalities provided with HoloCollab:
+* Shared canvas creation
+* Add 3D model to canvas using model ID
+* Interactions with 3D model
+  * Annotation within model viewer, where a UV map layer is present on the 3D model
+  * Zoom In/Out
+  * Rotation
+  * Waypoints, save model positions to return to them later within a meeting
+* Add images to canvas using a direct public URL
+* Add PDFs to canvas using a direct public URL
+* Export a 3D model canvas object to an image, png file
+* Export the canvas in its entirety as an image, png file 
+* Text notes for comments, can be edited collaboratively  
+* Mark up tools for annotation
+  * Pen (varying colours and thickness options)
+  * Point eraser, used to remove parts of a continuous markup
+  * Solid eraser, used to remove continuous mark ups
+  * Highlighter (varying colours and thickness options)
+  * Laser pointer
+* Object manipulation
+  * Pinning of canvas objects in place, through a Pin button
+  * Detele 2D, 3D resources with Bin button
+  * Repositioning of canvas objects, send to front/back as well as around the canvas itself  
+  * Resizing of canvas objects  
+
 # Architecture
 
 ![System Diagram](./public/AchitectureDiagram.png)
