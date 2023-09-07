@@ -9,30 +9,26 @@ The models can then be imported into the collaborative environment, which provid
 # Showcase 
 Demonstration videos
 
-These are the functionalities provided with HoloCollab:
-* Shared canvas creation
-* Add 3D model to canvas using model ID
-* Interactions with 3D model
-  * Annotation within model viewer, where a UV map layer is present on the 3D model
-  * Zoom In/Out
-  * Rotation
-  * Waypoints, save model positions to return to them later within a meeting
-* Add images to canvas using a direct public URL
-* Add PDFs to canvas using a direct public URL
-* Export a 3D model canvas object to an image, png file
-* Export the canvas in its entirety as an image, png file 
-* Text notes for comments, can be edited collaboratively  
-* Mark up tools for annotation
-  * Pen, varying colours and thickness
-  * Point eraser, used to remove parts of a continuous markup
-  * Solid eraser, used to remove continuous mark ups
-  * Highlighter, varying colours and thickness
-  * Laser pointer
-* Object manipulation
-  * Pinning of canvas objects in place, through a Pin button
-  * Detele 2D, 3D resources with Bin button
-  * Repositioning of canvas objects, send to front/back as well as around the canvas itself  
-  * Resizing of canvas objects  
+HoloCollab provides the following functionalities:
+* Shared collaborative canvas
+* Mark up tools for annotation on the canvas:
+  * Pen of varying colours and thickness
+  * Highlighter of varying colours and thickness
+  * Point eraser to delete parts of a stroke
+  * Solid eraser to delete entire strokes
+  * Laser pointer to highlight parts of the canvas
+* Display of 3D models on the canvas, with the following collaborative features:
+  * Direct drawing on the model's surface
+  * Free rotation and scaling
+  * Waypoints to save snapshots of a model's positioning
+  * Export the current view of the model to an image
+* Sharing of images and PDFs to the canvas using a direct public URL
+* Sharing of collaborative text notes for comments and discussion
+* Manipulation of 2D and 3D resources shared on the canvas:
+  * Moving and resizing
+  * Arranging of the z-order
+  * Deletion
+* Exporting the canvas in its entirety to an image
 
 # Architecture
 
