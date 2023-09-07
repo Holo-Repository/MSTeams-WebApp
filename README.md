@@ -121,7 +121,7 @@ Finally, the app can be published by pressing the `Publish` button in the `Teams
 The app will be published in the organization used to login in the Teams Toolkit and will be available for review in the [Teams Admin Center](https://admin.teams.microsoft.com/policies/manage-apps).
 
 # Maintenance
-As part of routine maintenance, the following tasks should be performed:
+As part of routine maintenance, the following tasks should also be performed:
 - Regenerate the access keys of the Fluid Relay and update the `FluidRelayKey` variable in the configuration of the Function App.
 - Regenerate the SAS token of the HoloCollab storage account, update it in the `.env` file, and redeploy the app. Note that if not manually updated, the SAS will expire after a set period of time.
 - Remove unused Fluid containers following the official [documentation](https://learn.microsoft.com/en-us/azure/azure-fluid-relay/how-tos/container-deletion).
