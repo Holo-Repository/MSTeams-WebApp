@@ -11,6 +11,25 @@ Demonstration videos and a list of features
 
 # Architecture
 
+![System Diagram](./public/AchitectureDiagram.png)
+
+The HoloCollab system consists of multiple sub-components and remains open to future extensions. Currently, core components are:
+
+## HoloCollab Teams App
+
+The HoloCollab Teams App is the central hub of the system, directly interacting with the MS Teams Client to gather user input and display the application's state. It relays state changes to the Azure Fluid Relay for synchronization across all client instances. Additionally, it acts as the host for the 3D Model Viewer Unity App and facilitates communication between the components via a custom interface.
+
+## Azure Fluid Relay
+
+Azure Fluid Relay plays a crucial role as a backend service, synchronizing the application state across all connected clients. It interacts closely with the HoloCollab Teams App, fetching user authentication tokens from the Fluid JWT Provider service to facilitate this synchronization.
+
+## 3D Model Viewer Unity App
+
+The 3D Model Viewer Unity App allows users to retrieve models via directly accessible URLs, and do basic manipulations and annotation on models. This component communicates with both the HoloCollab Teams App for display and the Organ Segmentation Pipeline for data retrieval.
+
+## Organ Segmentation Pipeline
+
+The Organ Segmentation Pipeline focuses on organ segmentation, working in conjunction with MONAI for 3D model generation. This pipeline also involves the Organ Segmentation Storage Accessor, which is responsible for retrieving and storing the segmented 3D models. These models are subsequently fetched by the 3D Model Viewer Unity App for user interaction and display.
 
 # Installation
 
