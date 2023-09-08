@@ -6,7 +6,9 @@ Additionally, leveraging previous UCL projects under the HoloRepository umbrella
 The models can then be imported into the collaborative environment, which provides a globally synchronized view of the 3D volumes handling rotation, scaling, and drawing on the model’s texture.
 
 # Showcase 
-Demonstration videos
+Demonstration video
+
+[![DemoVideo](./public/DemoThumbNail.png)](https://github.com/Holo-Repository/MSTeams-WebApp/assets/118208675/0c61e0fa-9359-4831-9981-d041d3754761)
 
 HoloCollab provides the following functionalities:
 * Shared collaborative canvas
