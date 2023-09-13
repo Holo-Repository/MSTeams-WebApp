@@ -5,6 +5,9 @@ import { throttle } from 'lodash';
 import { Document, pdfjs, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
+import { 
+    ArrowForward24Filled as Arrow,
+} from "@fluentui/react-icons";
 
 import { PDFKeys } from '../IFile';
 import { FloaterScreenSize } from "../../utils/FloaterUtils";
@@ -77,9 +80,9 @@ function PDF(props: { url: string, screenSize: FloaterScreenSize, objMap: Shared
 
     return <div className={styles.body} style={{ width: props.screenSize.width }} onScroll={handleScroll} ref={bodyRef} >
         <Toolbar className={styles.controls}>
-            <Button onClick={prevPage} disabled={pageNumber === 1} >Previous</Button>
-            <Text>Page {pageNumber} of {numPages}</Text>
-            <Button onClick={nextPage} disabled={pageNumber === numPages}>Next</Button>
+            <Button onClick={prevPage} disabled={pageNumber === 1}><Arrow rotate={180}/></Button>
+            <Text>{pageNumber}/{numPages}</Text>
+            <Button onClick={nextPage} disabled={pageNumber === numPages}><Arrow /></Button>
         </Toolbar>
         <Document 
             file={props.url} 
