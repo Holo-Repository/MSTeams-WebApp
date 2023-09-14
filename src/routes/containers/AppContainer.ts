@@ -22,7 +22,6 @@ class AppContainer {
     
     public static async connect(): Promise<IFluidContainer> {
         // Setup the Fluid container
-        // TODO: Investigate whether more than once connection can be made per client. Remember that sidePanel and MeetingStage count as different clients.
         const host = LiveShareHost.create();
         const liveShare = new LiveShareClient(host);
         const { container } = await liveShare.joinContainer(this.schema);

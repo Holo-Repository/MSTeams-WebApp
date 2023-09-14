@@ -10,6 +10,12 @@
       },
       "storageSku": {
         "value": "Standard_LRS"
+      },
+      "tableBaseName": {
+        "value": "locationIDtoFluidRelay${{RESOURCE_SUFFIX}}"
+      },
+      "functionBaseName": {
+        "value": "Fluid-JWT-Provider-${{RESOURCE_SUFFIX}}"
       }
     }
   }

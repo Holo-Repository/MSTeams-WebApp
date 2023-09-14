@@ -51,12 +51,21 @@ class ContainerManager {
         // Connect to the table storage
         this.tableClient = getTableClient();
 
+        const fluidTenantID = process.env.REACT_APP_FLUID_TENANT_ID;
+        if (!fluidTenantID) throw raiseGlobalError(new Error("Tenant ID is required"));
+
+        const fluidEndpoint = process.env.REACT_APP_FLUID_ENDPOINT;
+        if (!fluidEndpoint) throw raiseGlobalError(new Error("Fluid Endpoint is required"));
+
+        const remoteTokenProviderURL = process.env.REACT_APP_REMOTE_TOKEN_PROVIDER_URL;
+        if (!remoteTokenProviderURL) throw raiseGlobalError(new Error("Remote Token Provider URL is required"));
+
         // Define a custom connection to the Azure Fluid Relay
         const options: AzureClientProps = {
             connection: {
-                tenantId: 'a04ee05a-7649-44cc-a6ab-39a91f793bb8',
-                tokenProvider: new FluidTokenProvider('https://fluid-jwt-provider.azurewebsites.net/api/JWTProvider', user),
-                endpoint: 'https://eu.fluidrelay.azure.com',
+                tenantId: fluidTenantID,
+                tokenProvider: new FluidTokenProvider(`https://${remoteTokenProviderURL}/api/JWTProvider`, user),
+                endpoint: fluidEndpoint,
                 type: 'remote'
             }
         };
