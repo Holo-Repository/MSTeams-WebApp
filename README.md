@@ -109,10 +109,6 @@ This will create the following resources:
 
 The resources are provisioned according to the configuration in the [BICEP file](./infra/azure.bicep).
 
-Most of the settings are automatically configured by `Teams Toolkit`, however, final steps need to be completed manually:
-- CORS should be enabled for the table service of the storage account. For testing purposes we recommend allowing all origins, however, for production, it is recommended to restrict the origins to the domain of the app, which can be found in the `.env` file.
-- A shared access signature (SAS) token needs to be generated for the storage account and added to the `.env` file.
-
 ### Deployment
 Once provisioned, the app can be deployed by pressing the `Deploy` button in the `Teams Toolkit` tab of Visual Studio Code and selecting the appropriate subscription and resource group.
 
@@ -125,7 +121,7 @@ The app will be published in the organization used to login in the Teams Toolkit
 # Maintenance
 As part of routine maintenance, the following tasks should also be performed:
 - Regenerate the access keys of the Fluid Relay and update the `FluidRelayKey` variable in the configuration of the Function App.
-- Regenerate the SAS token of the HoloCollab storage account, update it in the `.env` file, and redeploy the app. Note that if not manually updated, the SAS will expire after a set period of time.
+- Regenerate the SAS token of the HoloCollab storage account, update it in the `.env` file, and redeploy the app. Note that if not manually updated, the SAS will expire after 1 year.
 - Remove unused Fluid containers following the official [documentation](https://learn.microsoft.com/en-us/azure/azure-fluid-relay/how-tos/container-deletion).
 
 
